@@ -29,10 +29,9 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-slide-up opacity-0 text-left">
-        <!-- Left Column: Form Fields + Sticky Price Card -->
-        <div class="lg:col-span-5 lg:h-[calc(100vh-140px)] flex flex-col justify-between text-left font-mono">
-          <div class="flex-1 overflow-y-auto pr-1 space-y-6 scrollbar-thin scrollbar-thumb-white/10 max-h-[58vh] lg:max-h-[calc(100vh-320px)] pb-4"
-            [style.overflow]="isAnyDropdownOpen() ">
+        <!-- Left Column: Form Fields -->
+        <div class="lg:col-span-5 text-left font-mono">
+          <div class="space-y-6">
 
             <!-- STEP 1: Project Specifications -->
             @if (formStep() === 1) {
@@ -541,38 +540,92 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             }
           </div>
 
-          <!-- Step Progress Timeline -->
-          <div class="pt-4 pb-2 shrink-0 select-none">
-            <div class="relative flex items-center justify-between px-2">
-              <!-- Continuous background line -->
-              <div class="absolute left-[10%] right-[10%] top-[14px] h-0.5 bg-white/10 -translate-y-1/2"></div>
-              <!-- Filled progress line -->
-              <div class="absolute left-[10%] top-[14px] h-0.5 bg-emerald-500 -translate-y-1/2 transition-all duration-500"
-                [style.width.%]="formStep() === 1 ? 0 : formStep() === 2 ? 40 : 80"></div>
-              @for (step of [1, 2, 3]; track step) {
-                <div class="flex flex-col items-center gap-1.5 z-10">
-                  <div (click)="goToStep(step)"
-                    [ngClass]="formStep() > step ? 'bg-emerald-500 border-emerald-500 cursor-pointer' : formStep() === step ? 'bg-primary-custom border-primary-custom ring-2 ring-primary-custom/30' : 'bg-[#19191D] border-white/10 cursor-pointer hover:border-white/30'"
-                    class="w-7 h-7 rounded-full border flex items-center justify-center text-[10px] font-bold font-mono transition-all duration-300 hover:scale-110 active:scale-95">
-                    @if (formStep() > step) {
-                      <span class="material-symbols-outlined text-xs text-white">check</span>
-                    } @else {
-                      <span [ngClass]="formStep() === step ? 'text-white' : 'text-on-surface-variant-custom'">{{ step }}</span>
-                    }
-                  </div>
-                  <span (click)="goToStep(step)"
-                    [ngClass]="formStep() === step ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom cursor-pointer hover:text-white'"
-                    class="text-[8px] uppercase tracking-wider font-mono transition-all duration-300 whitespace-nowrap">
-                    {{ step === 1 ? 'Project Specs' : step === 2 ? 'Location Info' : 'Valuation' }}
-                  </span>
-                </div>
-              }
+        </div>
+
+        <!-- Right Column: Visualizer -->
+        <div class="lg:col-span-7 lg:h-[calc(100vh-140px)] flex flex-col text-left">
+
+          <div class="flex-1 overflow-y-auto space-y-6 pr-1 scrollbar-thin scrollbar-thumb-white/10">
+
+          <!-- Explore External Site RealityXD -->
+          <div class="glass-panel p-4 rounded-xl bg-gradient-to-r from-primary-custom/10 to-[#DF80AC]/10 border border-[#DF80AC]/20 select-none">
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
+              <div class="text-left font-sans flex-1">
+                <h4 class="text-xs text-white font-bold">AxisXD Platform Integration</h4>
+                <p class="text-[9px] text-slate-400 mt-0.5 font-mono">Export coordinate assets directly to realityxd.axisxd.com.</p>
+              </div>
+              <a href="https://realityxd.axisxd.com/realityxd/?pid=9sd45g7fd2dfgdf6p3qr" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-[#DF80AC] text-black font-mono text-[10px] uppercase tracking-widest px-4 py-2.5 rounded-lg hover:opacity-95 active:scale-95 transition-all outline-none font-bold shrink-0 shadow-md">
+                <span class="material-symbols-outlined text-xs">explore</span>
+                <span>Explore</span>
+              </a>
             </div>
           </div>
 
-          <!-- Sticky Price Card at bottom of left column -->
-          <div class="pt-4 border-t border-white/5 shrink-0 z-20 sticky bottom-0">
-            <section class="glass-panel p-6 rounded-2xl relative overflow-hidden bg-[#131117]/80 border border-[#DF80AC]/30 font-mono animate-fade-in text-left">
+          <!-- Visualizer -->
+          <div class="glass-panel p-5 rounded-2xl border border-white/10 bg-[#121216]/60 space-y-4">
+            <div class="flex items-center justify-between border-b border-white/5 pb-3">
+              <div class="flex items-center gap-2 font-mono">
+                <span class="material-symbols-outlined text-sm text-[#DF80AC] animate-pulse">videocam</span>
+                <span class="text-[10px] text-slate-300 uppercase tracking-widest font-bold">Reality Live Feed Visualizer</span>
+              </div>
+              <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase font-bold text-[8px] font-mono">
+                {{ calculator.selectedModelingWay() === 'bim' ? 'BIM Modeling Track' : 'CAD-to-BIM Track' }}
+              </span>
+            </div>
+
+            <div class="space-y-4">
+              <div class="space-y-1.5">
+                <div class="flex justify-between items-center font-mono text-[9px]">
+                  <span class="text-slate-400 uppercase tracking-wider font-bold">2. Detailing Grade Standard Preview</span>
+                  <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase font-bold text-[8.5px]">
+                    {{ getSelectedLODLabel() }}
+                  </span>
+                </div>
+                <div class="relative rounded-xl overflow-hidden aspect-video border border-white/5 bg-black/40 group relative">
+                  <img [src]="getLODPreviewImage()"
+                       [alt]="getSelectedLODLabel() + ' preview'"
+                       class="w-full h-full object-cover opacity-80 group-hover:scale-[1.03] transition-transform duration-700"
+                       referrerpolicy="no-referrer" />
+                  <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 font-mono text-[8.5px] text-[#DF80AC] font-bold">
+                    {{ getLODOverlayText() }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+
+          <div class="sticky top-0 space-y-4">
+            <!-- Step Progress Timeline -->
+            <div class="pt-4 pb-2 shrink-0 select-none">
+              <div class="relative flex items-center justify-between px-2">
+                <div class="absolute left-[10%] right-[10%] top-[14px] h-0.5 bg-white/10 -translate-y-1/2"></div>
+                <div class="absolute left-[10%] top-[14px] h-0.5 bg-emerald-500 -translate-y-1/2 transition-all duration-500"
+                  [style.width.%]="formStep() === 1 ? 0 : formStep() === 2 ? 40 : 80"></div>
+                @for (step of [1, 2, 3]; track step) {
+                  <div class="flex flex-col items-center gap-1.5 z-10">
+                    <div (click)="goToStep(step)"
+                      [ngClass]="formStep() > step ? 'bg-emerald-500 border-emerald-500 cursor-pointer' : formStep() === step ? 'bg-primary-custom border-primary-custom ring-2 ring-primary-custom/30' : 'bg-[#19191D] border-white/10 cursor-pointer hover:border-white/30'"
+                      class="w-7 h-7 rounded-full border flex items-center justify-center text-[10px] font-bold font-mono transition-all duration-300 hover:scale-110 active:scale-95">
+                      @if (formStep() > step) {
+                        <span class="material-symbols-outlined text-xs text-white">check</span>
+                      } @else {
+                        <span [ngClass]="formStep() === step ? 'text-white' : 'text-on-surface-variant-custom'">{{ step }}</span>
+                      }
+                    </div>
+                    <span (click)="goToStep(step)"
+                      [ngClass]="formStep() === step ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom cursor-pointer hover:text-white'"
+                      class="text-[8px] uppercase tracking-wider font-mono transition-all duration-300 whitespace-nowrap">
+                      {{ step === 1 ? 'Project Specs' : step === 2 ? 'Location Info' : 'Valuation' }}
+                    </span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Sticky Price Card -->
+            <div class="pt-4 border-t border-white/5 shrink-0 z-20">
+              <section class="glass-panel p-6 rounded-2xl relative overflow-hidden bg-[#131117]/80 border border-[#DF80AC]/30 font-mono animate-fade-in text-left">
               <div class="absolute top-0 right-0 p-4 opacity-15 select-none text-[#DF80AC]">
                 <span class="material-symbols-outlined text-5xl font-light">receipt_long</span>
               </div>
@@ -667,82 +720,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                 }
               </div>
             </section>
-          </div>
-        </div>
-
-        <!-- Right Column: Visualizer -->
-        <div class="lg:col-span-7 space-y-6 text-left">
-
-          <!-- Explore External Site RealityXD -->
-          <div class="glass-panel p-4 rounded-xl bg-gradient-to-r from-primary-custom/10 to-[#DF80AC]/10 border border-[#DF80AC]/20 select-none">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-              <div class="text-left font-sans flex-1">
-                <h4 class="text-xs text-white font-bold">AxisXD Platform Integration</h4>
-                <p class="text-[9px] text-slate-400 mt-0.5 font-mono">Export coordinate assets directly to realityxd.axisxd.com.</p>
-              </div>
-              <a href="https://realityxd.axisxd.com/realityxd/?pid=9sd45g7fd2dfgdf6p3qr" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-[#DF80AC] text-black font-mono text-[10px] uppercase tracking-widest px-4 py-2.5 rounded-lg hover:opacity-95 active:scale-95 transition-all outline-none font-bold shrink-0 shadow-md">
-                <span class="material-symbols-outlined text-xs">explore</span>
-                <span>Explore</span>
-              </a>
-            </div>
-          </div>
-
-          <!-- Visualizer -->
-          <div class="glass-panel p-5 rounded-2xl border border-white/10 bg-[#121216]/60 space-y-4">
-            <div class="flex items-center justify-between border-b border-white/5 pb-3">
-              <div class="flex items-center gap-2 font-mono">
-                <span class="material-symbols-outlined text-sm text-[#DF80AC] animate-pulse">videocam</span>
-                <span class="text-[10px] text-slate-300 uppercase tracking-widest font-bold">Reality Live Feed Visualizer</span>
-              </div>
-              <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase font-bold text-[8px] font-mono">
-                {{ calculator.selectedModelingWay() === 'bim' ? 'BIM Modeling Track' : 'CAD-to-BIM Track' }}
-              </span>
-            </div>
-
-            <div class="space-y-4">
-              <div class="space-y-1.5">
-                <span class="font-mono text-[9px] text-slate-400 uppercase tracking-wider block font-bold">1. Track Model Asset Representation</span>
-                <div class="relative rounded-xl overflow-hidden aspect-video border border-white/5 bg-black/40 group">
-                  @if (calculator.selectedModelingWay() === 'bim') {
-                    <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80"
-                         alt="BIM Modeling 3D structure layout render"
-                         class="w-full h-full object-cover opacity-80 group-hover:scale-[1.03] transition-transform duration-700"
-                         referrerpolicy="no-referrer" />
-                    <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 font-mono text-[8.5px] text-[#DF80AC] font-bold">
-                      STREAM: BIM MODELING 3D ACTIVE ASSET
-                    </div>
-                  } @else {
-                    <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
-                         alt="CAD to BIM alignment layout blueprint"
-                         class="w-full h-full object-cover opacity-80 group-hover:scale-[1.03] transition-transform duration-700"
-                         referrerpolicy="no-referrer" />
-                    <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 font-mono text-[8.5px] text-[#DF80AC] font-bold">
-                      STREAM: CAD-TO-BIM TRANSFORMATION ASSET
-                    </div>
-                  }
-                </div>
-              </div>
-
-              <div class="space-y-1.5">
-                <div class="flex justify-between items-center font-mono text-[9px]">
-                  <span class="text-slate-400 uppercase tracking-wider font-bold">2. Detailing Grade Standard Preview</span>
-                  <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase font-bold text-[8.5px]">
-                    {{ getSelectedLODLabel() }}
-                  </span>
-                </div>
-                <div class="relative rounded-xl overflow-hidden aspect-video border border-white/5 bg-black/40 group relative">
-                  <img [src]="getLODPreviewImage()"
-                       [alt]="getSelectedLODLabel() + ' preview'"
-                       class="w-full h-full object-cover opacity-80 group-hover:scale-[1.03] transition-transform duration-700"
-                       referrerpolicy="no-referrer" />
-                  <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 font-mono text-[8.5px] text-[#DF80AC] font-bold">
-                    {{ getLODOverlayText() }}
-                  </div>
-                </div>
-              </div>
-
-            
-            </div>
+wef          </div>
           </div>
 
         </div>
