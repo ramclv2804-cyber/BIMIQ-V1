@@ -39,7 +39,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           
           <div class="flex flex-wrap items-center justify-center gap-4 pt-4 select-none">
             <button type="button" (click)="calculator.setTab('config')" class="bg-primary-custom text-on-primary-custom font-mono text-xs uppercase tracking-widest px-8 py-3.5 rounded-lg border-none hover:opacity-95 active:scale-95 transition-all font-bold cursor-pointer shadow-lg shadow-primary-custom/15">
-              Explore Dashboard
+             Try Price Estimation
             </button>
             <button type="button" (click)="watchDemo()" class="border border-white/20 hover:border-white/50 bg-[#0A0A0D]/80 text-silver-leaf font-mono text-xs uppercase tracking-widest px-8 py-3.5 rounded-lg active:scale-95 transition-all font-bold cursor-pointer hover:bg-white/10 backdrop-blur-md">
               Watch Live Demo

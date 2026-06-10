@@ -57,14 +57,21 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     </div>
 
                     <div class="space-y-2">
-                      <label for="cadProjectType" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Type <span class="text-red-400">*</span></label>
-                      <input id="cadProjectType" [value]="calculator.projectType()" (input)="calculator.projectType.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="text" placeholder="Renovation / New Build"/>
-                    </div>
-
-                    <div class="space-y-2">
-                      <label for="cadArea" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Area <span class="text-red-400">*</span></label>
+                      <div class="flex items-center justify-between">
+                        <label for="cadArea" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Area <span class="text-red-400">*</span></label>
+                        <button type="button" (click)="calculator.smartIsMetric.set(!calculator.smartIsMetric())"
+                          class="px-1.5 py-0.5 rounded text-[8px] font-bold font-mono uppercase tracking-wider border transition-all select-none cursor-pointer"
+                          [class.bg-[#DF80AC]/15]="calculator.smartIsMetric()"
+                          [class.text-[#DF80AC]]="calculator.smartIsMetric()"
+                          [class.border-[#DF80AC]/30]="calculator.smartIsMetric()"
+                          [class.bg-white/5]="!calculator.smartIsMetric()"
+                          [class.text-slate-400]="!calculator.smartIsMetric()"
+                          [class.border-white/10]="!calculator.smartIsMetric()">
+                          {{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}
+                        </button>
+                      </div>
                       <div class="relative">
-                        <input id="cadArea" [value]="calculator.smartScanSize()" (input)="calculator.smartScanSize.set($any($event.target).value || 0)" type="number" placeholder="1500" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg pl-4 pr-16 py-3 font-mono tracking-wide text-silver-leaf focus:outline-none focus:border-primary-custom transition-all text-xs"/>
+                        <input id="cadArea" [value]="calculator.smartScanSize()" (input)="calculator.smartScanSize.set($any($event.target).value || 0)" oninput="this.value = this.value.replace(/[^0-9+]/g, '');" placeholder="1500" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg pl-4 pr-16 py-3 font-mono tracking-wide text-silver-leaf focus:outline-none focus:border-primary-custom transition-all text-xs"/>
                         <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] text-[#DF80AC] font-bold uppercase tracking-widest select-none font-mono">{{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}</span>
                       </div>
                     </div>
@@ -167,14 +174,21 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     </div>
 
                     <div class="space-y-2">
-                      <label for="bimProjectType" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Type <span class="text-red-400">*</span></label>
-                      <input id="bimProjectType" [value]="calculator.projectType()" (input)="calculator.projectType.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="text" placeholder="Commercial / Residential"/>
-                    </div>
-
-                    <div class="space-y-2">
-                      <label for="bimArea" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Area <span class="text-red-400">*</span></label>
+                      <div class="flex items-center justify-between">
+                        <label for="bimArea" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Area <span class="text-red-400">*</span></label>
+                        <button type="button" (click)="calculator.smartIsMetric.set(!calculator.smartIsMetric())"
+                          class="px-1.5 py-0.5 rounded text-[8px] font-bold font-mono uppercase tracking-wider border transition-all select-none cursor-pointer"
+                          [class.bg-[#DF80AC]/15]="calculator.smartIsMetric()"
+                          [class.text-[#DF80AC]]="calculator.smartIsMetric()"
+                          [class.border-[#DF80AC]/30]="calculator.smartIsMetric()"
+                          [class.bg-white/5]="!calculator.smartIsMetric()"
+                          [class.text-slate-400]="!calculator.smartIsMetric()"
+                          [class.border-white/10]="!calculator.smartIsMetric()">
+                          {{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}
+                        </button>
+                      </div>
                       <div class="relative">
-                        <input id="bimArea" [value]="calculator.smartScanSize()" (input)="calculator.smartScanSize.set($any($event.target).value || 0)" type="number" placeholder="1500" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg pl-4 pr-16 py-3 font-mono tracking-wide text-silver-leaf focus:outline-none focus:border-primary-custom transition-all text-xs"/>
+                        <input id="bimArea" [value]="calculator.smartScanSize()" (input)="calculator.smartScanSize.set($any($event.target).value || 0)"oninput="this.value = this.value.replace(/[^0-9+]/g, '');" placeholder="1500" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg pl-4 pr-16 py-3 font-mono tracking-wide text-silver-leaf focus:outline-none focus:border-primary-custom transition-all text-xs"/>
                         <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] text-[#DF80AC] font-bold uppercase tracking-widest select-none font-mono">{{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}</span>
                       </div>
                     </div>
@@ -337,7 +351,6 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <div class="flex items-center gap-1.5 text-red-400 font-bold uppercase tracking-wider text-[9px] font-mono"><span class="material-symbols-outlined text-xs">report</span><span>Required Fields Pending</span></div>
                     <ul class="list-disc list-inside space-y-0.5 text-on-surface-variant-custom text-[10px] pl-0.5 font-sans leading-normal">
                       @if (!calculator.smartProjectName().trim()) { <li>Project Name is required.</li> }
-                      @if (!calculator.projectType().trim()) { <li>Project Type is required.</li> }
                       @if (!calculator.smartScanSize() || calculator.smartScanSize() <= 0) { <li>Area must have a value greater than 0.</li> }
                       @if (!calculator.selectedBuildingType()) { <li>Please select a Building Type.</li> }
                       @if (calculator.selectedModelingWay() === 'cad_to_bim') {
@@ -401,12 +414,6 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <input id="descriptionLink" [value]="calculator.descriptionLink()" (input)="calculator.descriptionLink.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="url" placeholder="https://docs.google.com/..."/>
                   </div>
 
-                  <!-- Manual Estimation textarea -->
-                  <div class="space-y-2">
-                    <label for="manualEstimationField" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Manual Estimation</label>
-                    <textarea id="manualEstimationField" [value]="calculator.manualEstimation()" (input)="calculator.manualEstimation.set($any($event.target).value)" rows="2" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all resize-none" placeholder="Enter manual estimation details..."></textarea>
-                  </div>
-
                   <!-- Send Proposal | Place Order buttons side by side -->
                   <div class="grid grid-cols-2 gap-3 pt-1">
                     <button type="button" (click)="calculator.sendProposal.set(!calculator.sendProposal())"
@@ -416,7 +423,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                       [class.text-silver-leaf]="!calculator.sendProposal()"
                       class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-white/10 font-mono text-[10px] uppercase font-bold tracking-widest transition-all cursor-pointer select-none hover:opacity-90">
                       <span class="material-symbols-outlined text-sm">{{ calculator.sendProposal() ? 'check_circle' : 'description' }}</span>
-                      Send Proposal
+                      Generate Proposal
                     </button>
                     <button type="button" (click)="calculator.placeOrder.set(!calculator.placeOrder())"
                       [class.bg-primary-custom]="calculator.placeOrder()"
@@ -777,7 +784,6 @@ export class PriceEstimation implements OnInit {
   isProjectDetailsValid(): boolean {
     const c = this.calculator;
     if (!c.smartProjectName().trim()) return false;
-    if (!c.projectType().trim()) return false;
     if (!c.smartScanSize() || c.smartScanSize() <= 0) return false;
     if (!c.selectedBuildingType()) return false;
     if (c.selectedModelingWay() === 'cad_to_bim') {
