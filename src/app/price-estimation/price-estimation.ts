@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
@@ -31,7 +31,8 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-slide-up opacity-0 text-left">
         <!-- Left Column: Form Fields + Sticky Price Card -->
         <div class="lg:col-span-5 lg:h-[calc(100vh-140px)] flex flex-col justify-between text-left font-mono">
-          <div class="flex-1 overflow-y-auto pr-1 space-y-6 scrollbar-thin scrollbar-thumb-white/10 max-h-[58vh] lg:max-h-[calc(100vh-320px)] pb-4">
+          <div class="flex-1 overflow-y-auto pr-1 space-y-6 scrollbar-thin scrollbar-thumb-white/10 max-h-[58vh] lg:max-h-[calc(100vh-320px)] pb-4"
+            [style.overflow]="isAnyDropdownOpen() ? 'visible' : ''">
 
             <!-- STEP 1: Project Specifications -->
             @if (formStep() === 1) {
@@ -42,124 +43,242 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                   <span class="text-[9px] text-on-surface-variant-custom font-mono">Project Specifications</span>
                 </div>
 
-                <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
-                  <div class="flex items-center gap-2 mb-2 select-none">
-                    <span class="material-symbols-outlined text-primary-custom">troubleshoot</span>
-                    <span class="text-[10px] text-primary-custom font-bold uppercase tracking-wider font-mono">Acoustics & Spatial Parameters</span>
-                  </div>
+                @if (calculator.selectedModelingWay() === 'cad_to_bim') {
+                  <!-- === SCAN TO CAD FORM === -->
+                  <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
+                    <div class="flex items-center gap-2 mb-2 select-none">
+                      <span class="material-symbols-outlined text-primary-custom">draw</span>
+                      <span class="text-[10px] text-primary-custom font-bold uppercase tracking-wider font-mono">Scan to CAD Specifications</span>
+                    </div>
 
-                  <div class="space-y-1.5 flex flex-col font-sans relative">
-                    <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block">Space Type <span class="text-red-400">*</span></span>
-                    <div class="relative">
-                      <button type="button" (click)="calculator.toggleSpaceTypeDropdown()"
-                        class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
-                        <span>{{ calculator.getSpaceTypeLabel(calculator.smartSpaceType()) }}</span>
-                        <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isSpaceTypeDropdownOpen()">expand_more</span>
-                      </button>
-                      @if (calculator.isSpaceTypeDropdownOpen()) {
-                        <div class="absolute left-0 right-0 z-50 mt-1.5 max-h-60 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
-                          @for (option of calculator.spaceTypeOptions; track option.value) {
-                            <button type="button" (click)="calculator.smartSpaceType.set(option.value); calculator.isSpaceTypeDropdownOpen.set(false)"
-                              [ngClass]="calculator.smartSpaceType() === option.value ? 'bg-primary-custom/15 text-primary-custom font-semibold' : 'text-on-surface-variant-custom hover:bg-white/5 hover:text-white'"
-                              class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent">
-                              <span>{{ option.label }}</span>
-                              @if (calculator.smartSpaceType() === option.value) {
-                                <span class="material-symbols-outlined text-xs text-primary-custom">done</span>
-                              }
-                            </button>
-                          }
-                        </div>
-                      }
-                    </div>
-                  </div>
-
-                  <div class="space-y-1.5 flex flex-col font-sans">
-                    <div class="flex justify-between items-center">
-                      <label for="smartSizeInputField" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold">Scan Size <span class="text-red-400">*</span></label>
-                      <div class="flex bg-surface-container-low/80 p-0.5 rounded-md border border-outline-variant-custom text-[8px] h-6 items-center select-none font-bold">
-                        <button type="button" (click)="calculator.smartIsMetric.set(false)" [ngClass]="!calculator.smartIsMetric() ? 'bg-primary-custom text-on-primary-custom font-bold' : 'text-on-surface-variant-custom hover:bg-white/5'" class="px-2.5 py-1 rounded transition-colors uppercase border-none cursor-pointer">Imperial</button>
-                        <button type="button" (click)="calculator.smartIsMetric.set(true)" [ngClass]="calculator.smartIsMetric() ? 'bg-primary-custom text-on-primary-custom font-bold' : 'text-on-surface-variant-custom hover:bg-white/5'" class="px-2.5 py-1 rounded transition-colors uppercase border-none cursor-pointer">Metric</button>
-                      </div>
-                    </div>
-                    <div class="relative">
-                      <input id="smartSizeInputField" [value]="calculator.smartScanSize()" (input)="calculator.smartScanSize.set($any($event.target).value || 0)" type="number" placeholder="1500" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg pl-4 pr-16 py-3 font-mono tracking-wide text-silver-leaf focus:outline-none focus:border-primary-custom focus:ring-1 focus:ring-primary-custom transition-all text-xs"/>
-                      <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] text-[#DF80AC] font-bold uppercase tracking-widest select-none font-mono">{{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}</span>
-                    </div>
-                  </div>
-
-                  <div class="space-y-2">
-                    <div class="flex justify-between items-center font-mono">
-                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold block">Level Of Detail Grade Target <span class="text-red-400">*</span></span>
-                      <button type="button" (click)="calculator.showNotification('LOD affects model tolerances and engineering cost multipliers.', 'info')" class="text-[#DF80AC] text-[9.5px] hover:underline hover:text-white transition-all focus:outline-none bg-transparent border-none cursor-pointer font-mono">What is LOD?</button>
-                    </div>
-                    <div class="grid grid-cols-4 gap-1 bg-[#19191D] p-1 rounded-xl border border-white/5 font-mono select-none">
-                      <button type="button" (click)="calculator.smartLODLevel.set('LOD_200')" [ngClass]="calculator.smartLODLevel() === 'LOD_200' ? 'bg-[#DF80AC]/15 border-[#DF80AC]/35 text-[#DF80AC] shadow-[0_0_15px_rgba(223,128,172,0.15)] animate-pulse' : 'border-transparent text-on-surface-variant-custom hover:bg-white/5 hover:text-white'" class="py-2 rounded-lg border text-center transition-all duration-300 text-[9px] uppercase font-bold cursor-pointer font-mono flex flex-col items-center justify-center hover:scale-[1.02] active:scale-[0.98]"><span class="text-xs">LOD 200</span><span class="text-[7px] opacity-75 tracking-tight font-normal">Schematic</span></button>
-                      <button type="button" (click)="calculator.smartLODLevel.set('LOD_300')" [ngClass]="calculator.smartLODLevel() === 'LOD_300' ? 'bg-[#DF80AC]/15 border-[#DF80AC]/35 text-[#DF80AC] shadow-[0_0_15px_rgba(223,128,172,0.15)] animate-pulse' : 'border-transparent text-on-surface-variant-custom hover:bg-white/5 hover:text-white'" class="py-2 rounded-lg border text-center transition-all duration-300 text-[9px] uppercase font-bold cursor-pointer font-mono flex flex-col items-center justify-center hover:scale-[1.02] active:scale-[0.98]"><span class="text-xs">LOD 300</span><span class="text-[7px] opacity-75 tracking-tight font-normal">Design</span></button>
-                      <button type="button" (click)="calculator.smartLODLevel.set('LOD_400')" [ngClass]="calculator.smartLODLevel() === 'LOD_400' ? 'bg-[#DF80AC]/15 border-[#DF80AC]/35 text-[#DF80AC] shadow-[0_0_15px_rgba(223,128,172,0.15)] animate-pulse' : 'border-transparent text-on-surface-variant-custom hover:bg-white/5 hover:text-white'" class="py-2 rounded-lg border text-center transition-all duration-300 text-[9px] uppercase font-bold cursor-pointer font-mono flex flex-col items-center justify-center hover:scale-[1.02] active:scale-[0.98]"><span class="text-xs">LOD 400</span><span class="text-[7px] opacity-75 tracking-tight font-normal">Fabricate</span></button>
-                      <button type="button" (click)="calculator.smartLODLevel.set('LOD_500')" [ngClass]="calculator.smartLODLevel() === 'LOD_500' ? 'bg-[#DF80AC]/15 border-[#DF80AC]/35 text-[#DF80AC] shadow-[0_0_15px_rgba(223,128,172,0.15)] animate-pulse' : 'border-transparent text-on-surface-variant-custom hover:bg-white/5 hover:text-white'" class="py-2 rounded-lg border text-center transition-all duration-300 text-[9px] uppercase font-bold cursor-pointer font-mono flex flex-col items-center justify-center hover:scale-[1.02] active:scale-[0.98]"><span class="text-xs">LOD 500</span><span class="text-[7px] opacity-75 tracking-tight font-normal">As-built</span></button>
-                    </div>
-                  </div>
-
-                  @if (calculator.selectedModelingWay() === 'cad_to_bim' || !calculator.smartIsComplexMepf()) {
                     <div class="space-y-2">
-                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold block font-mono">{{ calculator.selectedModelingWay() === 'cad_to_bim' ? 'CAD to BIM Extraction Layers' : 'Interior Scope Layers' }} <span class="text-red-400">*</span></span>
-                      <div class="grid grid-cols-3 gap-2">
-                        <button type="button" (click)="toggleInteriorArchitecture()" [ngClass]="calculator.smartInteriorArchitecture() ? 'bg-primary-custom/10 border-primary-custom text-primary-custom font-bold font-mono shadow-[0_0_15px_rgba(218,225,255,0.1)]' : 'bg-surface-container-low/30 border-white/5 hover:bg-white/5 text-on-surface-variant-custom'" class="py-3.5 rounded-xl border text-center transition-all duration-300 hover:scale-[1.04] active:scale-[0.96] hover:shadow-[0_4px_15px_rgba(218,225,255,0.06)] text-[11px] flex flex-col items-center justify-between gap-1 border-white/5 font-mono cursor-pointer focus:outline-none"><span class="material-symbols-outlined text-lg font-mono">architecture</span><span>Architecture</span></button>
-                        <button type="button" (click)="toggleInteriorFurniture()" [ngClass]="calculator.smartInteriorFurniture() ? 'bg-primary-custom/10 border-primary-custom text-primary-custom font-bold font-mono shadow-[0_0_15px_rgba(218,225,255,0.1)]' : 'bg-surface-container-low/30 border-white/5 hover:bg-white/5 text-on-surface-variant-custom'" class="py-3.5 rounded-xl border text-center transition-all duration-300 hover:scale-[1.04] active:scale-[0.96] hover:shadow-[0_4px_15px_rgba(218,225,255,0.06)] text-[11px] flex flex-col items-center justify-between gap-1 border-white/5 font-mono cursor-pointer focus:outline-none"><span class="material-symbols-outlined text-lg">chair</span><span>Furniture</span></button>
-                        <button type="button" (click)="toggleInteriorMep()" [ngClass]="calculator.smartInteriorMep() ? 'bg-primary-custom/10 border-primary-custom text-primary-custom font-bold font-mono shadow-[0_0_15px_rgba(218,225,255,0.1)]' : 'bg-surface-container-low/30 border-white/5 hover:bg-white/5 text-on-surface-variant-custom'" class="py-3.5 rounded-xl border text-center transition-all duration-300 hover:scale-[1.04] active:scale-[0.96] hover:shadow-[0_4px_15px_rgba(218,225,255,0.06)] text-[11px] flex flex-col items-center justify-between gap-1 border-white/5 font-mono cursor-pointer focus:outline-none"><span class="material-symbols-outlined text-lg">hub</span><span>MEP</span></button>
+                      <label for="cadProjectName" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Name <span class="text-red-400">*</span></label>
+                      <input id="cadProjectName" [value]="calculator.smartProjectName()" (input)="calculator.smartProjectName.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="text" placeholder="My Project"/>
+                    </div>
+
+                    <div class="space-y-2">
+                      <label for="cadProjectType" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Type <span class="text-red-400">*</span></label>
+                      <input id="cadProjectType" [value]="calculator.projectType()" (input)="calculator.projectType.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="text" placeholder="Renovation / New Build"/>
+                    </div>
+
+                    <div class="space-y-2">
+                      <label for="cadArea" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Area <span class="text-red-400">*</span></label>
+                      <div class="relative">
+                        <input id="cadArea" [value]="calculator.smartScanSize()" (input)="calculator.smartScanSize.set($any($event.target).value || 0)" type="number" placeholder="1500" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg pl-4 pr-16 py-3 font-mono tracking-wide text-silver-leaf focus:outline-none focus:border-primary-custom transition-all text-xs"/>
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] text-[#DF80AC] font-bold uppercase tracking-widest select-none font-mono">{{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}</span>
                       </div>
                     </div>
-                  }
 
-                  @if (calculator.selectedModelingWay() !== 'cad_to_bim') {
-                    <div class="flex items-center justify-between glass-panel p-4 rounded-xl cursor-default border border-white/5 select-none my-1 font-sans bg-midnight-charcoal/20">
-                      <div class="space-y-0.5 text-left font-sans"><span class="font-bold text-xs text-silver-leaf block font-mono">Is it a complex MEPF?</span><span class="text-[10px] text-on-surface-variant-custom block font-sans">Dense plumbing, mechanical rooms, fire pipelines</span></div>
-                      <button type="button" (click)="toggleComplexMepf()" [ngClass]="calculator.smartIsComplexMepf() ? 'bg-primary-custom font-mono' : 'bg-outline-variant-custom font-mono'" class="w-10 h-5 rounded-full relative transition-colors duration-300 focus:outline-none cursor-pointer border-none"><span [ngClass]="calculator.smartIsComplexMepf() ? 'left-5.5 font-mono' : 'left-0.5 font-mono'" class="w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all duration-300"></span></button>
-                    </div>
-
-                    @if (!calculator.smartIsComplexMepf()) {
-                      <div class="space-y-3 font-sans">
-                        <div class="flex items-center justify-between glass-panel p-4 rounded-xl cursor-default border border-white/5 select-none bg-midnight-charcoal/20 flex-row">
-                          <div class="space-y-0.5 text-left"><span class="font-bold text-xs text-silver-leaf block font-mono">Is exterior modeling required?</span><span class="text-[10px] text-on-surface-variant-custom block font-sans">Façade parameters, elevation claddings</span></div>
-                          <button type="button" (click)="toggleExteriorRequired()" [ngClass]="calculator.smartIsExteriorRequired() ? 'bg-primary-custom font-mono' : 'bg-outline-variant-custom font-mono'" class="w-10 h-5 rounded-full relative transition-colors duration-300 focus:outline-none cursor-pointer border-none"><span [ngClass]="calculator.smartIsExteriorRequired() ? 'left-5.5' : 'left-0.5'" class="w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all duration-300 font-mono"></span></button>
-                        </div>
-                        @if (calculator.smartIsExteriorRequired()) {
-                          <div class="p-4 bg-midnight-charcoal/30 border border-white/5 rounded-xl animate-[fade-in_0.25s_ease] space-y-2 text-left bg-surface-container-low/10 font-sans">
-                            <span class="text-[9px] text-on-surface-variant-custom uppercase tracking-wider font-bold block font-mono">Exterior Scope details</span>
-                            <div class="grid grid-cols-3 gap-2">
-                              <button type="button" (click)="toggleExteriorArchitecture()" [ngClass]="calculator.smartExteriorArchitecture() ? 'bg-secondary-custom/10 border-secondary-custom text-secondary-custom font-bold font-mono' : 'bg-surface-container-low/30 border-white/5 hover:bg-white/5 text-on-surface-variant-custom font-mono'" class="py-2.5 rounded-lg border text-center transition-all text-[10px] uppercase font-bold border-white/5 font-mono cursor-pointer focus:outline-none">Architecture</button>
-                              <button type="button" (click)="toggleExteriorFurniture()" [ngClass]="calculator.smartExteriorFurniture() ? 'bg-secondary-custom/10 border-secondary-custom text-secondary-custom font-bold font-mono' : 'bg-surface-container-low/30 border-white/5 hover:bg-white/5 text-on-surface-variant-custom font-mono'" class="py-2.5 rounded-lg border text-center transition-all text-[11px] uppercase font-bold border-white/5 font-mono cursor-pointer focus:outline-none">Furniture</button>
-                              <button type="button" (click)="toggleExteriorMep()" [ngClass]="calculator.smartExteriorMep() ? 'bg-secondary-custom/10 border-secondary-custom text-secondary-custom font-bold font-mono' : 'bg-surface-container-low/30 border-white/5 hover:bg-white/5 text-on-surface-variant-custom font-mono'" class="py-2.5 rounded-lg border text-center transition-all text-[10px] uppercase font-bold border-white/5 font-mono cursor-pointer focus:outline-none">MEP</button>
-                            </div>
+                    <div class="space-y-1.5 flex flex-col relative">
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Type of Building <span class="text-red-400">*</span></span>
+                      <div class="relative">
+                        <button type="button" (click)="toggleBuildingTypeDropdown()"
+                          class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
+                          <span>{{ calculator.selectedBuildingType() || 'Select building type' }}</span>
+                          <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isBuildingTypeDropdownOpen()">expand_more</span>
+                        </button>
+                        @if (calculator.isBuildingTypeDropdownOpen()) {
+                          <div class="absolute left-0 right-0 z-50 mt-1.5 max-h-60 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                            @for (option of calculator.buildingTypeOptions; track option) {
+                              <button type="button" (click)="calculator.selectedBuildingType.set(option); calculator.isBuildingTypeDropdownOpen.set(false)"
+                                [ngClass]="calculator.selectedBuildingType() === option ? 'bg-primary-custom/15 text-primary-custom font-semibold' : 'text-on-surface-variant-custom hover:bg-white/5 hover:text-white'"
+                                class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent">
+                                <span>{{ option }}</span>
+                                @if (calculator.selectedBuildingType() === option) {
+                                  <span class="material-symbols-outlined text-xs text-primary-custom">done</span>
+                                }
+                              </button>
+                            }
                           </div>
                         }
                       </div>
-                    }
+                    </div>
 
-                    @if (!calculator.smartIsComplexMepf()) {
-                      <div class="flex items-center justify-between glass-panel p-4 rounded-xl cursor-default border border-white/5 select-none text-left font-sans bg-midnight-charcoal/20">
-                        <div class="space-y-0.5 text-left font-sans"><span class="font-bold text-xs text-silver-leaf font-mono block">Is site modeling required?</span><span class="text-[10px] text-on-surface-variant-custom block font-sans">Surrounding terrains, plot boundaries, landscapes</span></div>
-                        <button type="button" (click)="toggleSiteRequired()" [ngClass]="calculator.smartIsSiteRequired() ? 'bg-primary-custom' : 'bg-outline-variant-custom'" class="w-10 h-5 rounded-full relative transition-colors duration-300 focus:outline-none cursor-pointer border-none"><span [ngClass]="calculator.smartIsSiteRequired() ? 'left-5.5' : 'left-0.5'" class="w-4 h-4 bg-white rounded-full absolute top-0.5 transition-all duration-300 font-mono"></span></button>
+                    <div class="space-y-1.5 flex flex-col relative">
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Requirements <span class="text-red-400">*</span></span>
+                      <div class="relative">
+                        <button type="button" (click)="toggleCadRequirementsDropdown()"
+                          class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
+                          <span>{{ calculator.cadRequirements().length ? calculator.cadRequirements().length + ' selected' : 'Select requirements' }}</span>
+                          <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isCadRequirementsOpen()">expand_more</span>
+                        </button>
+                        @if (calculator.isCadRequirementsOpen()) {
+                          <div class="absolute left-0 right-0 z-50 mt-1.5 max-h-60 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                            @for (option of calculator.cadRequirementsOptions; track option) {
+                              <button type="button" (click)="calculator.cadRequirements.set(calculator.toggleMultiSelection(calculator.cadRequirements(), option))"
+                                class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
+                                <span [ngClass]="calculator.cadRequirements().includes(option) ? 'text-primary-custom font-semibold' : 'text-on-surface-variant-custom'">{{ option }}</span>
+                                @if (calculator.cadRequirements().includes(option)) {
+                                  <span class="material-symbols-outlined text-xs text-primary-custom">check_box</span>
+                                } @else {
+                                  <span class="material-symbols-outlined text-xs text-on-surface-variant-custom">check_box_outline_blank</span>
+                                }
+                              </button>
+                            }
+                          </div>
+                        }
                       </div>
-                    }
+                    </div>
 
-                    @if (calculator.smartIsSiteRequired() && !calculator.smartIsComplexMepf()) {
-                      <div class="space-y-1.5 flex flex-col font-sans p-4 rounded-xl bg-primary-custom/5 border border-primary-custom/15 animate-[fade-in_0.25s_ease] mt-2 text-left">
-                        <label for="siteModelingSftField" class="text-[10px] text-primary-custom uppercase tracking-wider font-bold">Site Modeling Area (sft) <span class="text-red-400">*</span></label>
-                        <div class="relative"><input id="siteModelingSftField" [value]="calculator.siteModelingSft()" (input)="calculator.siteModelingSft.set($any($event.target).value || 0)" type="number" placeholder="1000" class="w-full bg-surface-container-low/60 border border-outline-variant-custom rounded-lg pl-4 pr-16 py-3 font-mono tracking-wide text-silver-leaf focus:outline-none focus:border-primary-custom focus:ring-1 focus:ring-primary-custom transition-all text-xs"/><span class="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] text-[#DF80AC] font-bold uppercase tracking-widest select-none font-mono">Sq.ft</span></div>
-                        <p class="text-[9.5px] text-on-surface-variant-custom leading-normal">Secure site modeling rates applied instantly to the ledger above (ranging from custom min/max bounds).</p>
+                    <div class="space-y-1.5 flex flex-col relative">
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Scale <span class="text-red-400">*</span></span>
+                      <div class="relative">
+                        <button type="button" (click)="toggleCadScaleDropdown()"
+                          class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
+                          <span>{{ calculator.cadScale() || 'Select scale' }}</span>
+                          <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isCadScaleDropdownOpen()">expand_more</span>
+                        </button>
+                        @if (calculator.isCadScaleDropdownOpen()) {
+                          <div class="absolute left-0 right-0 z-50 mt-1.5 max-h-60 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                            @for (option of calculator.cadScaleOptions; track option) {
+                              <button type="button" (click)="calculator.cadScale.set(option); calculator.isCadScaleDropdownOpen.set(false)"
+                                [ngClass]="calculator.cadScale() === option ? 'bg-primary-custom/15 text-primary-custom font-semibold' : 'text-on-surface-variant-custom hover:bg-white/5 hover:text-white'"
+                                class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent">
+                                <span>{{ option }}</span>
+                                @if (calculator.cadScale() === option) {
+                                  <span class="material-symbols-outlined text-xs text-primary-custom">done</span>
+                                }
+                              </button>
+                            }
+                          </div>
+                        }
                       </div>
-                    }
-                  }
+                    </div>
+                  </div>
+                } @else {
+                  <!-- === SCAN TO BIM FORM === -->
+                  <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
+                    <div class="flex items-center gap-2 mb-2 select-none">
+                      <span class="material-symbols-outlined text-primary-custom">view_in_ar</span>
+                      <span class="text-[10px] text-primary-custom font-bold uppercase tracking-wider font-mono">Scan to BIM Specifications</span>
+                    </div>
 
-                  <div class="space-y-1.5 flex flex-col font-sans relative">
+                    <div class="space-y-2">
+                      <label for="bimProjectName" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Name <span class="text-red-400">*</span></label>
+                      <input id="bimProjectName" [value]="calculator.smartProjectName()" (input)="calculator.smartProjectName.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="text" placeholder="My Project"/>
+                    </div>
+
+                    <div class="space-y-2">
+                      <label for="bimProjectType" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Type <span class="text-red-400">*</span></label>
+                      <input id="bimProjectType" [value]="calculator.projectType()" (input)="calculator.projectType.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="text" placeholder="Commercial / Residential"/>
+                    </div>
+
+                    <div class="space-y-2">
+                      <label for="bimArea" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Area <span class="text-red-400">*</span></label>
+                      <div class="relative">
+                        <input id="bimArea" [value]="calculator.smartScanSize()" (input)="calculator.smartScanSize.set($any($event.target).value || 0)" type="number" placeholder="1500" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg pl-4 pr-16 py-3 font-mono tracking-wide text-silver-leaf focus:outline-none focus:border-primary-custom transition-all text-xs"/>
+                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] text-[#DF80AC] font-bold uppercase tracking-widest select-none font-mono">{{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}</span>
+                      </div>
+                    </div>
+
+                    <div class="space-y-1.5 flex flex-col relative">
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Type of Building <span class="text-red-400">*</span></span>
+                      <div class="relative">
+                        <button type="button" (click)="toggleBuildingTypeDropdown()"
+                          class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
+                          <span>{{ calculator.selectedBuildingType() || 'Select building type' }}</span>
+                          <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isBuildingTypeDropdownOpen()">expand_more</span>
+                        </button>
+                        @if (calculator.isBuildingTypeDropdownOpen()) {
+                          <div class="absolute left-0 right-0 z-50 mt-1.5 max-h-60 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                            @for (option of calculator.buildingTypeOptions; track option) {
+                              <button type="button" (click)="calculator.selectedBuildingType.set(option); calculator.isBuildingTypeDropdownOpen.set(false)"
+                                [ngClass]="calculator.selectedBuildingType() === option ? 'bg-primary-custom/15 text-primary-custom font-semibold' : 'text-on-surface-variant-custom hover:bg-white/5 hover:text-white'"
+                                class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent">
+                                <span>{{ option }}</span>
+                                @if (calculator.selectedBuildingType() === option) {
+                                  <span class="material-symbols-outlined text-xs text-primary-custom">done</span>
+                                }
+                              </button>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="space-y-1.5 flex flex-col relative">
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Requirements <span class="text-red-400">*</span></span>
+                      <div class="relative">
+                        <button type="button" (click)="toggleBimRequirementsDropdown()"
+                          class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
+                          <span>{{ calculator.bimRequirements().length ? calculator.bimRequirements().length + ' selected' : 'Select requirements' }}</span>
+                          <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isBimRequirementsOpen()">expand_more</span>
+                        </button>
+                        @if (calculator.isBimRequirementsOpen()) {
+                          <div class="absolute left-0 right-0 z-50 mt-1.5 max-h-60 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                            @for (option of calculator.bimRequirementsOptions; track option) {
+                              <button type="button" (click)="calculator.bimRequirements.set(calculator.toggleMultiSelection(calculator.bimRequirements(), option))"
+                                class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
+                                <span [ngClass]="calculator.bimRequirements().includes(option) ? 'text-primary-custom font-semibold' : 'text-on-surface-variant-custom'">{{ option }}</span>
+                                @if (calculator.bimRequirements().includes(option)) {
+                                  <span class="material-symbols-outlined text-xs text-primary-custom">check_box</span>
+                                } @else {
+                                  <span class="material-symbols-outlined text-xs text-on-surface-variant-custom">check_box_outline_blank</span>
+                                }
+                              </button>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="space-y-1.5 flex flex-col relative">
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Add On's <span class="text-red-400">*</span></span>
+                      <div class="relative">
+                        <button type="button" (click)="toggleBimAddOnsDropdown()"
+                          class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
+                          <span>{{ calculator.bimAddOns().length ? calculator.bimAddOns().length + ' selected' : 'Select add ons' }}</span>
+                          <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isBimAddOnsOpen()">expand_more</span>
+                        </button>
+                        @if (calculator.isBimAddOnsOpen()) {
+                          <div class="absolute left-0 right-0 z-50 mt-1.5 max-h-60 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                            @for (option of calculator.bimAddOnsOptions; track option) {
+                              <button type="button" (click)="calculator.bimAddOns.set(calculator.toggleMultiSelection(calculator.bimAddOns(), option))"
+                                class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
+                                <span [ngClass]="calculator.bimAddOns().includes(option) ? 'text-primary-custom font-semibold' : 'text-on-surface-variant-custom'">{{ option }}</span>
+                                @if (calculator.bimAddOns().includes(option)) {
+                                  <span class="material-symbols-outlined text-xs text-primary-custom">check_box</span>
+                                } @else {
+                                  <span class="material-symbols-outlined text-xs text-on-surface-variant-custom">check_box_outline_blank</span>
+                                }
+                              </button>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+
+                    <div class="space-y-2">
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold block font-mono">LOD Level <span class="text-red-400">*</span></span>
+                      <div class="bg-[#19191D] p-3 rounded-xl border border-white/5 font-mono select-none flex items-center gap-3">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-[#DF80AC] font-bold text-xs">LOD 300</span>
+                        <span class="text-[9px] text-on-surface-variant-custom">Design Development</span>
+                      </div>
+                    </div>
+                  </div>
+                }
+
+                <!-- Common Fields: Currency + Email -->
+                <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
+                  <div class="space-y-1.5 flex flex-col relative">
                     <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Quotation Currency <span class="text-red-400">*</span></span>
-                    <div class="relative font-mono font-bold">
-                      <button type="button" (click)="calculator.toggleCurrencyDropdown()" class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none"><span>{{ calculator.getCurrencyLabel(calculator.selectedCurrency()) }}</span><span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isCurrencyDropdownOpen()">expand_more</span></button>
+                    <div class="relative font-mono">
+                      <button type="button" (click)="toggleCurrencyDropdown()" class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
+                        <span>{{ calculator.getCurrencyLabel(calculator.selectedCurrency()) }}</span>
+                        <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isCurrencyDropdownOpen()">expand_more</span>
+                      </button>
                       @if (calculator.isCurrencyDropdownOpen()) {
                         <div class="absolute left-0 right-0 z-50 mt-1.5 max-h-60 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
                           @for (option of calculator.currencyOptions; track option.value) {
-                            <button type="button" (click)="calculator.selectedCurrency.set(option.value); calculator.isCurrencyDropdownOpen.set(false)" [ngClass]="calculator.selectedCurrency() === option.value ? 'bg-[#DF80AC]/15 text-[#DF80AC] font-semibold' : 'text-[#DF80AC]/70 hover:bg-white/5 hover:text-white'" class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent font-medium"><span>{{ option.label }}</span>@if (calculator.selectedCurrency() === option.value) {<span class="material-symbols-outlined text-xs text-[#DF80AC]">done</span>}</button>
+                            <button type="button" (click)="calculator.selectedCurrency.set(option.value); calculator.isCurrencyDropdownOpen.set(false)"
+                              [ngClass]="calculator.selectedCurrency() === option.value ? 'bg-[#DF80AC]/15 text-[#DF80AC] font-semibold' : 'text-[#DF80AC]/70 hover:bg-white/5 hover:text-white'"
+                              class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent">
+                              <span>{{ option.label }}</span>
+                              @if (calculator.selectedCurrency() === option.value) {
+                                <span class="material-symbols-outlined text-xs text-[#DF80AC]">done</span>
+                              }
+                            </button>
                           }
                         </div>
                       }
@@ -178,9 +297,18 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                   <div class="p-4 rounded-xl bg-red-500/5 border border-red-500/20 text-left space-y-1.5 font-sans">
                     <div class="flex items-center gap-1.5 text-red-400 font-bold uppercase tracking-wider text-[9px] font-mono"><span class="material-symbols-outlined text-xs">report</span><span>Required Fields Pending</span></div>
                     <ul class="list-disc list-inside space-y-0.5 text-on-surface-variant-custom text-[10px] pl-0.5 font-sans leading-normal">
-                      @if (!calculator.smartSpaceType() || calculator.smartSpaceType() === 'Select a space type') { <li>Please select a valid Space Type.</li> }
-                      @if (!calculator.smartScanSize() || calculator.smartScanSize() <= 0) { <li>Scan Size must have a value greater than 0.</li> }
-                      @if (!calculator.smartLODLevel()) { <li>Please select a Level Of Detail (LOD).</li> }
+                      @if (!calculator.smartProjectName().trim()) { <li>Project Name is required.</li> }
+                      @if (!calculator.projectType().trim()) { <li>Project Type is required.</li> }
+                      @if (!calculator.smartScanSize() || calculator.smartScanSize() <= 0) { <li>Area must have a value greater than 0.</li> }
+                      @if (!calculator.selectedBuildingType()) { <li>Please select a Building Type.</li> }
+                      @if (calculator.selectedModelingWay() === 'cad_to_bim') {
+                        @if (!calculator.cadRequirements().length) { <li>Please select at least one Requirement.</li> }
+                        @if (!calculator.cadScale()) { <li>Please select a Scale.</li> }
+                      }
+                      @if (calculator.selectedModelingWay() === 'bim') {
+                        @if (!calculator.bimRequirements().length) { <li>Please select at least one Requirement.</li> }
+                        @if (!calculator.bimAddOns().length) { <li>Please select at least one Add On.</li> }
+                      }
                       @if (!calculator.isEmailValid()) { <li>A valid email address is required.</li> }
                     </ul>
                   </div>
@@ -208,10 +336,6 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                 @if (calculator.selectedModelingWay() === 'bim') {
                   <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
                     <div class="flex items-center gap-2 mb-2 select-none"><span class="material-symbols-outlined text-primary-custom">map_location</span><span class="font-mono text-[10px] text-primary-custom uppercase tracking-wider font-bold">BIM Model Creation Specifications</span></div>
-                    <div class="space-y-2">
-                      <label for="smartProjectNameField" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Identification / Title <span class="text-red-400">*</span></label>
-                      <input id="smartProjectNameField" [value]="calculator.smartProjectName()" (input)="calculator.smartProjectName.set($any($event.target).value)" class="w-full bg-surface-container-low/60 border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom focus:ring-1 focus:ring-primary-custom transition-all" type="text" placeholder="Vertex HQ"/>
-                    </div>
                     <div class="space-y-2">
                       <label for="smartProjectAddressField" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Physical Site / Plot Address <span class="text-red-400">*</span></label>
                       <input id="smartProjectAddressField" [value]="calculator.smartProjectAddress()" (input)="calculator.smartProjectAddress.set($any($event.target).value)" class="w-full bg-surface-container-low/60 border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom focus:ring-1 focus:ring-primary-custom transition-all" type="text" placeholder="742 Custom Boulevard, Sector 4"/>
@@ -278,7 +402,6 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <div class="flex items-center gap-1.5 text-red-400 font-bold uppercase tracking-wider text-[9px] font-mono"><span class="material-symbols-outlined text-xs">report</span><span>Required Fields Pending</span></div>
                     <ul class="list-disc list-inside space-y-0.5 text-on-surface-variant-custom text-[10px] pl-0.5 font-sans leading-normal">
                       @if (calculator.selectedModelingWay() === 'bim') {
-                        @if (!calculator.smartProjectName().trim()) { <li>Project Title is required.</li> }
                         @if (!calculator.smartProjectAddress().trim()) { <li>Site Address is required.</li> }
                         @if (!calculator.smartRevitVersion()) { <li>Revit Version must be specified.</li> }
                       } @else {
@@ -611,6 +734,14 @@ export class PriceEstimation implements OnInit {
   isCardCurrencyOpen = signal<boolean>(false);
   formStep = signal<number>(1);
   buildingModelIndex = signal<number>(0);
+  isAnyDropdownOpen = computed(() =>
+    this.calculator.isBuildingTypeDropdownOpen() ||
+    this.calculator.isCadRequirementsOpen() ||
+    this.calculator.isCadScaleDropdownOpen() ||
+    this.calculator.isBimRequirementsOpen() ||
+    this.calculator.isBimAddOnsOpen() ||
+    this.calculator.isCurrencyDropdownOpen()
+  );
 
   cycleModel() {
     this.buildingModelIndex.update(i => (i + 1) % 3);
@@ -630,9 +761,17 @@ export class PriceEstimation implements OnInit {
 
   isProjectDetailsValid(): boolean {
     const c = this.calculator;
-    if (!c.smartSpaceType() || c.smartSpaceType() === 'Select a space type') return false;
+    if (!c.smartProjectName().trim()) return false;
+    if (!c.projectType().trim()) return false;
     if (!c.smartScanSize() || c.smartScanSize() <= 0) return false;
-    if (!c.smartLODLevel()) return false;
+    if (!c.selectedBuildingType()) return false;
+    if (c.selectedModelingWay() === 'cad_to_bim') {
+      if (!c.cadRequirements().length) return false;
+      if (!c.cadScale()) return false;
+    } else {
+      if (!c.bimRequirements().length) return false;
+      if (!c.bimAddOns().length) return false;
+    }
     if (!c.isEmailValid()) return false;
     return true;
   }
@@ -640,7 +779,6 @@ export class PriceEstimation implements OnInit {
   isLocationInfoValid(): boolean {
     const c = this.calculator;
     if (c.selectedModelingWay() === 'bim') {
-      if (!c.smartProjectName().trim()) return false;
       if (!c.smartProjectAddress().trim()) return false;
       if (!c.smartRevitVersion()) return false;
     } else {
@@ -1070,5 +1208,36 @@ export class PriceEstimation implements OnInit {
 
   toggleSiteRequired() {
     this.calculator.smartIsSiteRequired.set(!this.calculator.smartIsSiteRequired());
+  }
+
+  toggleBuildingTypeDropdown() {
+    const was = this.calculator.isBuildingTypeDropdownOpen();
+    this.calculator.closeAllDropdowns();
+    this.calculator.isBuildingTypeDropdownOpen.set(!was);
+  }
+  toggleCadRequirementsDropdown() {
+    const was = this.calculator.isCadRequirementsOpen();
+    this.calculator.closeAllDropdowns();
+    this.calculator.isCadRequirementsOpen.set(!was);
+  }
+  toggleCadScaleDropdown() {
+    const was = this.calculator.isCadScaleDropdownOpen();
+    this.calculator.closeAllDropdowns();
+    this.calculator.isCadScaleDropdownOpen.set(!was);
+  }
+  toggleBimRequirementsDropdown() {
+    const was = this.calculator.isBimRequirementsOpen();
+    this.calculator.closeAllDropdowns();
+    this.calculator.isBimRequirementsOpen.set(!was);
+  }
+  toggleBimAddOnsDropdown() {
+    const was = this.calculator.isBimAddOnsOpen();
+    this.calculator.closeAllDropdowns();
+    this.calculator.isBimAddOnsOpen.set(!was);
+  }
+  toggleCurrencyDropdown() {
+    const was = this.calculator.isCurrencyDropdownOpen();
+    this.calculator.closeAllDropdowns();
+    this.calculator.isCurrencyDropdownOpen.set(!was);
   }
 }
