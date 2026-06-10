@@ -243,17 +243,59 @@ export class SpatialCostCalculator {
   ];
 
   toggleCadFormatDropdown() {
-    this.isCadFormatDropdownOpen.set(!this.isCadFormatDropdownOpen());
-    this.isPrebuiltFormatDropdownOpen.set(false);
-    this.isPrebuiltLodDropdownOpen.set(false);
-    this.isSpaceTypeDropdownOpen.set(false);
-    this.isCurrencyDropdownOpen.set(false);
-    this.isRevitDropdownOpen.set(false);
+    this.closeAllDropdowns();
+    this.isCadFormatDropdownOpen.set(true);
   }
 
   getCadFormatLabel(value: string): string {
     const found = this.cadFormatOptions.find(o => o.value === value);
     return found ? found.label : (value || '.DWG (AutoCAD Drawing)');
+  }
+
+  // Step 1 fields — shared between Scan to CAD and Scan to BIM
+  projectType = signal<string>('');
+  selectedBuildingType = signal<string>('');
+  isBuildingTypeDropdownOpen = signal<boolean>(false);
+  buildingTypeOptions = [
+    'Retail', 'Commercial', 'Warehouse', 'Residential',
+    'Multifamily', 'Educational', 'Historical', 'Spiritual'
+  ];
+
+  // CAD mode fields
+  cadRequirements = signal<string[]>([]);
+  cadRequirementsOptions = ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'MEP', 'Furniture'];
+  isCadRequirementsOpen = signal<boolean>(false);
+  cadScale = signal<string>('');
+  cadScaleOptions = ['1/8" - 1\'0"', '1/4" - 1\'0"', '1/2" - 1\'0"'];
+  isCadScaleDropdownOpen = signal<boolean>(false);
+
+  // BIM mode fields
+  bimRequirements = signal<string[]>([]);
+  bimRequirementsOptions = ['Architectural', 'Structural', 'Mechanical', 'Electrical', 'Plumbing', 'Fire Protection', 'Furniture'];
+  isBimRequirementsOpen = signal<boolean>(false);
+  bimAddOns = signal<string[]>([]);
+  bimAddOnsOptions = ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'MEP', 'Furniture', 'Sheets'];
+  isBimAddOnsOpen = signal<boolean>(false);
+
+  toggleMultiSelection(arr: string[], value: string): string[] {
+    if (arr.includes(value)) {
+      return arr.filter(v => v !== value);
+    }
+    return [...arr, value];
+  }
+
+  closeAllDropdowns() {
+    this.isBuildingTypeDropdownOpen.set(false);
+    this.isCadRequirementsOpen.set(false);
+    this.isCadScaleDropdownOpen.set(false);
+    this.isBimRequirementsOpen.set(false);
+    this.isBimAddOnsOpen.set(false);
+    this.isSpaceTypeDropdownOpen.set(false);
+    this.isCurrencyDropdownOpen.set(false);
+    this.isRevitDropdownOpen.set(false);
+    this.isPrebuiltFormatDropdownOpen.set(false);
+    this.isPrebuiltLodDropdownOpen.set(false);
+    this.isCadFormatDropdownOpen.set(false);
   }
 
   // Prebuilt / Existing Model fields
@@ -280,19 +322,13 @@ export class SpatialCostCalculator {
   ];
 
   togglePrebuiltFormatDropdown() {
-    this.isPrebuiltFormatDropdownOpen.set(!this.isPrebuiltFormatDropdownOpen());
-    this.isPrebuiltLodDropdownOpen.set(false);
-    this.isSpaceTypeDropdownOpen.set(false);
-    this.isCurrencyDropdownOpen.set(false);
-    this.isRevitDropdownOpen.set(false);
+    this.closeAllDropdowns();
+    this.isPrebuiltFormatDropdownOpen.set(true);
   }
 
   togglePrebuiltLodDropdown() {
-    this.isPrebuiltLodDropdownOpen.set(!this.isPrebuiltLodDropdownOpen());
-    this.isPrebuiltFormatDropdownOpen.set(false);
-    this.isSpaceTypeDropdownOpen.set(false);
-    this.isCurrencyDropdownOpen.set(false);
-    this.isRevitDropdownOpen.set(false);
+    this.closeAllDropdowns();
+    this.isPrebuiltLodDropdownOpen.set(true);
   }
 
   getPrebuiltFormatLabel(value: string): string {
@@ -334,6 +370,21 @@ export class SpatialCostCalculator {
   smartVersionId = signal<string>('35441d5b-3402-4b47-964a-9e4caca8bda4');
   isLiveTwinViewerOpen = signal<boolean>(true);
 
+  // Step 2 common fields
+  uploadLink = signal<string>('');
+  pointCloudLink = signal<string>('');
+  descriptionLink = signal<string>('');
+  remark = signal<string>('');
+  manualEstimation = signal<string>('');
+  sendProposal = signal<boolean>(false);
+  placeOrder = signal<boolean>(false);
+
+  // Step 3 fields
+  projectNumber = signal<string>('PRJ-' + Date.now().toString(36).toUpperCase());
+  orderPlacedDate = signal<string>(new Date().toISOString().split('T')[0]);
+  pointCloudIssueDate = signal<string>('');
+  expectedDeliveryDate = signal<string>('');
+
   // Custom dropdown signals, options and methods matching website theme
   isSpaceTypeDropdownOpen = signal<boolean>(false);
   isCurrencyDropdownOpen = signal<boolean>(false);
@@ -371,21 +422,18 @@ export class SpatialCostCalculator {
   ];
 
   toggleSpaceTypeDropdown() {
-    this.isSpaceTypeDropdownOpen.set(!this.isSpaceTypeDropdownOpen());
-    this.isCurrencyDropdownOpen.set(false);
-    this.isRevitDropdownOpen.set(false);
+    this.closeAllDropdowns();
+    this.isSpaceTypeDropdownOpen.set(true);
   }
 
   toggleCurrencyDropdown() {
-    this.isCurrencyDropdownOpen.set(!this.isCurrencyDropdownOpen());
-    this.isSpaceTypeDropdownOpen.set(false);
-    this.isRevitDropdownOpen.set(false);
+    this.closeAllDropdowns();
+    this.isCurrencyDropdownOpen.set(true);
   }
 
   toggleRevitDropdown() {
-    this.isRevitDropdownOpen.set(!this.isRevitDropdownOpen());
-    this.isSpaceTypeDropdownOpen.set(false);
-    this.isCurrencyDropdownOpen.set(false);
+    this.closeAllDropdowns();
+    this.isRevitDropdownOpen.set(true);
   }
 
   getSpaceTypeLabel(value: string): string {
@@ -404,7 +452,7 @@ export class SpatialCostCalculator {
   }
 
   // Active inputs
-  selectedCurrency = signal<string>('GBP');
+  selectedCurrency = signal<string>('USD');
   smartStep = signal<number>(1); // Step 1: Specifications, Step 2: Project Details, Step 3: Summary
   smartProjectName = signal<string>('Vertex HQ');
   smartProjectAddress = signal<string>('742 Custom Boulevard, Sector 4');
@@ -704,7 +752,7 @@ export class SpatialCostCalculator {
 
   // Structural Tiers
   mepTiers = {
-    SMALL: { label: 'SMALL', costValue: 4200, display: '$4.2k' },
+    SMALL: { label: 'SMALL', costValue: 4200, display: '$1.2k' },
     MEDIUM: { label: 'MEDIUM', costValue: 8900, display: '$8.9k' },
     LARGE: { label: 'LARGE', costValue: 15000, display: '$15k+' }
   };

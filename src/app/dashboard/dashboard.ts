@@ -92,7 +92,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <p class="font-mono text-xs text-[#DF80AC] mb-1 uppercase tracking-widest font-bold">Ecosystem Status</p>
-            <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf select-none">Global Coverage GIS Telemetry</h2>
+            <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf select-none">Global Coverage</h2>
           </div>
           
           <!-- Country Dropdown that automatically zooms map, supporting all 10 countries dynamically -->
@@ -194,259 +194,12 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         </div>
       </section>
 
-      <!-- ================= SECTION 3: INTEGRATED BROWSER SECTION ================= -->
-      <section class="space-y-8 text-left" id="integrated-browser-section">
-        <div>
-          <p class="font-mono text-xs text-[#DF80AC] bg-[#DF80AC]/10 border border-[#DF80AC]/15 px-2.5 py-1 rounded inline-block uppercase tracking-widest text-left font-bold scale-95 origin-left">File Delivery Engine</p>
-          <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf mt-2 select-none">Integrated browser-based viewer</h2>
-        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          <!-- Left side column: LOD 350 Revit View Mockup precisely designed after visual cues -->
-          <div class="lg:col-span-7 bg-[#111215] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col h-[400px] relative select-none">
-            
-            <!-- Heading bars -->
-            <div class="px-5 py-3.5 bg-background-custom border-b border-white/5 flex items-center justify-between font-mono text-xs shrink-0">
-              <div class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary-custom text-sm">architecture</span>
-                <span class="font-bold text-silver-leaf uppercase tracking-wider text-[11px]">{{ activeModel().title }} Viewer</span>
-              </div>
-              <div class="flex items-center gap-1.5 text-emerald-400 font-bold text-[9px] tracking-wide uppercase">
-                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
-                <span>DEMO WORKSPACE PREVIEW</span>
-              </div>
-            </div>
-
-            <!-- Interactivity Area containing isometric structural renders -->
-            <div class="flex-1 relative overflow-hidden bg-gradient-to-br from-[#0c0d10] to-[#1a1c22]">
-              
-              <!-- Realistic technical design mockup thumbnail background -->
-              <img alt="LOD 350 high-fidelity structural building visualizer mockup render" 
-                   class="w-full h-full object-cover grayscale opacity-75 transform hover:scale-105 transition-transform duration-1000 ease-out pointer-events-none" 
-                   [src]="activeModel().image"/>
-
-              <div class="absolute inset-0 bg-gradient-to-t from-[#0e0f11]/95 via-transparent to-transparent z-10 pointer-events-none"></div>
-
-              <!-- Top Left layout active HUD details -->
-              <div class="absolute top-4 left-4 z-20">
-                <div class="bg-midnight-charcoal/80 border border-primary-custom/25 rounded-md px-2.5 py-1 backdrop-blur-sm flex items-center gap-1.5 text-[9px] font-mono font-bold uppercase tracking-wider text-primary-custom">
-                  <span class="w-1.5 h-3 bg-primary-custom rounded-sm"></span>
-                  <span>{{ activeModel().activeLayer }}</span>
-                </div>
-              </div>
-
-              <!-- Top Right file dimensions exactly as image HUD overlay -->
-              <div class="absolute top-4 right-4 z-20 flex flex-col gap-1.5 font-mono text-[8px] items-end">
-                <span class="bg-[#111215]/85 px-2 py-0.5 rounded border border-white/5 text-silver-leaf uppercase tracking-widest leading-none font-bold">FORMAT: {{ activeModel().format }}</span>
-                <span class="bg-[#111215]/85 px-2.5 py-1 rounded border border-[#DF80AC]/30 text-[#DF80AC] font-bold tracking-wide">LASER PRECISION: {{ activeModel().precision }}</span>
-              </div>
-
-              <!-- Bottom coordinates alignment HUD display -->
-              <div class="absolute bottom-4 left-4 z-20 flex flex-col font-mono text-[9px] text-on-surface-variant-custom">
-                <p class="flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-[12px] text-[#DF80AC]" style="font-variation-settings: 'FILL' 1;">verified</span>
-                  <span>{{ activeModel().alignment }}</span>
-                </p>
-              </div>
-
-              <!-- Interactive anchor cycle trigger button layout -->
-              <div class="absolute bottom-4 right-4 z-20">
-                <button type="button" 
-                        (click)="cycleModel()" 
-                        class="bg-[#191D24] text-silver-leaf border border-white/20 hover:border-white/40 hover:bg-[#20252F] font-mono text-[9px] font-bold uppercase tracking-widest py-2 px-3.5 rounded-lg flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all focus:outline-none select-none">
-                  <span>Load different building</span>
-                  <span class="material-symbols-outlined text-[12px] font-bold">arrow_forward</span>
-                </button>
-              </div>
-
-            </div>
-
-          </div>
-
-          <!-- Right side column: Stacked precision metadata cards exactly as reference listing -->
-          <div class="lg:col-span-5 space-y-4">
-            
-            <!-- Card 1 -->
-            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-primary-custom/25 transition-all group hover:bg-[#151619]/40">
-              <div class="flex items-center gap-3 mb-2 font-mono">
-                <span class="material-symbols-outlined text-primary-custom" style="font-variation-settings: 'FILL' 1;">architecture</span>
-                <h4 class="font-serif text-lg text-silver-leaf font-bold">Native CAD Precision</h4>
-              </div>
-              <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans">
-                Instant access to layered DWG files directly within the platform. Inspect structural vectors quickly without high-overhead software installations.
-              </p>
-            </div>
-
-            <!-- Card 2 -->
-            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#DF80AC]/25 transition-all group hover:bg-[#151619]/40">
-              <div class="flex items-center gap-3 mb-2 font-mono">
-                <span class="material-symbols-outlined text-[#DF80AC]" style="font-variation-settings: 'FILL' 1;">photo_camera_back</span>
-                <h4 class="font-serif text-lg text-silver-leaf font-bold">360° Continuity</h4>
-              </div>
-              <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans">
-                Navigate immersive high-resolution 360° survey photography linked directly to multi-level CAD floorplans for verified remote field site coordination.
-              </p>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#e9c349]/25 transition-all group hover:bg-[#151619]/40">
-              <div class="flex items-center gap-3 mb-2 font-mono">
-                <span class="material-symbols-outlined text-[#e9c349]">sync</span>
-                <h4 class="font-serif text-lg text-silver-leaf font-bold">BIM Coordination</h4>
-              </div>
-              <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans">
-                Automated synchronization between scanning stakeholders and remote modeling engineers ensuring everyone works with zero-delay data accuracy.
-              </p>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ================= SECTION 4: STREAMLINED OS VIEWPORTS ================= -->
-      <section class="space-y-6 pt-12 border-t border-white/5 text-left select-none" id="operating-system-viewports-section">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
-          <div>
-            <p class="font-mono text-xs text-primary-custom mb-1 uppercase tracking-widest">Streamlined Operating System</p>
-            <h3 class="font-serif text-2xl md:text-3xl text-silver-leaf">View, Order, Share, Export.</h3>
-          </div>
-          <p class="max-w-md text-xs text-on-surface-variant-custom leading-relaxed font-sans">
-            A frictionless cloud journey from laser point-cloud site capture to enterprise-level architecture asset management.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-          <!-- Item 01 -->
-          <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-primary-custom/25 transition-all">
-            <span class="font-mono text-xs font-bold text-primary-custom/40 text-right block">01 / ACCESS</span>
-            <div>
-              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">View</h5>
-              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
-                Inspect every corner of your modeled facility layout in high-definition interactive 3D structures and layered 2D floorplans.
-              </p>
-            </div>
-          </div>
-
-          <!-- Item 02 -->
-          <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-primary-custom/25 transition-all">
-            <span class="font-mono text-xs font-bold text-primary-custom/40 text-right block">02 / DEMAND</span>
-            <div>
-              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">Order</h5>
-              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
-                Request new surveys or 3D coordinate model updates with an instant calculator. No traditional tedious RFPs required.
-              </p>
-            </div>
-          </div>
-
-          <!-- Item 03 -->
-          <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-[#DF80AC]/25 transition-all">
-            <span class="font-mono text-xs font-bold text-[#DF80AC]/40 text-right block">03 / COLLABORATION</span>
-            <div>
-              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">Share</h5>
-              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
-                Collaborate securely with external engineers and sub-consultants using expiring tokens and revocable access links.
-              </p>
-            </div>
-          </div>
-
-          <!-- Item 04 -->
-          <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-[#e9c349]/25 transition-all">
-            <span class="font-mono text-xs font-bold text-[#e9c349]/40 text-right block">04 / INTEGRATION</span>
-            <div>
-              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">Export</h5>
-              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
-                Direct native API integration with Autodesk Construction Cloud (ACC), Procore, and Bentley ProjectWise repositories.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================= SECTION 5: TECHNICAL ARCHIVE RECENT DEPLOYMENTS ================= -->
-      <section class="space-y-6 text-left pt-12 border-t border-white/5" id="technical-archive-section">
-        <div class="flex items-center justify-between">
-          <div>
-            <p class="font-mono text-xs text-[#C86B98] mb-1 uppercase tracking-widest font-bold">RECENT DEPLOYMENTS</p>
-            <h2 class="font-serif text-3xl md:text-chart-font-custom text-silver-leaf select-none font-bold">Technical Archive</h2>
-          </div>
-          <button type="button" 
-                  (click)="calculator.setTab('portfolio')"
-                  class="font-mono text-[10px] uppercase text-on-surface-variant-custom hover:text-white flex items-center gap-1.5 bg-transparent border-none cursor-pointer focus:outline-none transition-colors tracking-widest font-bold">
-            <span>VIEW_ALL</span>
-            <span class="material-symbols-outlined text-xs font-bold">arrow_forward</span>
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 gap-3 font-mono">
-          <!-- Project 1 -->
-          <button type="button" (click)="calculator.openArchiveProject('Vertex', 'MEP', 'Opening archive node: PROJECT_001 The Vertex Pavilion')"
-               style="animation-delay: 50ms;"
-               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
-            <div class="flex items-center gap-4">
-              <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=120&q=80" 
-                   alt="The Vertex Pavilion" 
-                   class="w-14 h-14 object-cover rounded-lg grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 transition-all duration-300" 
-                   referrerpolicy="no-referrer" />
-              <div class="text-left">
-                <span class="text-[9px] text-[#DF80AC] uppercase font-mono tracking-wider font-bold block">PROJECT_001</span>
-                <h4 class="text-sm font-serif text-silver-leaf font-bold group-hover:text-primary-custom transition-colors mt-0.5">
-                  <span class="hover-underline-animate pb-0.5">The Vertex Pavilion</span>
-                </h4>
-                <p class="text-[11px] text-on-surface-variant-custom/70 font-sans mt-0.5 leading-normal">Modernist corporate workspace with integrated climate systems.</p>
-              </div>
-            </div>
-            <span class="material-symbols-outlined text-[18px] text-on-surface-variant-custom group-hover:text-white transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 duration-300 shrink-0">north_east</span>
-          </button>
-
-          <!-- Project 2 -->
-          <button type="button" (click)="calculator.openArchiveProject('Obsidian', 'STRUCTURAL', 'Opening archive node: PROJECT_005 Obsidian Terminal')"
-               style="animation-delay: 110ms;"
-               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
-            <div class="flex items-center gap-4">
-              <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=120&q=80" 
-                   alt="Obsidian Terminal" 
-                   class="w-14 h-14 object-cover rounded-lg grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 transition-all duration-300" 
-                   referrerpolicy="no-referrer" />
-              <div class="text-left">
-                <span class="text-[9px] text-[#DF80AC] uppercase font-mono tracking-wider font-bold block">PROJECT_005</span>
-                <h4 class="text-sm font-serif text-silver-leaf font-bold group-hover:text-primary-custom transition-colors mt-0.5">
-                  <span class="hover-underline-animate pb-0.5">Obsidian Terminal</span>
-                </h4>
-                <p class="text-[11px] text-on-surface-variant-custom/70 font-sans mt-0.5 leading-normal">Brutalist concrete architecture combined with daylight shafts.</p>
-              </div>
-            </div>
-            <span class="material-symbols-outlined text-[18px] text-on-surface-variant-custom group-hover:text-white transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 duration-300 shrink-0">north_east</span>
-          </button>
-
-          <!-- Project 3 -->
-          <button type="button" (click)="calculator.openArchiveProject('Flux', 'ARCHITECTURAL', 'Opening archive node: PROJECT_016 Flux Residential')"
-               style="animation-delay: 170ms;"
-               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
-            <div class="flex items-center gap-4">
-              <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" 
-                   alt="Flux Residential" 
-                   class="w-14 h-14 object-cover rounded-lg grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 transition-all duration-300" 
-                   referrerpolicy="no-referrer" />
-              <div class="text-left">
-                <span class="text-[9px] text-[#DF80AC] uppercase font-mono tracking-wider font-bold block">PROJECT_016</span>
-                <h4 class="text-sm font-serif text-silver-leaf font-bold group-hover:text-primary-custom transition-colors mt-0.5">
-                  <span class="hover-underline-animate pb-0.5 font-bold">Flux Residential</span>
-                </h4>
-                <p class="text-[11px] text-on-surface-variant-custom/70 font-sans mt-0.5 leading-normal">High-end architecture showcasing high strength structural frames.</p>
-              </div>
-            </div>
-            <span class="material-symbols-outlined text-[18px] text-on-surface-variant-custom group-hover:text-white transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 duration-300 shrink-0">north_east</span>
-          </button>
-        </div>
-      </section>
-
-      <!-- ================= SECTION 6: SERVICE SPECIFICATION TIERS ================= -->
+        <!-- ================= SECTION 6: SERVICE SPECIFICATION TIERS ================= -->
       <section class="space-y-6 text-left pt-12 border-t border-white/5" id="service-sectors-tiers">
         <div>
           <p class="font-mono text-xs text-[#C86B98] mb-1 uppercase tracking-widest font-bold">BIM SERVICE SECTORS</p>
-          <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf select-none font-bold">Active Service Specifications</h2>
+          <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf select-none font-bold">Our Services</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -602,6 +355,258 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         </div>
       </section>
 
+       <!-- ================= SECTION 4: STREAMLINED OS VIEWPORTS ================= -->
+      <section class="space-y-6 pt-12 border-t border-white/5 text-left select-none" id="operating-system-viewports-section">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
+          <div>
+            <p class="font-mono text-xs text-primary-custom mb-1 uppercase tracking-widest">Streamlined Operating System</p>
+            <h3 class="font-serif text-2xl md:text-3xl text-silver-leaf">View, Order, Share, Export.</h3>
+          </div>
+          <p class="max-w-md text-xs text-on-surface-variant-custom leading-relaxed font-sans">
+            A frictionless cloud journey from laser point-cloud site capture to enterprise-level architecture asset management.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+          <!-- Item 01 -->
+          <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-primary-custom/25 transition-all">
+            <span class="font-mono text-xs font-bold text-primary-custom/40 text-right block">01 / ACCESS</span>
+            <div>
+              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">View</h5>
+              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
+                Inspect every corner of your modeled facility layout in high-definition interactive 3D structures and layered 2D floorplans.
+              </p>
+            </div>
+          </div>
+
+          <!-- Item 02 -->
+          <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-primary-custom/25 transition-all">
+            <span class="font-mono text-xs font-bold text-primary-custom/40 text-right block">02 / DEMAND</span>
+            <div>
+              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">Order</h5>
+              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
+                Request new surveys or 3D coordinate model updates with an instant calculator. No traditional tedious RFPs required.
+              </p>
+            </div>
+          </div>
+
+          <!-- Item 03 -->
+          <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-[#DF80AC]/25 transition-all">
+            <span class="font-mono text-xs font-bold text-[#DF80AC]/40 text-right block">03 / COLLABORATION</span>
+            <div>
+              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">Share</h5>
+              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
+                Collaborate securely with external engineers and sub-consultants using expiring tokens and revocable access links.
+              </p>
+            </div>
+          </div>
+
+          <!-- Item 04 -->
+          <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-[#e9c349]/25 transition-all">
+            <span class="font-mono text-xs font-bold text-[#e9c349]/40 text-right block">04 / INTEGRATION</span>
+            <div>
+              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">Export</h5>
+              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
+                Direct native API integration with Autodesk Construction Cloud (ACC), Procore, and Bentley ProjectWise repositories.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SECTION 3: INTEGRATED BROWSER SECTION ================= -->
+      <section class="space-y-8 text-left" id="integrated-browser-section">
+        <div>
+          <p class="font-mono text-xs text-[#DF80AC] bg-[#DF80AC]/10 border border-[#DF80AC]/15 px-2.5 py-1 rounded inline-block uppercase tracking-widest text-left font-bold scale-95 origin-left">File Delivery Engine</p>
+          <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf mt-2 select-none">Integrated browser-based viewer</h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- Left side column: LOD 350 Revit View Mockup precisely designed after visual cues -->
+          <div class="lg:col-span-7 bg-[#111215] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col h-[400px] relative select-none">
+            
+            <!-- Heading bars -->
+            <div class="px-5 py-3.5 bg-background-custom border-b border-white/5 flex items-center justify-between font-mono text-xs shrink-0">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary-custom text-sm">architecture</span>
+                <span class="font-bold text-silver-leaf uppercase tracking-wider text-[11px]">{{ activeModel().title }} Viewer</span>
+              </div>
+              <div class="flex items-center gap-1.5 text-emerald-400 font-bold text-[9px] tracking-wide uppercase">
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+                <span>DEMO WORKSPACE PREVIEW</span>
+              </div>
+            </div>
+
+            <!-- Interactivity Area containing isometric structural renders -->
+            <div class="flex-1 relative overflow-hidden bg-gradient-to-br from-[#0c0d10] to-[#1a1c22]">
+              
+              <!-- Realistic technical design mockup thumbnail background -->
+              <img alt="LOD 350 high-fidelity structural building visualizer mockup render" 
+                   class="w-full h-full object-cover grayscale opacity-75 transform hover:scale-105 transition-transform duration-1000 ease-out pointer-events-none" 
+                   [src]="activeModel().image"/>
+
+              <div class="absolute inset-0 bg-gradient-to-t from-[#0e0f11]/95 via-transparent to-transparent z-10 pointer-events-none"></div>
+
+              <!-- Top Left layout active HUD details -->
+              <div class="absolute top-4 left-4 z-20">
+                <div class="bg-midnight-charcoal/80 border border-primary-custom/25 rounded-md px-2.5 py-1 backdrop-blur-sm flex items-center gap-1.5 text-[9px] font-mono font-bold uppercase tracking-wider text-primary-custom">
+                  <span class="w-1.5 h-3 bg-primary-custom rounded-sm"></span>
+                  <span>{{ activeModel().activeLayer }}</span>
+                </div>
+              </div>
+
+              <!-- Top Right file dimensions exactly as image HUD overlay -->
+              <div class="absolute top-4 right-4 z-20 flex flex-col gap-1.5 font-mono text-[8px] items-end">
+                <span class="bg-[#111215]/85 px-2 py-0.5 rounded border border-white/5 text-silver-leaf uppercase tracking-widest leading-none font-bold">FORMAT: {{ activeModel().format }}</span>
+                <span class="bg-[#111215]/85 px-2.5 py-1 rounded border border-[#DF80AC]/30 text-[#DF80AC] font-bold tracking-wide">LASER PRECISION: {{ activeModel().precision }}</span>
+              </div>
+
+              <!-- Bottom coordinates alignment HUD display -->
+              <div class="absolute bottom-4 left-4 z-20 flex flex-col font-mono text-[9px] text-on-surface-variant-custom">
+                <p class="flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[12px] text-[#DF80AC]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                  <span>{{ activeModel().alignment }}</span>
+                </p>
+              </div>
+
+              <!-- Interactive anchor cycle trigger button layout -->
+              <div class="absolute bottom-4 right-4 z-20">
+                <button type="button" 
+                        (click)="cycleModel()" 
+                        class="bg-[#191D24] text-silver-leaf border border-white/20 hover:border-white/40 hover:bg-[#20252F] font-mono text-[9px] font-bold uppercase tracking-widest py-2 px-3.5 rounded-lg flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all focus:outline-none select-none">
+                  <span>Load different building</span>
+                  <span class="material-symbols-outlined text-[12px] font-bold">arrow_forward</span>
+                </button>
+                
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Right side column: Stacked precision metadata cards exactly as reference listing -->
+          <div class="lg:col-span-5 space-y-4">
+            
+            <!-- Card 1 -->
+            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-primary-custom/25 transition-all group hover:bg-[#151619]/40">
+              <div class="flex items-center gap-3 mb-2 font-mono">
+                <span class="material-symbols-outlined text-primary-custom" style="font-variation-settings: 'FILL' 1;">architecture</span>
+                <h4 class="font-serif text-lg text-silver-leaf font-bold">Native CAD Precision</h4>
+              </div>
+              <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans">
+                Instant access to layered DWG files directly within the platform. Inspect structural vectors quickly without high-overhead software installations.
+              </p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#DF80AC]/25 transition-all group hover:bg-[#151619]/40">
+              <div class="flex items-center gap-3 mb-2 font-mono">
+                <span class="material-symbols-outlined text-[#DF80AC]" style="font-variation-settings: 'FILL' 1;">photo_camera_back</span>
+                <h4 class="font-serif text-lg text-silver-leaf font-bold">360° Continuity</h4>
+              </div>
+              <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans">
+                Navigate immersive high-resolution 360° survey photography linked directly to multi-level CAD floorplans for verified remote field site coordination.
+              </p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#e9c349]/25 transition-all group hover:bg-[#151619]/40">
+              <div class="flex items-center gap-3 mb-2 font-mono">
+                <span class="material-symbols-outlined text-[#e9c349]">sync</span>
+                <h4 class="font-serif text-lg text-silver-leaf font-bold">BIM Coordination</h4>
+              </div>
+              <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans">
+                Automated synchronization between scanning stakeholders and remote modeling engineers ensuring everyone works with zero-delay data accuracy.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+     
+      <!-- ================= SECTION 5: TECHNICAL ARCHIVE RECENT DEPLOYMENTS ================= -->
+      <section class="space-y-6 text-left pt-12 border-t border-white/5" id="technical-archive-section">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="font-mono text-xs text-[#C86B98] mb-1 uppercase tracking-widest font-bold">RECENT DEPLOYMENTS</p>
+            <h2 class="font-serif text-3xl md:text-chart-font-custom text-silver-leaf select-none font-bold">Technical Archive</h2>
+          </div>
+          <button type="button" 
+                  (click)="calculator.setTab('portfolio')"
+                  class="font-mono text-[10px] uppercase text-on-surface-variant-custom hover:text-white flex items-center gap-1.5 bg-transparent border-none cursor-pointer focus:outline-none transition-colors tracking-widest font-bold">
+            <span>VIEW_ALL</span>
+            <span class="material-symbols-outlined text-xs font-bold">arrow_forward</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3 font-mono">
+          <!-- Project 1 -->
+          <button type="button" (click)="calculator.openArchiveProject('Vertex', 'MEP', 'Opening archive node: PROJECT_001 The Vertex Pavilion')"
+               style="animation-delay: 50ms;"
+               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
+            <div class="flex items-center gap-4">
+              <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=120&q=80" 
+                   alt="The Vertex Pavilion" 
+                   class="w-14 h-14 object-cover rounded-lg grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 transition-all duration-300" 
+                   referrerpolicy="no-referrer" />
+              <div class="text-left">
+                <span class="text-[9px] text-[#DF80AC] uppercase font-mono tracking-wider font-bold block">PROJECT_001</span>
+                <h4 class="text-sm font-serif text-silver-leaf font-bold group-hover:text-primary-custom transition-colors mt-0.5">
+                  <span class="hover-underline-animate pb-0.5">The Vertex Pavilion</span>
+                </h4>
+                <p class="text-[11px] text-on-surface-variant-custom/70 font-sans mt-0.5 leading-normal">Modernist corporate workspace with integrated climate systems.</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-[18px] text-on-surface-variant-custom group-hover:text-white transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 duration-300 shrink-0">north_east</span>
+          </button>
+
+          <!-- Project 2 -->
+          <button type="button" (click)="calculator.openArchiveProject('Obsidian', 'STRUCTURAL', 'Opening archive node: PROJECT_005 Obsidian Terminal')"
+               style="animation-delay: 110ms;"
+               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
+            <div class="flex items-center gap-4">
+              <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=120&q=80" 
+                   alt="Obsidian Terminal" 
+                   class="w-14 h-14 object-cover rounded-lg grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 transition-all duration-300" 
+                   referrerpolicy="no-referrer" />
+              <div class="text-left">
+                <span class="text-[9px] text-[#DF80AC] uppercase font-mono tracking-wider font-bold block">PROJECT_005</span>
+                <h4 class="text-sm font-serif text-silver-leaf font-bold group-hover:text-primary-custom transition-colors mt-0.5">
+                  <span class="hover-underline-animate pb-0.5">Obsidian Terminal</span>
+                </h4>
+                <p class="text-[11px] text-on-surface-variant-custom/70 font-sans mt-0.5 leading-normal">Brutalist concrete architecture combined with daylight shafts.</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-[18px] text-on-surface-variant-custom group-hover:text-white transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 duration-300 shrink-0">north_east</span>
+          </button>
+
+          <!-- Project 3 -->
+          <button type="button" (click)="calculator.openArchiveProject('Flux', 'ARCHITECTURAL', 'Opening archive node: PROJECT_016 Flux Residential')"
+               style="animation-delay: 170ms;"
+               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
+            <div class="flex items-center gap-4">
+              <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" 
+                   alt="Flux Residential" 
+                   class="w-14 h-14 object-cover rounded-lg grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 transition-all duration-300" 
+                   referrerpolicy="no-referrer" />
+              <div class="text-left">
+                <span class="text-[9px] text-[#DF80AC] uppercase font-mono tracking-wider font-bold block">PROJECT_016</span>
+                <h4 class="text-sm font-serif text-silver-leaf font-bold group-hover:text-primary-custom transition-colors mt-0.5">
+                  <span class="hover-underline-animate pb-0.5 font-bold">Flux Residential</span>
+                </h4>
+                <p class="text-[11px] text-on-surface-variant-custom/70 font-sans mt-0.5 leading-normal">High-end architecture showcasing high strength structural frames.</p>
+              </div>
+            </div>
+            <span class="material-symbols-outlined text-[18px] text-on-surface-variant-custom group-hover:text-white transition-colors transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 duration-300 shrink-0">north_east</span>
+          </button>
+        </div>
+      </section>
+
+    
+
     </div>
   `,
 })
@@ -668,35 +673,35 @@ export class Dashboard {
 
   // High quality digital architecture assets mapped to cycle through upon load different building triggers
   models = [
-    { 
-      title: 'Crystal Atrium', 
-      format: '.RVT / .DWG', 
-      precision: '+/- 1.5mm', 
-      type: 'ARCHITECTURAL', 
-      activeLayer: 'Daylight Analysis Axis Active', 
-      size: '12,000 SQ FT', 
-      alignment: 'Coordinate alignment verified (WGS84 GPS grid)', 
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCRWYGczuRNVoLApBph6t_QACwT__PN5xdqb5KbDa3JsJ0tH3rLbbrgGyi_1V6HJ2xYX4410dXoSWmUSYCpisKcsGbSX88OXypSEANhuBn8BudnwmlIrCYNhTjT7j84ogwNxG1GBVe6ITJ_IglZtLd9uFThp3IpbccQ-XhB-kDfy_W3AbswscbGT-v_-oo0oEBqdWbF7CrIe9t9hOi3Bo71Yio41IDiWOirzTMYhCReQ2dPcZj6NYGHGHWwqrDfMPYOtPYXQcRRgY8' 
+    {
+      title: 'Crystal Atrium',
+      format: '.RVT / .DWG',
+      precision: '+/- 1.5mm',
+      type: 'ARCHITECTURAL',
+      activeLayer: 'Daylight Analysis Axis Active',
+      size: '12,000 SQ FT',
+      alignment: 'Coordinate alignment verified (WGS84 GPS grid)',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCRWYGczuRNVoLApBph6t_QACwT__PN5xdqb5KbDa3JsJ0tH3rLbbrgGyi_1V6HJ2xYX4410dXoSWmUSYCpisKcsGbSX88OXypSEANhuBn8BudnwmlIrCYNhTjT7j84ogwNxG1GBVe6ITJ_IglZtLd9uFThp3IpbccQ-XhB-kDfy_W3AbswscbGT-v_-oo0oEBqdWbF7CrIe9t9hOi3Bo71Yio41IDiWOirzTMYhCReQ2dPcZj6NYGHGHWwqrDfMPYOtPYXQcRRgY8'
     },
-    { 
-      title: 'Monolith Terminal', 
-      format: '.RVT / .IFC', 
-      precision: '+/- 2.0mm', 
-      type: 'STRUCTURAL', 
-      activeLayer: 'Structural Concrete Skeletons Active', 
-      size: '33,023 SQ FT', 
-      alignment: 'Structural load telemetry verified securely', 
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRFkC6_hFVn7b-agjpn9iKPpfmErl8szxOLnn5K6wfH1mNgngYgHEddNwt2QBFjktDwHrgXoQSCWROAbuZp_bVltApbslk8lXqSU4qGyoRGE9DRluSiwG2lYJ1qoXU6oi1vVfcFWsvvK7WaN_oQs9YFcjpV6nDBUljI3DW_i-NybLNSjlg0cJrR09nSG9fVPo4E5R4TLur-IcV9Q-y-5nYxqN0ytBcqCVOjc2V7WMnKAmp2M71URgmXwB7RY8uxxCmsyKdhfZenYY' 
+    {
+      title: 'Monolith Terminal',
+      format: '.RVT / .IFC',
+      precision: '+/- 2.0mm',
+      type: 'STRUCTURAL',
+      activeLayer: 'Structural Concrete Skeletons Active',
+      size: '33,023 SQ FT',
+      alignment: 'Structural load telemetry verified securely',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRFkC6_hFVn7b-agjpn9iKPpfmErl8szxOLnn5K6wfH1mNgngYgHEddNwt2QBFjktDwHrgXoQSCWROAbuZp_bVltApbslk8lXqSU4qGyoRGE9DRluSiwG2lYJ1qoXU6oi1vVfcFWsvvK7WaN_oQs9YFcjpV6nDBUljI3DW_i-NybLNSjlg0cJrR09nSG9fVPo4E5R4TLur-IcV9Q-y-5nYxqN0ytBcqCVOjc2V7WMnKAmp2M71URgmXwB7RY8uxxCmsyKdhfZenYY'
     },
-    { 
-      title: 'Vertex HQ Pipeline', 
-      format: '.RVT / .NWD', 
-      precision: '+/- 1.0mm', 
-      type: 'MEP', 
-      activeLayer: 'HVAC Duct Network Thermal Map Active', 
-      size: '30,423 SQ FT', 
-      alignment: 'MEP pressure parameters balanced via local OS', 
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAiEiH9mgVilqvzCWFFc_H37omBy7ubmxexHym6TptnLIN4cRnPoG2ls2e6fRqmMrupPx-m_yqmiU4ffXbQRXuspuWVDvopddTOjnYdlPqtNSDB_z-5HerYQ42cYtcPMazbu1aYtTGPMgh4ayFwCR3-o-dQklVuMK44BpyLxuTMXtYAQ3FWkmojnTKtJb7WQfIN_h7W6Hvgn-XZug1z5WxhJ5KIwvq7igLe4wqkQXlUjyIgAQlM-7AGMDixBPvsO9QsU3ws8YPb-mU' 
+    {
+      title: 'Vertex HQ Pipeline',
+      format: '.RVT / .NWD',
+      precision: '+/- 1.0mm',
+      type: 'MEP',
+      activeLayer: 'HVAC Duct Network Thermal Map Active',
+      size: '30,423 SQ FT',
+      alignment: 'MEP pressure parameters balanced via local OS',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAiEiH9mgVilqvzCWFFc_H37omBy7ubmxexHym6TptnLIN4cRnPoG2ls2e6fRqmMrupPx-m_yqmiU4ffXbQRXuspuWVDvopddTOjnYdlPqtNSDB_z-5HerYQ42cYtcPMazbu1aYtTGPMgh4ayFwCR3-o-dQklVuMK44BpyLxuTMXtYAQ3FWkmojnTKtJb7WQfIN_h7W6Hvgn-XZug1z5WxhJ5KIwvq7igLe4wqkQXlUjyIgAQlM-7AGMDixBPvsO9QsU3ws8YPb-mU'
     }
   ];
 
@@ -734,7 +739,7 @@ export class Dashboard {
       //   attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
       // }).addTo(mapInstance);
 
-      L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+      L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
         minZoom: 0,
         maxZoom: 20,
         attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -747,7 +752,7 @@ export class Dashboard {
 
   createMarkers(LObj: unknown) {
     const L = LObj as typeof import('leaflet');
-    
+
     // Typecast markers to clear them
     const currentMarkers = this.markers as import('leaflet').Marker[];
     currentMarkers.forEach(m => {
@@ -783,7 +788,7 @@ export class Dashboard {
 
       try {
         const marker = L.marker([latVal, lonVal], { icon: customIcon });
-        
+
         const markerObj = marker as unknown as Record<string, unknown>;
         markerObj['customPinData'] = pin;
 

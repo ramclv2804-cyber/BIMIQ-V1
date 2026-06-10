@@ -39,30 +39,8 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           </div>
         </button>
 
-        <!-- OPTION 2: Prebuilt Scan to BIM -->
-        <button 
-          type="button" 
-          (click)="selectMode('prebuilt')"
-          [class.border-primary-custom]="calculator.selectedModelingWay() === 'prebuilt'"
-          [class.bg-primary-custom/5]="calculator.selectedModelingWay() === 'prebuilt'"
-          [class.border-white/10]="calculator.selectedModelingWay() !== 'prebuilt'"
-          class="w-full flex items-start gap-4 p-5 rounded-2xl border text-left cursor-pointer transition-all hover:bg-white/5 focus:outline-none relative group select-none">
-          <div class="mt-1 flex items-center justify-center">
-            @if (calculator.selectedModelingWay() === 'prebuilt') {
-              <span class="material-symbols-outlined text-primary-custom text-2xl fill-1">radio_button_checked</span>
-            } @else {
-              <span class="material-symbols-outlined text-on-surface-variant-custom text-2xl">radio_button_unchecked</span>
-            }
-          </div>
-          <div class="space-y-1 pr-6 flex-1">
-            <h4 class="font-sans font-bold text-sm text-silver-leaf group-hover:text-primary-custom transition-colors">Prebuilt Scan to BIM</h4>
-            <p class="text-[11px] text-on-surface-variant-custom leading-normal font-sans">
-              I already have an existing BIM model, and would like to register with your pipeline services.
-            </p>
-          </div>
-        </button>
 
-        <!-- OPTION 3: CAD to BIM -->
+        <!-- OPTION 3: Scan to CAD -->
         <button 
           type="button" 
           (click)="selectMode('cad_to_bim')"
@@ -78,7 +56,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             }
           </div>
           <div class="space-y-1 pr-6 flex-1">
-            <h4 class="font-sans font-bold text-sm text-silver-leaf group-hover:text-primary-custom transition-colors">CAD to BIM</h4>
+            <h4 class="font-sans font-bold text-sm text-silver-leaf group-hover:text-primary-custom transition-colors">Scan to CAD</h4>
             <p class="text-[11px] text-on-surface-variant-custom leading-normal font-sans">
               I have 2D architectural CAD drawings / engineering drawings and need transformation to 3D Revit models.
             </p>
@@ -93,11 +71,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 export class BimSelection {
   calculator = inject(SpatialCostCalculator);
 
-  selectMode(mode: 'bim' | 'prebuilt' | 'cad_to_bim') {
+  selectMode(mode: 'bim' | 'cad_to_bim') {
     this.calculator.selectedModelingWay.set(mode);
-  }
-
-  toggleUsePrebuiltLater() {
-    this.calculator.usePrebuiltDesignLater.update(val => !val);
   }
 }
