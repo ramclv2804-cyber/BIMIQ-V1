@@ -720,7 +720,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                 }
               </div>
             </section>
-wef          </div>
+     </div>
           </div>
 
         </div>
@@ -803,15 +803,15 @@ export class PriceEstimation implements OnInit {
   }
 
   getSelectedLODLabel(): string {
-    const lod = this.calculator.selectedModelingWay() === 'prebuilt' 
-      ? this.calculator.prebuiltLODLevel() 
+    const lod = this.calculator.selectedModelingWay() === 'prebuilt'
+      ? this.calculator.prebuiltLODLevel()
       : this.calculator.smartLODLevel();
     return lod === 'LOD_200' ? 'LOD 200' : (lod === 'LOD_300' ? 'LOD 300' : (lod === 'LOD_400' ? 'LOD 400' : 'LOD 500'));
   }
 
   getLODPreviewImage(): string {
-    const lod = this.calculator.selectedModelingWay() === 'prebuilt' 
-      ? this.calculator.prebuiltLODLevel() 
+    const lod = this.calculator.selectedModelingWay() === 'prebuilt'
+      ? this.calculator.prebuiltLODLevel()
       : this.calculator.smartLODLevel();
     if (lod === 'LOD_200') {
       return 'lod200.webp';
@@ -825,8 +825,8 @@ export class PriceEstimation implements OnInit {
   }
 
   getLODOverlayText(): string {
-    const lod = this.calculator.selectedModelingWay() === 'prebuilt' 
-      ? this.calculator.prebuiltLODLevel() 
+    const lod = this.calculator.selectedModelingWay() === 'prebuilt'
+      ? this.calculator.prebuiltLODLevel()
       : this.calculator.smartLODLevel();
     if (lod === 'LOD_200') {
       return 'BOUND: LOD 200 BASIC MINIMALIST CONCEPT SCHEME';
@@ -861,7 +861,7 @@ export class PriceEstimation implements OnInit {
     event.preventDefault();
     event.stopPropagation();
     this.calculator.dragActive.set(false);
-    
+
     if (event.dataTransfer && event.dataTransfer.files.length > 0) {
       const file = event.dataTransfer.files[0];
       this.readFileAndSubmit(file);
@@ -918,20 +918,20 @@ export class PriceEstimation implements OnInit {
       }
 
       const result = await response.json();
-      
+
       // Successfully extracted state from image! Update form signals
       if (result.spaceType) this.calculator.smartSpaceType.set(result.spaceType);
       if (result.scanSize) this.calculator.smartScanSize.set(result.scanSize);
-      
+
       if (result.interiorScope) {
         this.calculator.smartInteriorArchitecture.set(result.interiorScope.includes('Architecture'));
         this.calculator.smartInteriorFurniture.set(result.interiorScope.includes('Furniture'));
         this.calculator.smartInteriorMep.set(result.interiorScope.includes('MEP'));
       }
-      
+
       this.calculator.smartIsComplexMepf.set(!!result.isComplexMepf);
       this.calculator.smartIsExteriorRequired.set(!!result.isExteriorRequired);
-      
+
       if (result.exteriorScope) {
         this.calculator.smartExteriorArchitecture.set(result.exteriorScope.includes('Architecture'));
         this.calculator.smartExteriorFurniture.set(result.exteriorScope.includes('Furniture'));
@@ -943,7 +943,7 @@ export class PriceEstimation implements OnInit {
         // assign reasonable initial site sft space
         this.calculator.siteModelingSft.set(Math.round(result.scanSize * 1.5 || 2500));
       }
-      
+
       if (result.shortRationale) {
         this.calculator.extractedRationale.set(result.shortRationale);
       }
@@ -992,11 +992,11 @@ export class PriceEstimation implements OnInit {
       const totalStr = `${symbol}${est.totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${this.calculator.selectedCurrency()}`;
 
       // 1. Theme Styling - Elegant header band (Deep Charcoal)
-      doc.setFillColor(15, 23, 42); 
+      doc.setFillColor(15, 23, 42);
       doc.rect(0, 0, 210, 42, 'F');
 
       // Decorative accent line
-      doc.setFillColor(200, 107, 152); 
+      doc.setFillColor(200, 107, 152);
       doc.rect(0, 42, 210, 3, 'F');
 
       // Title Text
@@ -1019,14 +1019,14 @@ export class PriceEstimation implements OnInit {
       doc.text(`STATUS: CORE VERIFIED`, 195, 26, { align: 'right' });
 
       // Reset text color for body
-      doc.setTextColor(51, 65, 85); 
+      doc.setTextColor(51, 65, 85);
 
       // Section 1: PROJECT ATTRIBUTES
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(14);
       doc.text('1. Project Coordinates', 15, 60);
 
-      doc.setFillColor(226, 232, 240); 
+      doc.setFillColor(226, 232, 240);
       doc.rect(15, 63, 180, 0.5, 'F');
 
       doc.setFont('helvetica', 'bold');
@@ -1038,7 +1038,7 @@ export class PriceEstimation implements OnInit {
       doc.setFont('helvetica', 'bold');
       doc.text('Physical Location:', 15, 80);
       doc.setFont('helvetica', 'normal');
-      doc.text(this.calculator.selectedModelingWay() === 'bim' 
+      doc.text(this.calculator.selectedModelingWay() === 'bim'
         ? (this.calculator.smartProjectAddress() || 'Standard Delivery Zone')
         : `LOD Compliance: ${this.calculator.getPrebuiltLodLabel(this.calculator.prebuiltLODLevel())}`, 55, 80);
 
@@ -1059,7 +1059,7 @@ export class PriceEstimation implements OnInit {
       doc.setFontSize(14);
       doc.text('2. Scan Configuration', 15, 112);
 
-      doc.setFillColor(226, 232, 240); 
+      doc.setFillColor(226, 232, 240);
       doc.rect(15, 115, 180, 0.5, 'F');
 
       doc.setFont('helvetica', 'bold');
@@ -1081,7 +1081,7 @@ export class PriceEstimation implements OnInit {
 
       doc.setFont('helvetica', 'bold');
       doc.text('Included Scope Items:', 15, 148);
-      
+
       const scopes: string[] = [];
       if (this.calculator.smartInteriorArchitecture()) scopes.push('Interior Architecture');
       if (this.calculator.smartInteriorFurniture()) scopes.push('Interior Furniture Layouts');
@@ -1104,12 +1104,12 @@ export class PriceEstimation implements OnInit {
       doc.setFontSize(14);
       doc.text('3. Cost & Delivery Estimation', 15, 172);
 
-      doc.setFillColor(226, 232, 240); 
+      doc.setFillColor(226, 232, 240);
       doc.rect(15, 175, 180, 0.5, 'F');
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
-      
+
       doc.text('Interior Modeling Fees:', 15, 184);
       doc.setFont('helvetica', 'normal');
       doc.text(`${symbol}${est.interiorFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 65, 184);
@@ -1130,12 +1130,12 @@ export class PriceEstimation implements OnInit {
       doc.text(`${est.businessDaysText} (${est.dayRangeText})`, 65, 208);
 
       // valuation card at bottom
-      doc.setFillColor(248, 250, 252); 
+      doc.setFillColor(248, 250, 252);
       doc.rect(15, 218, 180, 30, 'F');
       doc.setDrawColor(226, 232, 240);
       doc.rect(15, 218, 180, 30, 'S');
 
-      doc.setFillColor(200, 107, 152); 
+      doc.setFillColor(200, 107, 152);
       doc.rect(15, 218, 4, 30, 'F');
 
       doc.setTextColor(15, 23, 42);
@@ -1148,11 +1148,11 @@ export class PriceEstimation implements OnInit {
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(16);
-      doc.setTextColor(200, 107, 152); 
+      doc.setTextColor(200, 107, 152);
       doc.text(totalStr, 190, 236, { align: 'right' });
 
       // Footer
-      doc.setTextColor(148, 163, 184); 
+      doc.setTextColor(148, 163, 184);
       doc.setFont('helvetica', 'italic');
       doc.setFontSize(7.5);
       doc.text('Verification Token: SPATIAL-BIM-EST-SECURE-990-2A', 15, 275);
