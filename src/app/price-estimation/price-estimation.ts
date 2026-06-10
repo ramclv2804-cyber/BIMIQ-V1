@@ -705,7 +705,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                       STREAM: BIM MODELING 3D ACTIVE ASSET
                     </div>
                   } @else {
-                    <img src="https://images.unsplash.com/photo-1581094288338-2314dddb7ecc?auto=format&fit=crop&w=600&q=80"
+                    <img src="https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80"
                          alt="CAD to BIM alignment layout blueprint"
                          class="w-full h-full object-cover opacity-80 group-hover:scale-[1.03] transition-transform duration-700"
                          referrerpolicy="no-referrer" />
