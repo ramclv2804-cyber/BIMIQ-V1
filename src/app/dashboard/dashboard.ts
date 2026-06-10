@@ -92,7 +92,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <p class="font-mono text-xs text-[#DF80AC] mb-1 uppercase tracking-widest font-bold">Ecosystem Status</p>
-            <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf select-none">Global Coverage GIS Telemetry</h2>
+            <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf select-none">Global Coverage</h2>
           </div>
           
           <!-- Country Dropdown that automatically zooms map, supporting all 10 countries dynamically -->
@@ -199,7 +199,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
       <section class="space-y-6 text-left pt-12 border-t border-white/5" id="service-sectors-tiers">
         <div>
           <p class="font-mono text-xs text-[#C86B98] mb-1 uppercase tracking-widest font-bold">BIM SERVICE SECTORS</p>
-          <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf select-none font-bold">Active Service Specifications</h2>
+          <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf select-none font-bold">Our Services</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -478,6 +478,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                   <span>Load different building</span>
                   <span class="material-symbols-outlined text-[12px] font-bold">arrow_forward</span>
                 </button>
+                
               </div>
 
             </div>
@@ -672,35 +673,35 @@ export class Dashboard {
 
   // High quality digital architecture assets mapped to cycle through upon load different building triggers
   models = [
-    { 
-      title: 'Crystal Atrium', 
-      format: '.RVT / .DWG', 
-      precision: '+/- 1.5mm', 
-      type: 'ARCHITECTURAL', 
-      activeLayer: 'Daylight Analysis Axis Active', 
-      size: '12,000 SQ FT', 
-      alignment: 'Coordinate alignment verified (WGS84 GPS grid)', 
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCRWYGczuRNVoLApBph6t_QACwT__PN5xdqb5KbDa3JsJ0tH3rLbbrgGyi_1V6HJ2xYX4410dXoSWmUSYCpisKcsGbSX88OXypSEANhuBn8BudnwmlIrCYNhTjT7j84ogwNxG1GBVe6ITJ_IglZtLd9uFThp3IpbccQ-XhB-kDfy_W3AbswscbGT-v_-oo0oEBqdWbF7CrIe9t9hOi3Bo71Yio41IDiWOirzTMYhCReQ2dPcZj6NYGHGHWwqrDfMPYOtPYXQcRRgY8' 
+    {
+      title: 'Crystal Atrium',
+      format: '.RVT / .DWG',
+      precision: '+/- 1.5mm',
+      type: 'ARCHITECTURAL',
+      activeLayer: 'Daylight Analysis Axis Active',
+      size: '12,000 SQ FT',
+      alignment: 'Coordinate alignment verified (WGS84 GPS grid)',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCRWYGczuRNVoLApBph6t_QACwT__PN5xdqb5KbDa3JsJ0tH3rLbbrgGyi_1V6HJ2xYX4410dXoSWmUSYCpisKcsGbSX88OXypSEANhuBn8BudnwmlIrCYNhTjT7j84ogwNxG1GBVe6ITJ_IglZtLd9uFThp3IpbccQ-XhB-kDfy_W3AbswscbGT-v_-oo0oEBqdWbF7CrIe9t9hOi3Bo71Yio41IDiWOirzTMYhCReQ2dPcZj6NYGHGHWwqrDfMPYOtPYXQcRRgY8'
     },
-    { 
-      title: 'Monolith Terminal', 
-      format: '.RVT / .IFC', 
-      precision: '+/- 2.0mm', 
-      type: 'STRUCTURAL', 
-      activeLayer: 'Structural Concrete Skeletons Active', 
-      size: '33,023 SQ FT', 
-      alignment: 'Structural load telemetry verified securely', 
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRFkC6_hFVn7b-agjpn9iKPpfmErl8szxOLnn5K6wfH1mNgngYgHEddNwt2QBFjktDwHrgXoQSCWROAbuZp_bVltApbslk8lXqSU4qGyoRGE9DRluSiwG2lYJ1qoXU6oi1vVfcFWsvvK7WaN_oQs9YFcjpV6nDBUljI3DW_i-NybLNSjlg0cJrR09nSG9fVPo4E5R4TLur-IcV9Q-y-5nYxqN0ytBcqCVOjc2V7WMnKAmp2M71URgmXwB7RY8uxxCmsyKdhfZenYY' 
+    {
+      title: 'Monolith Terminal',
+      format: '.RVT / .IFC',
+      precision: '+/- 2.0mm',
+      type: 'STRUCTURAL',
+      activeLayer: 'Structural Concrete Skeletons Active',
+      size: '33,023 SQ FT',
+      alignment: 'Structural load telemetry verified securely',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRFkC6_hFVn7b-agjpn9iKPpfmErl8szxOLnn5K6wfH1mNgngYgHEddNwt2QBFjktDwHrgXoQSCWROAbuZp_bVltApbslk8lXqSU4qGyoRGE9DRluSiwG2lYJ1qoXU6oi1vVfcFWsvvK7WaN_oQs9YFcjpV6nDBUljI3DW_i-NybLNSjlg0cJrR09nSG9fVPo4E5R4TLur-IcV9Q-y-5nYxqN0ytBcqCVOjc2V7WMnKAmp2M71URgmXwB7RY8uxxCmsyKdhfZenYY'
     },
-    { 
-      title: 'Vertex HQ Pipeline', 
-      format: '.RVT / .NWD', 
-      precision: '+/- 1.0mm', 
-      type: 'MEP', 
-      activeLayer: 'HVAC Duct Network Thermal Map Active', 
-      size: '30,423 SQ FT', 
-      alignment: 'MEP pressure parameters balanced via local OS', 
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAiEiH9mgVilqvzCWFFc_H37omBy7ubmxexHym6TptnLIN4cRnPoG2ls2e6fRqmMrupPx-m_yqmiU4ffXbQRXuspuWVDvopddTOjnYdlPqtNSDB_z-5HerYQ42cYtcPMazbu1aYtTGPMgh4ayFwCR3-o-dQklVuMK44BpyLxuTMXtYAQ3FWkmojnTKtJb7WQfIN_h7W6Hvgn-XZug1z5WxhJ5KIwvq7igLe4wqkQXlUjyIgAQlM-7AGMDixBPvsO9QsU3ws8YPb-mU' 
+    {
+      title: 'Vertex HQ Pipeline',
+      format: '.RVT / .NWD',
+      precision: '+/- 1.0mm',
+      type: 'MEP',
+      activeLayer: 'HVAC Duct Network Thermal Map Active',
+      size: '30,423 SQ FT',
+      alignment: 'MEP pressure parameters balanced via local OS',
+      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAiEiH9mgVilqvzCWFFc_H37omBy7ubmxexHym6TptnLIN4cRnPoG2ls2e6fRqmMrupPx-m_yqmiU4ffXbQRXuspuWVDvopddTOjnYdlPqtNSDB_z-5HerYQ42cYtcPMazbu1aYtTGPMgh4ayFwCR3-o-dQklVuMK44BpyLxuTMXtYAQ3FWkmojnTKtJb7WQfIN_h7W6Hvgn-XZug1z5WxhJ5KIwvq7igLe4wqkQXlUjyIgAQlM-7AGMDixBPvsO9QsU3ws8YPb-mU'
     }
   ];
 
@@ -738,7 +739,7 @@ export class Dashboard {
       //   attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
       // }).addTo(mapInstance);
 
-      L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+      L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {
         minZoom: 0,
         maxZoom: 20,
         attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -751,7 +752,7 @@ export class Dashboard {
 
   createMarkers(LObj: unknown) {
     const L = LObj as typeof import('leaflet');
-    
+
     // Typecast markers to clear them
     const currentMarkers = this.markers as import('leaflet').Marker[];
     currentMarkers.forEach(m => {
@@ -787,7 +788,7 @@ export class Dashboard {
 
       try {
         const marker = L.marker([latVal, lonVal], { icon: customIcon });
-        
+
         const markerObj = marker as unknown as Record<string, unknown>;
         markerObj['customPinData'] = pin;
 

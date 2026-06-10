@@ -582,37 +582,21 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                 <div class="flex justify-between items-center font-mono text-[9px]">
                   <span class="text-slate-400 uppercase tracking-wider font-bold">2. Detailing Grade Standard Preview</span>
                   <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase font-bold text-[8.5px]">
-                    LOD {{ (calculator.selectedModelingWay() === 'bim' ? calculator.smartLODLevel() : calculator.prebuiltLODLevel()) === 'LOD_200' ? '200' : ((calculator.selectedModelingWay() === 'bim' ? calculator.smartLODLevel() : calculator.prebuiltLODLevel()) === 'LOD_300' ? '300' : '350') }}
+                    {{ getSelectedLODLabel() }}
                   </span>
                 </div>
                 <div class="relative rounded-xl overflow-hidden aspect-video border border-white/5 bg-black/40 group relative">
-                  @if ((calculator.selectedModelingWay() === 'bim' ? calculator.smartLODLevel() : calculator.prebuiltLODLevel()) === 'LOD_200') {
-                    <img src="https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&w=600&q=80"
-                         alt="LOD 200 schematic layout layout copy"
-                         class="w-full h-full object-cover opacity-80 group-hover:scale-[1.03] transition-transform duration-700"
-                         referrerpolicy="no-referrer" />
-                    <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 font-mono text-[8.5px] text-[#DF80AC] font-bold">
-                      BOUND: LOD 200 SCHEMATIC SPECIFICATION
-                    </div>
-                  } @else if ((calculator.selectedModelingWay() === 'bim' ? calculator.smartLODLevel() : calculator.prebuiltLODLevel()) === 'LOD_300') {
-                    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=600&q=80"
-                         alt="LOD 300 detailed high-fidelity construction layout render"
-                         class="w-full h-full object-cover opacity-80 group-hover:scale-[1.03] transition-transform duration-700"
-                         referrerpolicy="no-referrer" />
-                    <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 font-mono text-[8.5px] text-[#DF80AC] font-bold">
-                      BOUND: LOD 300 DETAILED CONSTRUCTION MODEL
-                    </div>
-                  } @else {
-                    <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=600&q=80"
-                         alt="LOD 350 extremely high-fidelity structural construction system"
-                         class="w-full h-full object-cover opacity-80 group-hover:scale-[1.03] transition-transform duration-700"
-                         referrerpolicy="no-referrer" />
-                    <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 font-mono text-[8.5px] text-[#DF80AC] font-bold">
-                      BOUND: LOD 350 HIGH-FIDELITY AS-BUILT INTEGRATION
-                    </div>
-                  }
+                  <img [src]="getLODPreviewImage()"
+                       [alt]="getSelectedLODLabel() + ' preview'"
+                       class="w-full h-full object-cover opacity-80 group-hover:scale-[1.03] transition-transform duration-700"
+                       referrerpolicy="no-referrer" />
+                  <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 font-mono text-[8.5px] text-[#DF80AC] font-bold">
+                    {{ getLODOverlayText() }}
+                  </div>
                 </div>
               </div>
+
+            
             </div>
           </div>
 
@@ -626,6 +610,12 @@ export class PriceEstimation implements OnInit {
   sanitizer = inject(DomSanitizer);
   isCardCurrencyOpen = signal<boolean>(false);
   formStep = signal<number>(1);
+  buildingModelIndex = signal<number>(0);
+
+  cycleModel() {
+    this.buildingModelIndex.update(i => (i + 1) % 3);
+    this.calculator.showNotification('Loading alternative building model representation...', 'info');
+  }
 
   ngOnInit() {
     const params = new URLSearchParams(window.location.search);
@@ -687,13 +677,13 @@ export class PriceEstimation implements OnInit {
       ? this.calculator.prebuiltLODLevel() 
       : this.calculator.smartLODLevel();
     if (lod === 'LOD_200') {
-      return 'https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?auto=format&fit=crop&w=600&q=80';
+      return 'lod200.webp';
     } else if (lod === 'LOD_300') {
-      return 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&w=600&q=80';
+      return 'lod300.webp';
     } else if (lod === 'LOD_400') {
-      return 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=600&q=80';
+      return 'lod400.webp';
     } else {
-      return 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=600&q=80';
+      return 'lod500.webp';
     }
   }
 

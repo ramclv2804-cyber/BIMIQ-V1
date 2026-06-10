@@ -704,7 +704,7 @@ export class SpatialCostCalculator {
 
   // Structural Tiers
   mepTiers = {
-    SMALL: { label: 'SMALL', costValue: 4200, display: '$4.2k' },
+    SMALL: { label: 'SMALL', costValue: 4200, display: '$1.2k' },
     MEDIUM: { label: 'MEDIUM', costValue: 8900, display: '$8.9k' },
     LARGE: { label: 'LARGE', costValue: 15000, display: '$15k+' }
   };
