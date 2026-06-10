@@ -370,6 +370,21 @@ export class SpatialCostCalculator {
   smartVersionId = signal<string>('35441d5b-3402-4b47-964a-9e4caca8bda4');
   isLiveTwinViewerOpen = signal<boolean>(true);
 
+  // Step 2 common fields
+  uploadLink = signal<string>('');
+  pointCloudLink = signal<string>('');
+  descriptionLink = signal<string>('');
+  remark = signal<string>('');
+  manualEstimation = signal<string>('');
+  sendProposal = signal<boolean>(false);
+  placeOrder = signal<boolean>(false);
+
+  // Step 3 fields
+  projectNumber = signal<string>('PRJ-' + Date.now().toString(36).toUpperCase());
+  orderPlacedDate = signal<string>(new Date().toISOString().split('T')[0]);
+  pointCloudIssueDate = signal<string>('');
+  expectedDeliveryDate = signal<string>('');
+
   // Custom dropdown signals, options and methods matching website theme
   isSpaceTypeDropdownOpen = signal<boolean>(false);
   isCurrencyDropdownOpen = signal<boolean>(false);
@@ -437,7 +452,7 @@ export class SpatialCostCalculator {
   }
 
   // Active inputs
-  selectedCurrency = signal<string>('GBP');
+  selectedCurrency = signal<string>('USD');
   smartStep = signal<number>(1); // Step 1: Specifications, Step 2: Project Details, Step 3: Summary
   smartProjectName = signal<string>('Vertex HQ');
   smartProjectAddress = signal<string>('742 Custom Boulevard, Sector 4');

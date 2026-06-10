@@ -40,7 +40,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         </button>
 
 
-        <!-- OPTION 3: CAD to BIM -->
+        <!-- OPTION 3: Scan to CAD -->
         <button 
           type="button" 
           (click)="selectMode('cad_to_bim')"
@@ -56,7 +56,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             }
           </div>
           <div class="space-y-1 pr-6 flex-1">
-            <h4 class="font-sans font-bold text-sm text-silver-leaf group-hover:text-primary-custom transition-colors">CAD to BIM</h4>
+            <h4 class="font-sans font-bold text-sm text-silver-leaf group-hover:text-primary-custom transition-colors">Scan to CAD</h4>
             <p class="text-[11px] text-on-surface-variant-custom leading-normal font-sans">
               I have 2D architectural CAD drawings / engineering drawings and need transformation to 3D Revit models.
             </p>
