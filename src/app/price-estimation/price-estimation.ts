@@ -543,7 +543,9 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         </div>
 
         <!-- Right Column: Visualizer -->
-        <div class="lg:col-span-7 space-y-6 text-left">
+        <div class="lg:col-span-7 lg:h-[calc(100vh-140px)] flex flex-col text-left">
+
+          <div class="flex-1 overflow-y-auto space-y-6 pr-1 scrollbar-thin scrollbar-thumb-white/10">
 
           <!-- Explore External Site RealityXD -->
           <div class="glass-panel p-4 rounded-xl bg-gradient-to-r from-primary-custom/10 to-[#DF80AC]/10 border border-[#DF80AC]/20 select-none">
@@ -591,37 +593,39 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
               </div>
             </div>
           </div>
-
-          <!-- Step Progress Timeline -->
-          <div class="pt-4 pb-2 shrink-0 select-none">
-            <div class="relative flex items-center justify-between px-2">
-              <div class="absolute left-[10%] right-[10%] top-[14px] h-0.5 bg-white/10 -translate-y-1/2"></div>
-              <div class="absolute left-[10%] top-[14px] h-0.5 bg-emerald-500 -translate-y-1/2 transition-all duration-500"
-                [style.width.%]="formStep() === 1 ? 0 : formStep() === 2 ? 40 : 80"></div>
-              @for (step of [1, 2, 3]; track step) {
-                <div class="flex flex-col items-center gap-1.5 z-10">
-                  <div (click)="goToStep(step)"
-                    [ngClass]="formStep() > step ? 'bg-emerald-500 border-emerald-500 cursor-pointer' : formStep() === step ? 'bg-primary-custom border-primary-custom ring-2 ring-primary-custom/30' : 'bg-[#19191D] border-white/10 cursor-pointer hover:border-white/30'"
-                    class="w-7 h-7 rounded-full border flex items-center justify-center text-[10px] font-bold font-mono transition-all duration-300 hover:scale-110 active:scale-95">
-                    @if (formStep() > step) {
-                      <span class="material-symbols-outlined text-xs text-white">check</span>
-                    } @else {
-                      <span [ngClass]="formStep() === step ? 'text-white' : 'text-on-surface-variant-custom'">{{ step }}</span>
-                    }
-                  </div>
-                  <span (click)="goToStep(step)"
-                    [ngClass]="formStep() === step ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom cursor-pointer hover:text-white'"
-                    class="text-[8px] uppercase tracking-wider font-mono transition-all duration-300 whitespace-nowrap">
-                    {{ step === 1 ? 'Project Specs' : step === 2 ? 'Location Info' : 'Valuation' }}
-                  </span>
-                </div>
-              }
-            </div>
           </div>
 
-          <!-- Sticky Price Card -->
-          <div class="pt-4 border-t border-white/5 shrink-0 z-20 sticky bottom-0">
-            <section class="glass-panel p-6 rounded-2xl relative overflow-hidden bg-[#131117]/80 border border-[#DF80AC]/30 font-mono animate-fade-in text-left">
+          <div class="sticky top-0 space-y-4">
+            <!-- Step Progress Timeline -->
+            <div class="pt-4 pb-2 shrink-0 select-none">
+              <div class="relative flex items-center justify-between px-2">
+                <div class="absolute left-[10%] right-[10%] top-[14px] h-0.5 bg-white/10 -translate-y-1/2"></div>
+                <div class="absolute left-[10%] top-[14px] h-0.5 bg-emerald-500 -translate-y-1/2 transition-all duration-500"
+                  [style.width.%]="formStep() === 1 ? 0 : formStep() === 2 ? 40 : 80"></div>
+                @for (step of [1, 2, 3]; track step) {
+                  <div class="flex flex-col items-center gap-1.5 z-10">
+                    <div (click)="goToStep(step)"
+                      [ngClass]="formStep() > step ? 'bg-emerald-500 border-emerald-500 cursor-pointer' : formStep() === step ? 'bg-primary-custom border-primary-custom ring-2 ring-primary-custom/30' : 'bg-[#19191D] border-white/10 cursor-pointer hover:border-white/30'"
+                      class="w-7 h-7 rounded-full border flex items-center justify-center text-[10px] font-bold font-mono transition-all duration-300 hover:scale-110 active:scale-95">
+                      @if (formStep() > step) {
+                        <span class="material-symbols-outlined text-xs text-white">check</span>
+                      } @else {
+                        <span [ngClass]="formStep() === step ? 'text-white' : 'text-on-surface-variant-custom'">{{ step }}</span>
+                      }
+                    </div>
+                    <span (click)="goToStep(step)"
+                      [ngClass]="formStep() === step ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom cursor-pointer hover:text-white'"
+                      class="text-[8px] uppercase tracking-wider font-mono transition-all duration-300 whitespace-nowrap">
+                      {{ step === 1 ? 'Project Specs' : step === 2 ? 'Location Info' : 'Valuation' }}
+                    </span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Sticky Price Card -->
+            <div class="pt-4 border-t border-white/5 shrink-0 z-20">
+              <section class="glass-panel p-6 rounded-2xl relative overflow-hidden bg-[#131117]/80 border border-[#DF80AC]/30 font-mono animate-fade-in text-left">
               <div class="absolute top-0 right-0 p-4 opacity-15 select-none text-[#DF80AC]">
                 <span class="material-symbols-outlined text-5xl font-light">receipt_long</span>
               </div>
@@ -716,6 +720,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                 }
               </div>
             </section>
+wef          </div>
           </div>
 
         </div>
