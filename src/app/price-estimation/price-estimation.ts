@@ -97,10 +97,18 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <div class="space-y-1.5 flex flex-col relative">
                       <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Requirements <span class="text-red-400">*</span></span>
                       <div class="relative">
-                        <button type="button" (click)="toggleCadRequirementsDropdown()"
-                          class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
-                          <span>{{ calculator.cadRequirements().length ? calculator.cadRequirements().length + ' selected' : 'Select requirements' }}</span>
-                          <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isCadRequirementsOpen()">expand_more</span>
+                          <button type="button" (click)="toggleCadRequirementsDropdown()"
+                            class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
+                            <span class="flex items-center gap-1.5 flex-wrap">
+                              @if (calculator.cadRequirements().length) {
+                                @for (sel of calculator.cadRequirements(); track sel; let last = $last) {
+                                  <span class="bg-primary-custom/15 text-primary-custom px-2 py-0.5 rounded-md text-[9px] font-semibold whitespace-nowrap">{{ sel }}</span>
+                                }
+                              } @else {
+                                <span class="text-on-surface-variant-custom">Select requirements</span>
+                              }
+                            </span>
+                            <span class="material-symbols-outlined text-sm text-on-surface-variant-custom shrink-0" [class.rotate-180]="calculator.isCadRequirementsOpen()">expand_more</span>
                         </button>
                         @if (calculator.isCadRequirementsOpen()) {
                           <div class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
@@ -201,8 +209,16 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                       <div class="relative">
                         <button type="button" (click)="toggleBimRequirementsDropdown()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
-                          <span>{{ calculator.bimRequirements().length ? calculator.bimRequirements().length + ' selected' : 'Select requirements' }}</span>
-                          <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isBimRequirementsOpen()">expand_more</span>
+                          <span class="flex items-center gap-1.5 flex-wrap">
+                            @if (calculator.bimRequirements().length) {
+                              @for (sel of calculator.bimRequirements(); track sel; let last = $last) {
+                                <span class="bg-primary-custom/15 text-primary-custom px-2 py-0.5 rounded-md text-[9px] font-semibold whitespace-nowrap">{{ sel }}</span>
+                              }
+                            } @else {
+                              <span class="text-on-surface-variant-custom">Select requirements</span>
+                            }
+                          </span>
+                          <span class="material-symbols-outlined text-sm text-on-surface-variant-custom shrink-0" [class.rotate-180]="calculator.isBimRequirementsOpen()">expand_more</span>
                         </button>
                         @if (calculator.isBimRequirementsOpen()) {
                           <div class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
@@ -227,8 +243,16 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                       <div class="relative">
                         <button type="button" (click)="toggleBimAddOnsDropdown()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
-                          <span>{{ calculator.bimAddOns().length ? calculator.bimAddOns().length + ' selected' : 'Select add ons' }}</span>
-                          <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isBimAddOnsOpen()">expand_more</span>
+                          <span class="flex items-center gap-1.5 flex-wrap">
+                            @if (calculator.bimAddOns().length) {
+                              @for (sel of calculator.bimAddOns(); track sel) {
+                                <span class="bg-primary-custom/15 text-primary-custom px-2 py-0.5 rounded-md text-[9px] font-semibold whitespace-nowrap">{{ sel }}</span>
+                              }
+                            } @else {
+                              <span class="text-on-surface-variant-custom">Select add ons</span>
+                            }
+                          </span>
+                          <span class="material-symbols-outlined text-sm text-on-surface-variant-custom shrink-0" [class.rotate-180]="calculator.isBimAddOnsOpen()">expand_more</span>
                         </button>
                         @if (calculator.isBimAddOnsOpen()) {
                           <div class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
