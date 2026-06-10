@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
@@ -78,13 +78,13 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <div class="space-y-1.5 flex flex-col relative">
                       <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Type of Building <span class="text-red-400">*</span></span>
                       <div class="relative">
-                        <button type="button" (click)="toggleBuildingTypeDropdown()"
+                        <button type="button" (click)="toggleBuildingTypeDropdown(); $event.stopPropagation()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
                           <span>{{ calculator.selectedBuildingType() || 'Select building type' }}</span>
                           <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isBuildingTypeDropdownOpen()">expand_more</span>
                         </button>
                         @if (calculator.isBuildingTypeDropdownOpen()) {
-                          <div class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                          <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
                             @for (option of calculator.buildingTypeOptions; track option) {
                               <button type="button" (click)="calculator.selectedBuildingType.set(option); calculator.isBuildingTypeDropdownOpen.set(false)"
                                 [ngClass]="calculator.selectedBuildingType() === option ? 'bg-primary-custom/15 text-primary-custom font-semibold' : 'text-on-surface-variant-custom hover:bg-white/5 hover:text-white'"
@@ -103,7 +103,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <div class="space-y-1.5 flex flex-col relative">
                       <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Requirements <span class="text-red-400">*</span></span>
                       <div class="relative">
-                          <button type="button" (click)="toggleCadRequirementsDropdown()"
+                          <button type="button" (click)="toggleCadRequirementsDropdown(); $event.stopPropagation()"
                             class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
                             <span class="flex items-center gap-1.5 flex-wrap">
                               @if (calculator.cadRequirements().length) {
@@ -117,7 +117,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                             <span class="material-symbols-outlined text-sm text-on-surface-variant-custom shrink-0" [class.rotate-180]="calculator.isCadRequirementsOpen()">expand_more</span>
                         </button>
                         @if (calculator.isCadRequirementsOpen()) {
-                          <div class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                          <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
                             @for (option of calculator.cadRequirementsOptions; track option) {
                               <button type="button" (click)="calculator.cadRequirements.set(calculator.toggleMultiSelection(calculator.cadRequirements(), option))"
                                 class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
@@ -137,13 +137,13 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <div class="space-y-1.5 flex flex-col relative">
                       <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Scale <span class="text-red-400">*</span></span>
                       <div class="relative">
-                        <button type="button" (click)="toggleCadScaleDropdown()"
+                        <button type="button" (click)="toggleCadScaleDropdown(); $event.stopPropagation()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
                           <span>{{ calculator.cadScale() || 'Select scale' }}</span>
                           <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isCadScaleDropdownOpen()">expand_more</span>
                         </button>
                         @if (calculator.isCadScaleDropdownOpen()) {
-                          <div class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                          <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
                             @for (option of calculator.cadScaleOptions; track option) {
                               <button type="button" (click)="calculator.cadScale.set(option); calculator.isCadScaleDropdownOpen.set(false)"
                                 [ngClass]="calculator.cadScale() === option ? 'bg-primary-custom/15 text-primary-custom font-semibold' : 'text-on-surface-variant-custom hover:bg-white/5 hover:text-white'"
@@ -195,13 +195,13 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <div class="space-y-1.5 flex flex-col relative">
                       <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Type of Building <span class="text-red-400">*</span></span>
                       <div class="relative">
-                        <button type="button" (click)="toggleBuildingTypeDropdown()"
+                        <button type="button" (click)="toggleBuildingTypeDropdown(); $event.stopPropagation()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
                           <span>{{ calculator.selectedBuildingType() || 'Select building type' }}</span>
                           <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isBuildingTypeDropdownOpen()">expand_more</span>
                         </button>
                         @if (calculator.isBuildingTypeDropdownOpen()) {
-                          <div class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                          <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
                             @for (option of calculator.buildingTypeOptions; track option) {
                               <button type="button" (click)="calculator.selectedBuildingType.set(option); calculator.isBuildingTypeDropdownOpen.set(false)"
                                 [ngClass]="calculator.selectedBuildingType() === option ? 'bg-primary-custom/15 text-primary-custom font-semibold' : 'text-on-surface-variant-custom hover:bg-white/5 hover:text-white'"
@@ -220,7 +220,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <div class="space-y-1.5 flex flex-col relative">
                       <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Requirements <span class="text-red-400">*</span></span>
                       <div class="relative">
-                        <button type="button" (click)="toggleBimRequirementsDropdown()"
+                        <button type="button" (click)="toggleBimRequirementsDropdown(); $event.stopPropagation()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
                           <span class="flex items-center gap-1.5 flex-wrap">
                             @if (calculator.bimRequirements().length) {
@@ -234,7 +234,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                           <span class="material-symbols-outlined text-sm text-on-surface-variant-custom shrink-0" [class.rotate-180]="calculator.isBimRequirementsOpen()">expand_more</span>
                         </button>
                         @if (calculator.isBimRequirementsOpen()) {
-                          <div class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                          <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
                             @for (option of calculator.bimRequirementsOptions; track option) {
                               <button type="button" (click)="calculator.bimRequirements.set(calculator.toggleMultiSelection(calculator.bimRequirements(), option))"
                                 class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
@@ -254,7 +254,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <div class="space-y-1.5 flex flex-col relative">
                       <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Add On's</span>
                       <div class="relative">
-                        <button type="button" (click)="toggleBimAddOnsDropdown()"
+                        <button type="button" (click)="toggleBimAddOnsDropdown(); $event.stopPropagation()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
                           <span class="flex items-center gap-1.5 flex-wrap">
                             @if (calculator.bimAddOns().length) {
@@ -268,7 +268,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                           <span class="material-symbols-outlined text-sm text-on-surface-variant-custom shrink-0" [class.rotate-180]="calculator.isBimAddOnsOpen()">expand_more</span>
                         </button>
                         @if (calculator.isBimAddOnsOpen()) {
-                          <div class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                          <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
                             @for (option of calculator.bimAddOnsOptions; track option) {
                               <button type="button" (click)="calculator.bimAddOns.set(calculator.toggleMultiSelection(calculator.bimAddOns(), option))"
                                 class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
@@ -316,12 +316,12 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                   <div class="space-y-1.5 flex flex-col relative">
                     <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Quotation Currency <span class="text-red-400">*</span></span>
                     <div class="relative font-mono">
-                      <button type="button" (click)="toggleCurrencyDropdown()" class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
+                      <button type="button" (click)="toggleCurrencyDropdown(); $event.stopPropagation()" class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
                         <span>{{ calculator.getCurrencyLabel(calculator.selectedCurrency()) }}</span>
                         <span class="material-symbols-outlined text-sm text-on-surface-variant-custom" [class.rotate-180]="calculator.isCurrencyDropdownOpen()">expand_more</span>
                       </button>
                       @if (calculator.isCurrencyDropdownOpen()) {
-                        <div class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                        <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
                           @for (option of calculator.currencyOptions; track option.value) {
                             <button type="button" (click)="calculator.selectedCurrency.set(option.value); calculator.isCurrencyDropdownOpen.set(false)"
                               [ngClass]="calculator.selectedCurrency() === option.value ? 'bg-[#DF80AC]/15 text-[#DF80AC] font-semibold' : 'text-[#DF80AC]/70 hover:bg-white/5 hover:text-white'"
@@ -545,7 +545,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         <!-- Right Column: Visualizer -->
         <div class="lg:col-span-7 lg:h-[calc(100vh-140px)] flex flex-col text-left">
 
-          <div class="flex-1 overflow-y-auto space-y-6 pr-1 scrollbar-thin scrollbar-thumb-white/10">
+          <div class="flex-1 space-y-6 pr-1 ">
 
           <!-- Explore External Site RealityXD -->
           <div class="glass-panel p-4 rounded-xl bg-gradient-to-r from-primary-custom/10 to-[#DF80AC]/10 border border-[#DF80AC]/20 select-none">
@@ -651,7 +651,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     </button>
 
                     @if (isCardCurrencyOpen()) {
-                      <div class="absolute right-0 mt-1.5 w-28 bg-[#0F0F12] border border-white/10 rounded-lg shadow-2xl py-0.5 text-[9px] font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 z-40">
+                      <div (click)="$event.stopPropagation()" class="absolute right-0 mt-1.5 w-28 bg-[#0F0F12] border border-white/10 rounded-lg shadow-2xl py-0.5 text-[9px] font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 z-40">
                         @for (option of calculator.currencyOptions; track option.value) {
                           <button
                             type="button"
@@ -734,6 +734,15 @@ export class PriceEstimation implements OnInit {
   isCardCurrencyOpen = signal<boolean>(false);
   formStep = signal<number>(1);
   buildingModelIndex = signal<number>(0);
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.dropdown-toggle, .dropdown-panel')) {
+      this.calculator.closeAllDropdowns();
+      this.isCardCurrencyOpen.set(false);
+    }
+  }
   isAnyDropdownOpen = computed(() =>
     this.calculator.isBuildingTypeDropdownOpen() ||
     this.calculator.isCadRequirementsOpen() ||
