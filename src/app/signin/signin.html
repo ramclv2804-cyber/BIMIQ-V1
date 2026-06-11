@@ -1,1 +1,362 @@
-<p>signin works!</p>
+<div class="signin-page">
+  <!-- Decorative background -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- TopAppBar Header -->
+  <header class="page-header">
+    <button type="button" class="flex items-center gap-3 cursor-pointer text-left focus:outline-none bg-transparent border-none" (click)="setTab('dashboard')">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 hover:scale-110 hover:rotate-3 transition-all duration-300">
+        <defs>
+          <linearGradient id="logo-blue-s" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#dae1ff" />
+            <stop offset="100%" stop-color="#a5b4fc" />
+          </linearGradient>
+          <linearGradient id="logo-gold-s" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#e9c349" />
+            <stop offset="100%" stop-color="#fef08a" />
+          </linearGradient>
+          <linearGradient id="logo-pink-s" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#DF80AC" />
+            <stop offset="100%" stop-color="#f472b6" />
+          </linearGradient>
+        </defs>
+        <path d="M16 2L4 9V23L16 30" stroke="url(#logo-blue-s)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M16 2L28 9V23L16 30" stroke="url(#logo-pink-s)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+        <path d="M16 2V16L4 23" stroke="url(#logo-gold-s)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M16 16L28 23" stroke="url(#logo-gold-s)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="16" cy="16" r="3.5" fill="url(#logo-gold-s)" class="animate-pulse" />
+        <circle cx="16" cy="16" r="5.5" stroke="url(#logo-gold-s)" stroke-width="1" opacity="0.4" />
+        <circle cx="4" cy="9" r="2" fill="url(#logo-blue-s)" />
+        <circle cx="28" cy="9" r="2" fill="url(#logo-pink-s)" />
+        <circle cx="16" cy="30" r="2" fill="url(#logo-pink-s)" />
+      </svg>
+      <span class="font-sans font-black text-2xl text-primary-custom tracking-wider flex items-center">
+        BIM<span class="text-secondary-custom font-light bg-secondary-custom/10 px-1.5 py-0.5 rounded-md ml-0.5 shadow-sm text-xs border border-secondary-custom/20 font-mono tracking-normal">IQ</span>
+      </span>
+    </button>
+
+    <nav class="hidden md:flex items-center gap-8">
+      <button
+        type="button"
+        class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative text-on-surface-variant-custom hover:text-silver-leaf"
+        (click)="setTab('portfolio')">
+        <span class="hover-underline-animate pb-0.5">Portfolio</span>
+      </button>
+      <button
+        type="button"
+        class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative text-on-surface-variant-custom hover:text-silver-leaf"
+        (click)="setTab('config')">
+        <span class="hover-underline-animate pb-0.5">Price Estimate</span>
+      </button>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        class="hidden sm:inline-block bg-primary-custom text-on-primary-custom font-mono text-xs uppercase tracking-widest px-5 py-2 rounded-full border border-primary-custom/10 hover:opacity-90 hover:scale-[1.05] active:scale-95 transition-all focus:outline-none cursor-pointer border-none font-bold"
+        (click)="openAddModal()">
+        INITIATE PROJECT
+      </button>
+
+      @if (!calculator.isLoggedIn()) {
+        <button
+          type="button"
+          (click)="signIn()"
+          class="flex items-center gap-2 bg-[#DF80AC]/10 text-white border border-[#DF80AC]/30 font-mono text-[10px] uppercase tracking-widest px-4 py-2 rounded-full hover:bg-[#DF80AC]/20 hover:scale-[1.03] active:scale-95 transition-all focus:outline-none cursor-pointer font-bold">
+          <span class="material-symbols-outlined text-[14px] text-[#DF80AC] font-bold"></span>
+          <span>SIGN IN</span>
+        </button>
+      } @else {
+        <div class="relative group select-none z-[100]">
+          <button
+            type="button"
+            class="flex items-center gap-2 border border-[#DF80AC]/30 bg-[#DF80AC]/15 px-3 py-1.5 rounded-full text-slate-200 text-xs font-mono transition-all duration-300 hover:bg-[#DF80AC]/25 focus:outline-none cursor-pointer">
+            <span class="w-6 h-6 rounded-full bg-[#DF80AC] text-black flex items-center justify-center font-bold text-[10px]">
+              {{ calculator.currentUser()?.initials }}
+            </span>
+            <span class="hidden md:inline font-bold text-xs uppercase tracking-wider text-[#DF80AC]">{{ calculator.currentUser()?.name }}</span>
+            <span class="material-symbols-outlined text-sm transform group-hover:rotate-180 transition-transform">expand_more</span>
+          </button>
+          <div class="absolute right-0 mt-2 w-56 bg-[#121216] border border-white/10 rounded-xl shadow-2xl py-2 text-xs font-mono backdrop-blur-md opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 divide-y divide-white/5 z-[60] text-left">
+            <div class="px-4 py-2.5 text-left">
+              <p class="text-white font-bold leading-tight">{{ calculator.currentUser()?.name }}</p>
+              <p class="text-[9.5px] text-slate-400 mt-0.5 truncate">{{ calculator.currentUser()?.email }}</p>
+              <p class="text-[8.5px] text-[#DF80AC] uppercase font-bold mt-1.5 tracking-wider bg-[#DF80AC]/10 border border-[#DF80AC]/25 px-1.5 py-0.5 rounded inline-block">
+                {{ calculator.currentUser()?.role }}
+              </p>
+            </div>
+            <div class="py-1">
+              <button type="button" (click)="calculator.showNotification('Account integration synchronizing to cloud database.', 'info')" class="w-full text-left px-4 py-2 text-[10px] text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer border-none bg-transparent">
+                Account Node Settings
+              </button>
+              <button type="button" (click)="calculator.showNotification('Workspace synchronized with Live API Pipeline.', 'success')" class="w-full text-left px-4 py-2 text-[10px] text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer border-none bg-transparent">
+                Live Twin Pipelines
+              </button>
+            </div>
+            <div class="py-1">
+              <button type="button" (click)="calculator.logoutUser()" class="w-full text-left px-4 py-2 text-[10px] text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors flex items-center gap-1.5 cursor-pointer border-none bg-transparent">
+                <span class="material-symbols-outlined text-sm">logout</span>
+                <span>Disconnect Session</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </header>
+
+  <div class="signin-card">
+    <!-- Back button -->
+    <button type="button" (click)="goBack()" class="back-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/>
+      </svg>
+      <span>Back</span>
+    </button>
+
+    <!-- Branding -->
+    <div class="brand">
+      <svg width="36" height="36" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 2L4 9V23L16 30" stroke="url(#g1)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M16 2L28 9V23L16 30" stroke="url(#g2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+        <path d="M16 2V16L4 23" stroke="url(#g3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M16 16L28 23" stroke="url(#g3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="16" cy="16" r="3.5" fill="url(#g3)"/>
+        <circle cx="16" cy="16" r="5.5" stroke="url(#g3)" stroke-width="1" opacity="0.4"/>
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dae1ff"/><stop offset="1" stop-color="#a5b4fc"/></linearGradient>
+          <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#DF80AC"/><stop offset="1" stop-color="#f472b6"/></linearGradient>
+          <linearGradient id="g3" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#e9c349"/><stop offset="1" stop-color="#fef08a"/></linearGradient>
+        </defs>
+      </svg>
+      <div>
+        <span class="brand-label">AUTHENTICATION</span>
+        <h1 class="brand-title">BIM<span>IQ</span></h1>
+      </div>
+    </div>
+
+    <!-- Toggle -->
+    <div class="toggle-bar">
+      <button
+        type="button"
+        (click)="toggleMode()"
+        class="toggle-btn"
+        [class.active]="isLoginMode"
+      >Sign In</button>
+      <button
+        type="button"
+        (click)="toggleMode()"
+        class="toggle-btn"
+        [class.active]="!isLoginMode"
+      >Sign Up</button>
+    </div>
+
+    <!-- Error -->
+    @if (errorMessage) {
+      <div class="error-msg">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        <span>{{ errorMessage }}</span>
+      </div>
+    }
+
+    <!-- Form -->
+    @if (isLoginMode) {
+      <div class="form">
+        <div class="field">
+          <label for="loginEmail">Email</label>
+          <input
+            id="loginEmail"
+            type="email"
+            [value]="loginEmail"
+            (input)="loginEmail = $any($event.target).value"
+            (keydown.enter)="onLogin()"
+            placeholder="you@company.com"
+            autocomplete="email"
+          />
+        </div>
+        <div class="field">
+          <label for="loginPassword">Password</label>
+          <input
+            id="loginPassword"
+            type="password"
+            [value]="loginPassword"
+            (input)="loginPassword = $any($event.target).value"
+            (keydown.enter)="onLogin()"
+            placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
+            autocomplete="current-password"
+          />
+        </div>
+        <button type="button" (click)="onLogin()" class="submit-btn" [class.loading]="isLoading" [disabled]="isLoading">
+          @if (isLoading) {
+            <span class="spinner"></span>
+          }
+          <span>{{ isLoading ? 'Authenticating...' : 'Sign In' }}</span>
+        </button>
+        <p class="switch-text">
+          Don't have an account?
+          <button type="button" (click)="toggleMode()">Sign Up</button>
+        </p>
+      </div>
+    } @else {
+      <div class="form">
+        <div class="field">
+          <label for="signupUsername">Username</label>
+          <input
+            id="signupUsername"
+            type="text"
+            [value]="signupUsername"
+            (input)="signupUsername = $any($event.target).value"
+            (keydown.enter)="onSignup()"
+            placeholder="Choose a username"
+            autocomplete="username"
+          />
+        </div>
+        <div class="field">
+          <label for="signupEmail">Email</label>
+          <input
+            id="signupEmail"
+            type="email"
+            [value]="signupEmail"
+            (input)="signupEmail = $any($event.target).value"
+            (keydown.enter)="onSignup()"
+            placeholder="you@company.com"
+            autocomplete="email"
+          />
+        </div>
+        <div class="field">
+          <label for="signupPassword">Password</label>
+          <input
+            id="signupPassword"
+            type="password"
+            [value]="signupPassword"
+            (input)="signupPassword = $any($event.target).value"
+            (keydown.enter)="onSignup()"
+            placeholder="Create a password"
+            autocomplete="new-password"
+          />
+        </div>
+        <div class="field">
+          <label for="signupConfirm">Confirm Password</label>
+          <input
+            id="signupConfirm"
+            type="password"
+            [value]="signupConfirm"
+            (input)="signupConfirm = $any($event.target).value"
+            (keydown.enter)="onSignup()"
+            placeholder="Confirm your password"
+            autocomplete="new-password"
+          />
+        </div>
+        <button type="button" (click)="onSignup()" class="submit-btn" [class.loading]="isLoading" [disabled]="isLoading">
+          @if (isLoading) {
+            <span class="spinner"></span>
+          }
+          <span>{{ isLoading ? 'Creating Account...' : 'Create Account' }}</span>
+        </button>
+        <p class="switch-text">
+          Already have an account?
+          <button type="button" (click)="toggleMode()">Sign In</button>
+        </p>
+      </div>
+    }
+
+    <!-- Demo hint -->
+    <div class="demo-hint">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span>Demo: test&#64;bimiq.local / pass123</span>
+    </div>
+  </div>
+</div>
+
+<!-- INITIATE PROJECT DIALOG MODAL -->
+@if (calculator.isAddModalOpen()) {
+  <div class="fixed inset-0 bg-midnight-charcoal/90 backdrop-blur-md z-[200] flex justify-center items-center p-4 animate-[fade-in_0.25s_ease] text-left">
+    <div class="glass-panel w-full max-w-md rounded-2xl border-primary-custom/25 shadow-2xl p-6 relative flex flex-col gap-4 animate-[scale-up_0.3s_cubic-bezier(0.16,1,0.3,1)] bg-midnight-charcoal">
+      <div class="flex justify-between items-center pb-2 border-b border-silver-leaf/10">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary-custom">rocket_launch</span>
+          <span class="font-mono text-xs uppercase tracking-widest text-silver-leaf font-bold">Initiate Project Node</span>
+        </div>
+        <button type="button" (click)="calculator.closeAddModal()" class="text-on-surface-variant-custom hover:text-white focus:outline-none bg-transparent border-none cursor-pointer">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <div class="space-y-4 font-mono text-xs">
+        <div class="space-y-1">
+          <label for="newProjTitleS" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Title</label>
+          <input
+            id="newProjTitleS"
+            [value]="calculator.newProjectTitle()"
+            (input)="calculator.newProjectTitle.set($any($event.target).value)"
+            type="text"
+            placeholder="Crystal Atrium"
+            class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom"/>
+        </div>
+        <div class="space-y-1">
+          <label for="newProjCatS" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Technical Category</label>
+          <select
+            id="newProjCatS"
+            [value]="calculator.newProjectCategory()"
+            (change)="calculator.newProjectCategory.set($any($event.target).value)"
+            class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom font-mono text-xs cursor-pointer">
+            <option value="STRUCTURAL">STRUCTURAL Civil Skeleton</option>
+            <option value="ARCHITECTURAL">ARCHITECTURAL Aesthetics</option>
+            <option value="MEP">MEP Infrastructure Pipeline</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label for="newProjTypeS" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Typology</label>
+            <input
+              id="newProjTypeS"
+              [value]="calculator.newProjectTypology()"
+              (input)="calculator.newProjectTypology.set($any($event.target).value)"
+              type="text"
+              placeholder="Commercial"
+              class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom"/>
+          </div>
+          <div class="space-y-1">
+            <label for="newProjMagS" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Scale Size</label>
+            <input
+              id="newProjMagS"
+              [value]="calculator.newProjectMagnitude()"
+              (input)="calculator.newProjectMagnitude.set($any($event.target).value)"
+              type="text"
+              placeholder="12,000 SQ FT"
+              class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom"/>
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label for="newProjDescS" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Short Design Description</label>
+          <textarea
+            id="newProjDescS"
+            [value]="calculator.newProjectDescription()"
+            (input)="calculator.newProjectDescription.set($any($event.target).value)"
+            rows="3"
+            placeholder="Bespoke faceted steel workspace with parametric light ventilation integration."
+            class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom resize-none"></textarea>
+        </div>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button
+          type="button"
+          (click)="calculator.closeAddModal()"
+          class="flex-1 py-2.5 border border-silver-leaf/20 bg-transparent text-silver-leaf rounded-lg hover:bg-white/5 font-mono text-xs font-bold uppercase transition-all cursor-pointer">
+          CANCEL
+        </button>
+        <button
+          type="button"
+          [disabled]="!calculator.newProjectTitle().trim()"
+          (click)="calculator.submitNewProject()"
+          class="flex-1 py-2.5 bg-primary-custom text-on-primary-custom rounded-lg hover:opacity-90 active:scale-95 disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-md shadow-primary-custom/10">
+          SUBMIT NODE
+        </button>
+      </div>
+    </div>
+  </div>
+}

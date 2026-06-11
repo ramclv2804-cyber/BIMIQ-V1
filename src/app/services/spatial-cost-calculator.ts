@@ -27,6 +27,48 @@ export class SpatialCostCalculator {
   loginEmailInput = signal<string>('engineer@axisxd.com');
   loginPasswordInput = signal<string>('••••••••');
 
+  constructor() {
+    this.restoreSession();
+  }
+
+  private cookieKey = 'bimiq_session';
+
+  private isBrowser = typeof document !== 'undefined';
+
+  private restoreSession() {
+    if (!this.isBrowser) return;
+    try {
+      const match = document.cookie.match(new RegExp(`(?:^|; )${this.cookieKey}=([^;]*)`));
+      if (match) {
+        const data = JSON.parse(decodeURIComponent(match[1]));
+        if (data?.email) {
+          const nameStr = data.email.split('@')[0];
+          const uppercaseName = nameStr.charAt(0).toUpperCase() + nameStr.slice(1);
+          this.currentUser.set({
+            email: data.email,
+            name: uppercaseName,
+            initials: nameStr.substring(0, 2).toUpperCase(),
+            role: 'Project Chief Coordinator'
+          });
+          this.isLoggedIn.set(true);
+        }
+      }
+    } catch {
+      this.clearSessionCookie();
+    }
+  }
+
+  private setSessionCookie(email: string) {
+    if (!this.isBrowser) return;
+    const data = JSON.stringify({ email });
+    document.cookie = `${this.cookieKey}=${encodeURIComponent(data)}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+  }
+
+  clearSessionCookie() {
+    if (!this.isBrowser) return;
+    document.cookie = `${this.cookieKey}=; path=/; max-age=0; SameSite=Lax`;
+  }
+
   loginUser(email: string) {
     const trimmed = email.trim() || 'engineer@axisxd.com';
     const nameStr = trimmed.split('@')[0];
@@ -40,12 +82,14 @@ export class SpatialCostCalculator {
     });
     this.isLoggedIn.set(true);
     this.isLoginModalOpen.set(false);
+    this.setSessionCookie(trimmed);
     this.showNotification(`Authorized session established under node: ${trimmed}`, 'success');
   }
 
   logoutUser() {
     this.isLoggedIn.set(false);
     this.currentUser.set(null);
+    this.clearSessionCookie();
     this.showNotification('Authorized session disconnected.', 'info');
   }
 

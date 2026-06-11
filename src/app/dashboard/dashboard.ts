@@ -719,20 +719,28 @@ export class Dashboard {
       const L = LObj.default || LObj;
       this.leafletInstance = L;
 
-      const mapInstance = L.map('map_div', {
-        center: [25, 10],
-        zoom: 2,
-        minZoom: 1.5,
-        maxZoom: 14,
-        zoomControl: false,
-        attributionControl: false,
-        dragging: false,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        boxZoom: false,
-        keyboard: false,
-        touchZoom: false
-      });
+      const el = document.getElementById('map_div');
+      if (!el || (el as any)._leaflet_id) return;
+
+      let mapInstance: any;
+      try {
+        mapInstance = L.map('map_div', {
+          center: [25, 10],
+          zoom: 2,
+          minZoom: 1.5,
+          maxZoom: 14,
+          zoomControl: false,
+          attributionControl: false,
+          dragging: false,
+          scrollWheelZoom: false,
+          doubleClickZoom: false,
+          boxZoom: false,
+          keyboard: false,
+          touchZoom: false
+        });
+      } catch {
+        return;
+      }
       this.map = mapInstance;
 
       // L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {

@@ -1,1 +1,179 @@
-<p>estimation-dashboard works!</p>
+<div class="est-dashboard">
+  <div class="dash-orb dash-orb-1"></div>
+  <div class="dash-orb dash-orb-2"></div>
+
+  <div class="dash-body">
+    @if (user(); as u) {
+      <div class="dash-welcome">
+        <span class="dash-welcome-avatar">{{ u.initials }}</span>
+        <div>
+          <p class="dash-welcome-greeting">Welcome back, <strong>{{ u.name }}</strong></p>
+          <p class="dash-welcome-sub">{{ u.role }} &middot; {{ u.email }}</p>
+        </div>
+      </div>
+    }
+
+    <!-- Estimator Hub Nav Bar -->
+    <div class="dash-nav">
+      <span class="dash-nav-brand">Estimator Hub</span>
+      <div class="dash-nav-links">
+        <button class="dash-nav-link active">Pipeline</button>
+        <button class="dash-nav-link" (click)="setTab('portfolio')">Archive</button>
+        <button class="dash-nav-link" (click)="setTab('config')">New Estimate</button>
+      </div>
+      @if (user(); as u) {
+        <div class="dash-nav-user">
+          <span class="dash-nav-avatar">{{ u.initials }}</span>
+          <span class="dash-nav-role">{{ u.role }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Stage Progress Cards -->
+    <div class="dash-section">
+      <div class="dash-section-header">
+        <div>
+          <span class="dash-section-label">STAGE BREAKDOWN</span>
+          <h2 class="dash-section-title">Estimation Workflow Status</h2>
+        </div>
+        <span class="dash-table-count">{{ totalProjects() }} total</span>
+      </div>
+      <div class="stage-grid">
+        @for (s of stageData; track s.key) {
+          <div class="stage-card" [style.--stage-color]="s.color">
+            <div class="stage-card-top">
+              <span class="stage-card-icon">
+                <span class="material-symbols-outlined">{{ s.icon }}</span>
+              </span>
+              <span class="stage-card-value">{{ stageCount(s.key) }}</span>
+            </div>
+            <span class="stage-card-label">{{ s.label }}</span>
+            @if (s.key !== 'total') {
+              <div class="stage-card-bar">
+                <div class="stage-card-fill" [style.width.%]="stagePct(s.key)" [style.background]="s.color"></div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Estimations Metrics -->
+    <div class="dash-metrics">
+      @for (m of metrics; track m.label) {
+        <div class="metric-card">
+          <div class="metric-icon">
+            <span class="material-symbols-outlined">{{ m.icon }}</span>
+          </div>
+          <div class="metric-info">
+            <span class="metric-value">{{ m.value() }}</span>
+            <span class="metric-label">{{ m.label }}</span>
+            <span class="metric-change">{{ m.change() }}</span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Recent Estimations -->
+    <div class="dash-section">
+      <div class="dash-section-header">
+        <h2 class="dash-section-title">Recent Estimations</h2>
+        <span class="dash-table-count">{{ recentEstimations.length }} items</span>
+      </div>
+      <div class="dash-table-wrapper">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Project</th>
+              <th>Type</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Stage</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of recentEstimations; track item.id) {
+              <tr>
+                <td class="cell-id">{{ item.id }}</td>
+                <td class="cell-project">{{ item.project }}</td>
+                <td>
+                  <span class="type-badge" [class.type-mep]="item.type === 'MEP'" [class.type-arch]="item.type === 'Architectural'" [class.type-struct]="item.type === 'Structural'">{{ item.type }}</span>
+                </td>
+                <td class="cell-amount">{{ item.amount }}</td>
+                <td>
+                  <span class="status-badge" [class.status-pending]="item.status === 'Pending'" [class.status-approved]="item.status === 'Approved'" [class.status-draft]="item.status === 'Draft'">{{ item.status }}</span>
+                </td>
+                <td>
+                  <span class="step-badge" [class.step-done]="item.step === 3" [class.step-two]="item.step === 2" [class.step-one]="item.step === 1">
+                    Step {{ item.step }}/3
+                  </span>
+                </td>
+                <td class="cell-date">{{ item.date }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="dash-footer">
+      <span>&copy; 2026 BIM-IQ Estimations Pipeline</span>
+      <span class="dash-footer-status">
+        <span class="dash-dot"></span>
+        System Online
+      </span>
+    </div>
+  </div>
+</div>
+
+@if (calculator.isAddModalOpen()) {
+  <div class="fixed inset-0 bg-midnight-charcoal/90 backdrop-blur-md z-[200] flex justify-center items-center p-4 animate-[fade-in_0.25s_ease] text-left">
+    <div class="glass-panel w-full max-w-md rounded-2xl border-primary-custom/25 shadow-2xl p-6 relative flex flex-col gap-4 animate-[scale-up_0.3s_cubic-bezier(0.16,1,0.3,1)] bg-midnight-charcoal">
+      <div class="flex justify-between items-center pb-2 border-b border-silver-leaf/10">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary-custom">rocket_launch</span>
+          <span class="font-mono text-xs uppercase tracking-widest text-silver-leaf font-bold">Initiate Project Node</span>
+        </div>
+        <button type="button" (click)="calculator.closeAddModal()" class="text-on-surface-variant-custom hover:text-white focus:outline-none bg-transparent border-none cursor-pointer">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+
+      <div class="space-y-4 font-mono text-xs">
+        <div class="space-y-1">
+          <label for="newProjTitleE" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Title</label>
+          <input id="newProjTitleE" [value]="calculator.newProjectTitle()" (input)="calculator.newProjectTitle.set($any($event.target).value)" type="text" placeholder="Crystal Atrium" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom"/>
+        </div>
+        <div class="space-y-1">
+          <label for="newProjCatE" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Technical Category</label>
+          <select id="newProjCatE" [value]="calculator.newProjectCategory()" (change)="calculator.newProjectCategory.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom font-mono text-xs cursor-pointer">
+            <option value="STRUCTURAL">STRUCTURAL Civil Skeleton</option>
+            <option value="ARCHITECTURAL">ARCHITECTURAL Aesthetics</option>
+            <option value="MEP">MEP Infrastructure Pipeline</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="space-y-1">
+            <label for="newProjTypeE" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Typology</label>
+            <input id="newProjTypeE" [value]="calculator.newProjectTypology()" (input)="calculator.newProjectTypology.set($any($event.target).value)" type="text" placeholder="Commercial" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom"/>
+          </div>
+          <div class="space-y-1">
+            <label for="newProjMagE" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Scale Size</label>
+            <input id="newProjMagE" [value]="calculator.newProjectMagnitude()" (input)="calculator.newProjectMagnitude.set($any($event.target).value)" type="text" placeholder="12,000 SQ FT" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom"/>
+          </div>
+        </div>
+        <div class="space-y-1">
+          <label for="newProjDescE" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Short Design Description</label>
+          <textarea id="newProjDescE" [value]="calculator.newProjectDescription()" (input)="calculator.newProjectDescription.set($any($event.target).value)" rows="3" placeholder="Bespoke faceted steel workspace with parametric light ventilation integration." class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom resize-none"></textarea>
+        </div>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button type="button" (click)="calculator.closeAddModal()" class="flex-1 py-2.5 border border-silver-leaf/20 bg-transparent text-silver-leaf rounded-lg hover:bg-white/5 font-mono text-xs font-bold uppercase transition-all cursor-pointer">CANCEL</button>
+        <button type="button" [disabled]="!calculator.newProjectTitle().trim()" (click)="calculator.submitNewProject()" class="flex-1 py-2.5 bg-primary-custom text-on-primary-custom rounded-lg hover:opacity-90 active:scale-95 disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-md shadow-primary-custom/10">SUBMIT NODE</button>
+      </div>
+    </div>
+  </div>
+}
