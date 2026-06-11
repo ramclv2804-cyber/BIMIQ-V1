@@ -96,7 +96,7 @@ body {
 
 /* Custom Glassmorphism Panels */
 .glass-panel {
-  background: rgba(15, 15, 15, 0.6);
+  background: rgba(15, 15, 15, 1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(226, 232, 240, 0.1);

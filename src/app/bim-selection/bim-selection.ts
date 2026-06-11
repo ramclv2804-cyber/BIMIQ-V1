@@ -7,7 +7,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
   selector: 'app-bim-selection',
   imports: [CommonModule],
   template: `
-    <div class="glass-panel p-6 md:p-8 rounded-3xl border border-silver-leaf/15 bg-midnight-charcoal/35 max-w-2xl mx-auto space-y-6 antialiased">
+    <div class="glass-panel p-6 md:p-8 rounded-3xl border border-silver-leaf/15 bg-midnight-charcoal/35 w-full space-y-6 antialiased">
       <div class="text-center md:text-left space-y-1 select-none">
         <h2 class="font-serif text-2xl md:text-3xl text-silver-leaf">Let's get you an estimate</h2>
         <p class="text-xs text-on-surface-variant-custom/80 font-sans leading-relaxed">
@@ -15,7 +15,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         </p>
       </div>
 
-      <div class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- OPTION 1: Scan to BIM -->
         <button 
           type="button" 

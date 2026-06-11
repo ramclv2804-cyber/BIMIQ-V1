@@ -4,24 +4,11 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'app-price-estimation',
-  imports: [CommonModule],
-  template: `
+	changeDetection: ChangeDetectionStrategy.OnPush,
+	selector: 'app-price-estimation',
+	imports: [CommonModule],
+	template: `
     <div class="animate-fade-in text-left">
-      <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/5 pb-4">
-        <div>
-          <div class="inline-flex items-center gap-2 mb-2 select-none">
-            <span class="w-2 h-2 rounded-full col-primary pulse-pin bg-primary-custom"></span>
-            <span class="font-mono text-[10px] text-primary-custom uppercase tracking-widest font-mono">Financial Framework v4.0</span>
-          </div>
-          <h1 class="font-serif text-3xl md:text-5xl text-silver-leaf font-serif">Cost Estimation Configuration</h1>
-          <p class="text-[11px] text-on-surface-variant-custom mt-2 max-w-lg leading-relaxed font-sans">
-            Accurately configure pipeline systems and architectural specifications to generate high-fidelity commercial estimations instantly.
-          </p>
-        </div>
-      </div>
-
       <!-- Step URL Indicator -->
       <div class="flex items-center gap-2 mb-4 px-1 select-none">
         <span class="material-symbols-outlined text-[10px] text-on-surface-variant-custom">link</span>
@@ -391,25 +378,25 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
                   <!-- Upload Link -->
                   <div class="space-y-2">
-                    <label for="uploadLink" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Upload Link (DWG / JPEGs / PDFs / Point Cloud)</label>
+                    <label for="uploadLink" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Upload Link (DWG / JPEGs / PDFs)</label>
                     <input id="uploadLink" [value]="calculator.uploadLink()" (input)="calculator.uploadLink.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="url" placeholder="https://drive.google.com/..."/>
-                  </div>
-
-                  <!-- Remark / Description Column -->
-                  <div class="space-y-2">
-                    <label for="remarkField" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Remark / Description Column</label>
-                    <textarea id="remarkField" [value]="calculator.remark()" (input)="calculator.remark.set($any($event.target).value)" rows="3" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all resize-none" placeholder="Any additional notes or instructions..."></textarea>
                   </div>
 
                   <!-- Point Cloud / pdf / jpeg upload link -->
                   <div class="space-y-2">
-                    <label for="pointCloudLink" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Point Cloud / PDF / JPEG Upload Link</label>
+                    <label for="pointCloudLink" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Point Cloud / PDF / Upload Link</label>
                     <input id="pointCloudLink" [value]="calculator.pointCloudLink()" (input)="calculator.pointCloudLink.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="url" placeholder="https://pointcloud.example.com/..."/>
+                  </div>
+
+				   <!-- Remark / Description Column -->
+                  <div class="space-y-2">
+                    <label for="remarkField" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Remark </label>
+                    <textarea id="remarkField" [value]="calculator.remark()" (input)="calculator.remark.set($any($event.target).value)" rows="3" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all resize-none" placeholder="Any additional notes or instructions..."></textarea>
                   </div>
 
                   <!-- Description Link -->
                   <div class="space-y-2">
-                    <label for="descriptionLink" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Description Link</label>
+                    <label for="descriptionLink" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Description Link (Etf, Erf, if any)</label>
                     <input id="descriptionLink" [value]="calculator.descriptionLink()" (input)="calculator.descriptionLink.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="url" placeholder="https://docs.google.com/..."/>
                   </div>
 
@@ -595,7 +582,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           </div>
           </div>
 
-          <div class="sticky top-0 space-y-4">
+          <div class="sticky bottom-[5px] space-y-4 glass-panel mt-5 rounded-2xl bg-[#131117]/80">
             <!-- Step Progress Timeline -->
             <div class="pt-4 pb-2 shrink-0 select-none">
               <div class="relative flex items-center justify-between px-2">
@@ -625,7 +612,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
             <!-- Sticky Price Card -->
             <div class="pt-4 border-t border-white/5 shrink-0 z-20">
-              <section class="glass-panel p-6 rounded-2xl relative overflow-hidden bg-[#131117]/80 border border-[#DF80AC]/30 font-mono animate-fade-in text-left">
+              <section class="p-6 rounded-2xl relative overflow-hidden font-mono animate-fade-in text-left">
               <div class="absolute top-0 right-0 p-4 opacity-15 select-none text-[#DF80AC]">
                 <span class="material-symbols-outlined text-5xl font-light">receipt_long</span>
               </div>
@@ -729,557 +716,557 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
   `,
 })
 export class PriceEstimation implements OnInit {
-  calculator = inject(SpatialCostCalculator);
-  sanitizer = inject(DomSanitizer);
-  isCardCurrencyOpen = signal<boolean>(false);
-  formStep = signal<number>(1);
-  buildingModelIndex = signal<number>(0);
-
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event) {
-    const target = event.target as HTMLElement;
-    if (!target.closest('.dropdown-toggle, .dropdown-panel')) {
-      this.calculator.closeAllDropdowns();
-      this.isCardCurrencyOpen.set(false);
-    }
-  }
-  isAnyDropdownOpen = computed(() =>
-    this.calculator.isBuildingTypeDropdownOpen() ||
-    this.calculator.isCadRequirementsOpen() ||
-    this.calculator.isCadScaleDropdownOpen() ||
-    this.calculator.isBimRequirementsOpen() ||
-    this.calculator.isBimAddOnsOpen() ||
-    this.calculator.isCurrencyDropdownOpen()
-  );
-
-  cycleModel() {
-    this.buildingModelIndex.update(i => (i + 1) % 3);
-    this.calculator.showNotification('Loading alternative building model representation...', 'info');
-  }
-
-  ngOnInit() {
-    const params = new URLSearchParams(window.location.search);
-    const stepParam = params.get('step');
-    if (stepParam) {
-      const step = parseInt(stepParam, 10);
-      if (step >= 1 && step <= 3) {
-        this.formStep.set(step);
-      }
-    }
-  }
-
-  isProjectDetailsValid(): boolean {
-    const c = this.calculator;
-    if (!c.smartProjectName().trim()) return false;
-    if (!c.smartScanSize() || c.smartScanSize() <= 0) return false;
-    if (!c.selectedBuildingType()) return false;
-    if (c.selectedModelingWay() === 'cad_to_bim') {
-      if (!c.cadRequirements().length) return false;
-      if (!c.cadScale()) return false;
-    } else {
-      if (!c.bimRequirements().length) return false;
-    }
-    if (!c.isEmailValid()) return false;
-    return true;
-  }
-
-  isLocationInfoValid(): boolean {
-    return true;
-  }
-
-  goToStep(step: number) {
-    if (step > this.formStep()) {
-      if (this.formStep() === 1 && !this.isProjectDetailsValid()) {
-        this.calculator.showNotification('Please complete all required fields in Step 1 first.', 'warn');
-        return;
-      }
-      if (this.formStep() === 2 && !this.isLocationInfoValid()) {
-        this.calculator.showNotification('Please complete Step 2 first.', 'warn');
-        return;
-      }
-    }
-    this.formStep.set(step);
-    const url = new URL(window.location.href);
-    url.searchParams.set('step', String(step));
-    window.history.replaceState({}, '', url.toString());
-  }
-
-  getSanitizedViewerUrl(): SafeResourceUrl {
-    const loc = this.calculator.smartLocationId() || 'a99e3def-fcea-4b5f-abc8-ebc91231b461';
-    const ver = this.calculator.smartVersionId() || '35441d5b-3402-4b47-964a-9e4caca8bda4';
-    const rawUrl = `https://ipx.integrated-projects.com/?location=${loc}&versions=${ver}`;
-    return this.sanitizer.bypassSecurityTrustResourceUrl(rawUrl);
-  }
-
-  getSelectedLODLabel(): string {
-    const lod = this.calculator.selectedModelingWay() === 'prebuilt'
-      ? this.calculator.prebuiltLODLevel()
-      : this.calculator.smartLODLevel();
-    return lod === 'LOD_200' ? 'LOD 200' : (lod === 'LOD_300' ? 'LOD 300' : (lod === 'LOD_400' ? 'LOD 400' : 'LOD 500'));
-  }
-
-  getLODPreviewImage(): string {
-    const lod = this.calculator.selectedModelingWay() === 'prebuilt'
-      ? this.calculator.prebuiltLODLevel()
-      : this.calculator.smartLODLevel();
-    if (lod === 'LOD_200') {
-      return 'lod200.webp';
-    } else if (lod === 'LOD_300') {
-      return 'lod300.webp';
-    } else if (lod === 'LOD_400') {
-      return 'lod400.webp';
-    } else {
-      return 'lod500.webp';
-    }
-  }
-
-  getLODOverlayText(): string {
-    const lod = this.calculator.selectedModelingWay() === 'prebuilt'
-      ? this.calculator.prebuiltLODLevel()
-      : this.calculator.smartLODLevel();
-    if (lod === 'LOD_200') {
-      return 'BOUND: LOD 200 BASIC MINIMALIST CONCEPT SCHEME';
-    } else if (lod === 'LOD_300') {
-      return 'BOUND: LOD 300 MEDIUM DRAFTING STANDARD RENDER';
-    } else if (lod === 'LOD_400') {
-      return 'BOUND: LOD 400 FABRICATION AND DUCTWORK ASSEMBLY';
-    } else {
-      return 'BOUND: LOD 500 AS-BUILT & FIELD TO-CAD ACCURACY';
-    }
-  }
-
-  toggleCardCurrencyDropdown(event: Event) {
-    event.stopPropagation();
-    this.isCardCurrencyOpen.set(!this.isCardCurrencyOpen());
-  }
-
-  // File drag & drop triggers proxying to state service
-  onDragOver(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.calculator.dragActive.set(true);
-  }
-
-  onDragLeave(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.calculator.dragActive.set(false);
-  }
-
-  onFileDropped(event: DragEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.calculator.dragActive.set(false);
-
-    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-      const file = event.dataTransfer.files[0];
-      this.readFileAndSubmit(file);
-    }
-  }
-
-  onFileSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      this.readFileAndSubmit(file);
-    }
-  }
-
-  private readFileAndSubmit(file: File) {
-    if (!file.type.startsWith('image/')) {
-      this.calculator.showNotification('Please upload an image file (PNG, JPG, SVG, WebP).', 'warn');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64Content = reader.result as string;
-      this.calculator.uploadedImagePreview.set(base64Content);
-      this.processUploadedImage(base64Content, file.type);
-    };
-    reader.onerror = () => {
-      this.calculator.showNotification('Error reading uploaded image file.', 'warn');
-    };
-    reader.readAsDataURL(file);
-  }
-
-  private async processUploadedImage(dataUrl: string, mimeType: string) {
-    this.calculator.isAnalyzing.set(true);
-    this.calculator.extractedRationale.set('');
-    this.calculator.showNotification('Image upload detected. Processing CAD scan with Gemini AI...', 'info');
-
-    try {
-      const base64Data = dataUrl.split(',')[1];
-      const response = await fetch('/api/estimate/extract', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          imageBase64: base64Data,
-          mimeType: mimeType,
-          prompt: 'Analyze this design scan drawing and extract appropriate civil values.'
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Server returned an error status during parsing');
-      }
-
-      const result = await response.json();
-
-      // Successfully extracted state from image! Update form signals
-      if (result.spaceType) this.calculator.smartSpaceType.set(result.spaceType);
-      if (result.scanSize) this.calculator.smartScanSize.set(result.scanSize);
-
-      if (result.interiorScope) {
-        this.calculator.smartInteriorArchitecture.set(result.interiorScope.includes('Architecture'));
-        this.calculator.smartInteriorFurniture.set(result.interiorScope.includes('Furniture'));
-        this.calculator.smartInteriorMep.set(result.interiorScope.includes('MEP'));
-      }
-
-      this.calculator.smartIsComplexMepf.set(!!result.isComplexMepf);
-      this.calculator.smartIsExteriorRequired.set(!!result.isExteriorRequired);
-
-      if (result.exteriorScope) {
-        this.calculator.smartExteriorArchitecture.set(result.exteriorScope.includes('Architecture'));
-        this.calculator.smartExteriorFurniture.set(result.exteriorScope.includes('Furniture'));
-        this.calculator.smartExteriorMep.set(result.exteriorScope.includes('MEP'));
-      }
-
-      this.calculator.smartIsSiteRequired.set(!!result.isSiteRequired);
-      if (result.isSiteRequired) {
-        // assign reasonable initial site sft space
-        this.calculator.siteModelingSft.set(Math.round(result.scanSize * 1.5 || 2500));
-      }
-
-      if (result.shortRationale) {
-        this.calculator.extractedRationale.set(result.shortRationale);
-      }
-
-      this.calculator.showNotification('Drawing scan analysis complete! Estimates updated.', 'success');
-
-    } catch (err: unknown) {
-      console.error(err);
-      this.calculator.showNotification('Drawing analyzed. Synced properties successfully using local engine.', 'success');
-      // Simulate quick fallback to verify form behaves stably
-      this.calculator.extractedRationale.set('Local scanning complete. Extracted 1,500 Sq.ft area with active architectural layouts and MEP layers.');
-      this.calculator.smartSpaceType.set('Office');
-      this.calculator.smartScanSize.set(1500);
-      this.calculator.smartInteriorArchitecture.set(true);
-      this.calculator.smartInteriorFurniture.set(false);
-      this.calculator.smartInteriorMep.set(true);
-      this.calculator.smartIsComplexMepf.set(false);
-      this.calculator.smartIsExteriorRequired.set(true);
-      this.calculator.smartExteriorArchitecture.set(true);
-      this.calculator.smartExteriorFurniture.set(false);
-      this.calculator.smartExteriorMep.set(false);
-    } finally {
-      this.calculator.isAnalyzing.set(false);
-    }
-  }
-
-  async triggerEstimateDownload() {
-    this.calculator.showNotification('Preparing high-fidelity PDF document...', 'info');
-    try {
-      const { jsPDF } = await import('jspdf');
-      const doc = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4'
-      });
-
-      doc.setProperties({
-        title: `Valuation Report: ${this.calculator.resolvedProjectName()}`,
-        subject: 'BIM Spatial Scan Valuation',
-        author: 'Spatial Cost Calculator Pro',
-        creator: 'AI Studio Integration System'
-      });
-
-      const est = this.calculator.calculatedSmartEstimate();
-      const symbol = est.currencySymbol;
-      const totalStr = `${symbol}${est.totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${this.calculator.selectedCurrency()}`;
-
-      // 1. Theme Styling - Elegant header band (Deep Charcoal)
-      doc.setFillColor(15, 23, 42);
-      doc.rect(0, 0, 210, 42, 'F');
-
-      // Decorative accent line
-      doc.setFillColor(200, 107, 152);
-      doc.rect(0, 42, 210, 3, 'F');
-
-      // Title Text
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(18);
-      doc.text('SPATIAL SCAN VALUATION REPORT', 15, 18);
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(200, 200, 200);
-      doc.text('AUTOMATED BIM MODELING & SPATIAL ESTIMATION SERVICE', 15, 26);
-
-      // Date & Report Status
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(226, 232, 240);
-      const today = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-      doc.text(`DATE: ${today}`, 195, 18, { align: 'right' });
-      doc.text(`STATUS: CORE VERIFIED`, 195, 26, { align: 'right' });
-
-      // Reset text color for body
-      doc.setTextColor(51, 65, 85);
-
-      // Section 1: PROJECT ATTRIBUTES
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(14);
-      doc.text('1. Project Coordinates', 15, 60);
-
-      doc.setFillColor(226, 232, 240);
-      doc.rect(15, 63, 180, 0.5, 'F');
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.text('Project Title:', 15, 72);
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.calculator.resolvedProjectName() || 'Untitled Project', 55, 72);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text('Physical Location:', 15, 80);
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.calculator.selectedModelingWay() === 'bim'
-        ? (this.calculator.smartProjectAddress() || 'Standard Delivery Zone')
-        : `LOD Compliance: ${this.calculator.getPrebuiltLodLabel(this.calculator.prebuiltLODLevel())}`, 55, 80);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text(this.calculator.selectedModelingWay() === 'bim' ? 'Revit Destination:' : 'Model Format:', 15, 88);
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.calculator.selectedModelingWay() === 'bim'
-        ? (this.calculator.smartRevitVersion() || 'Revit 2024 LTS')
-        : `${this.calculator.prebuiltFileFormat()} (Author: ${this.calculator.prebuiltDesignerFirm()})`, 55, 88);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text('Authorized Contacts:', 15, 96);
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.calculator.smartEmail() || 'N/A', 55, 96);
-
-      // Section 2: CALIBRATION SPECIFICATIONS (BIM SCAN CONFIG)
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(14);
-      doc.text('2. Scan Configuration', 15, 112);
-
-      doc.setFillColor(226, 232, 240);
-      doc.rect(15, 115, 180, 0.5, 'F');
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.text('Space Category Type:', 15, 124);
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.calculator.smartSpaceType(), 55, 124);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text('Total Boundary Area:', 15, 132);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${this.calculator.smartScanSize().toLocaleString()} ${this.calculator.smartIsMetric() ? 'Sq.M' : 'Sq.Ft'}`, 55, 132);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text('Primary Modeling Mode:', 15, 140);
-      doc.setFont('helvetica', 'normal');
-      const modelingMode = this.calculator.selectedModelingWay() === 'bim' ? 'BIM Reconstruction from Scan' : 'Existing Model';
-      doc.text(modelingMode, 55, 140);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text('Included Scope Items:', 15, 148);
-
-      const scopes: string[] = [];
-      if (this.calculator.smartInteriorArchitecture()) scopes.push('Interior Architecture');
-      if (this.calculator.smartInteriorFurniture()) scopes.push('Interior Furniture Layouts');
-      if (this.calculator.smartInteriorMep()) scopes.push('Interior MEP Distribution');
-      if (this.calculator.smartIsComplexMepf()) scopes.push('Complex MEPF Seismic Routing');
-      if (this.calculator.smartIsExteriorRequired()) {
-        if (this.calculator.smartExteriorArchitecture()) scopes.push('Exterior Architecture/Facade');
-        if (this.calculator.smartExteriorFurniture()) scopes.push('Exterior Furniture');
-        if (this.calculator.smartExteriorMep()) scopes.push('Exterior MEP Services');
-      }
-      if (this.calculator.smartIsSiteRequired()) scopes.push('Site Boundary Modeling');
-
-      if (scopes.length === 0) scopes.push('Base Setup Calibration');
-
-      doc.setFont('helvetica', 'normal');
-      doc.text(scopes.join('  |  '), 55, 154, { maxWidth: 140 });
-
-      // Section 3: COST ESTIMATION & SUMMARY
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(14);
-      doc.text('3. Cost & Delivery Estimation', 15, 172);
-
-      doc.setFillColor(226, 232, 240);
-      doc.rect(15, 175, 180, 0.5, 'F');
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-
-      doc.text('Interior Modeling Fees:', 15, 184);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${symbol}${est.interiorFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 65, 184);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text('Exterior Modeling Fees:', 15, 192);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${symbol}${est.exteriorFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 65, 192);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text('Terrain Site Fees:', 15, 200);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${symbol}${est.siteFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 65, 200);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text('Target Timeline:', 15, 208);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${est.businessDaysText} (${est.dayRangeText})`, 65, 208);
-
-      // valuation card at bottom
-      doc.setFillColor(248, 250, 252);
-      doc.rect(15, 218, 180, 30, 'F');
-      doc.setDrawColor(226, 232, 240);
-      doc.rect(15, 218, 180, 30, 'S');
-
-      doc.setFillColor(200, 107, 152);
-      doc.rect(15, 218, 4, 30, 'F');
-
-      doc.setTextColor(15, 23, 42);
-      doc.setFont('helvetica', 'bold');
-      doc.text('ESTIMATED VALUATION TOTAL', 24, 230);
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8);
-      doc.setTextColor(100, 116, 139);
-      doc.text('Including all active SLA discounts and calibration multipliers.', 24, 238);
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(16);
-      doc.setTextColor(200, 107, 152);
-      doc.text(totalStr, 190, 236, { align: 'right' });
-
-      // Footer
-      doc.setTextColor(148, 163, 184);
-      doc.setFont('helvetica', 'italic');
-      doc.setFontSize(7.5);
-      doc.text('Verification Token: SPATIAL-BIM-EST-SECURE-990-2A', 15, 275);
-      doc.text('This document acts as an initial non-binding valuation report generated in real-time.', 15, 280);
-
-      doc.save(`Valuation_Report_${this.calculator.resolvedProjectName().replace(/\s+/g, '_')}.pdf`);
-      this.calculator.showNotification('PDF downloaded successfully!', 'success');
-    } catch (e) {
-      console.error(e);
-      this.calculator.showNotification('Failed to generate PDF document. Check developer logs.', 'warn');
-    }
-  }
-
-  triggerQuoteRequest() {
-    const c = this.calculator;
-    const mode = c.selectedModelingWay() === 'bim' ? 'Scan to BIM' : 'Scan to CAD';
-    console.log('=== QUOTE REQUEST ===');
-    console.log('Mode:', mode);
-    console.log('--- Step 1: Project Specs ---');
-    console.log('Project Name:', c.smartProjectName());
-    console.log('Type:', c.projectType());
-    console.log('Area:', c.smartScanSize(), c.smartIsMetric() ? 'Sq.m' : 'Sq.ft');
-    console.log('Building Type:', c.selectedBuildingType());
-    if (c.selectedModelingWay() === 'cad_to_bim') {
-      console.log('Requirements:', c.cadRequirements());
-      console.log('Scale:', c.cadScale());
-    } else {
-      console.log('Requirements:', c.bimRequirements());
-      console.log('Add Ons:', c.bimAddOns());
-      console.log('LOD Level:', c.smartLODLevel());
-    }
-    console.log('Currency:', c.selectedCurrency());
-    console.log('Email:', c.smartEmail());
-    console.log('--- Step 2: Upload & Project Info ---');
-    console.log('Upload Link:', c.uploadLink());
-    console.log('Point Cloud Link:', c.pointCloudLink());
-    console.log('Description Link:', c.descriptionLink());
-    console.log('Remark:', c.remark());
-    console.log('Manual Estimation:', c.manualEstimation());
-    console.log('Send Proposal:', c.sendProposal());
-    console.log('Place Order:', c.placeOrder());
-    console.log('--- Step 3: Order Summary ---');
-    console.log('Project Number:', c.projectNumber());
-    console.log('Order Placed Date:', c.orderPlacedDate());
-    console.log('Point Cloud Issue Date:', c.pointCloudIssueDate());
-    console.log('Expected Delivery Date:', c.expectedDeliveryDate());
-    console.log('Total Price:', c.calculatedSmartEstimate().currencySymbol + c.calculatedSmartEstimate().totalPrice, c.selectedCurrency());
-    console.log('========================');
-    this.calculator.showNotification('Initiating connection with production director...', 'info');
-    setTimeout(() => {
-      this.calculator.showNotification(`Handshake complete. Production pipeline coordinates sent securely to ${c.smartEmail()}!`, 'success');
-    }, 2200);
-  }
-
-  toggleInteriorArchitecture() {
-    this.calculator.smartInteriorArchitecture.set(!this.calculator.smartInteriorArchitecture());
-  }
-
-  toggleInteriorFurniture() {
-    this.calculator.smartInteriorFurniture.set(!this.calculator.smartInteriorFurniture());
-  }
-
-  toggleInteriorMep() {
-    this.calculator.smartInteriorMep.set(!this.calculator.smartInteriorMep());
-  }
-
-  toggleComplexMepf() {
-    this.calculator.smartIsComplexMepf.set(!this.calculator.smartIsComplexMepf());
-  }
-
-  toggleExteriorRequired() {
-    this.calculator.smartIsExteriorRequired.set(!this.calculator.smartIsExteriorRequired());
-  }
-
-  toggleExteriorArchitecture() {
-    this.calculator.smartExteriorArchitecture.set(!this.calculator.smartExteriorArchitecture());
-  }
-
-  toggleExteriorFurniture() {
-    this.calculator.smartExteriorFurniture.set(!this.calculator.smartExteriorFurniture());
-  }
-
-  toggleExteriorMep() {
-    this.calculator.smartExteriorMep.set(!this.calculator.smartExteriorMep());
-  }
-
-  toggleSiteRequired() {
-    this.calculator.smartIsSiteRequired.set(!this.calculator.smartIsSiteRequired());
-  }
-
-  toggleBuildingTypeDropdown() {
-    const was = this.calculator.isBuildingTypeDropdownOpen();
-    this.calculator.closeAllDropdowns();
-    this.calculator.isBuildingTypeDropdownOpen.set(!was);
-  }
-  toggleCadRequirementsDropdown() {
-    const was = this.calculator.isCadRequirementsOpen();
-    this.calculator.closeAllDropdowns();
-    this.calculator.isCadRequirementsOpen.set(!was);
-  }
-  toggleCadScaleDropdown() {
-    const was = this.calculator.isCadScaleDropdownOpen();
-    this.calculator.closeAllDropdowns();
-    this.calculator.isCadScaleDropdownOpen.set(!was);
-  }
-  toggleBimRequirementsDropdown() {
-    const was = this.calculator.isBimRequirementsOpen();
-    this.calculator.closeAllDropdowns();
-    this.calculator.isBimRequirementsOpen.set(!was);
-  }
-  toggleBimAddOnsDropdown() {
-    const was = this.calculator.isBimAddOnsOpen();
-    this.calculator.closeAllDropdowns();
-    this.calculator.isBimAddOnsOpen.set(!was);
-  }
-  toggleCurrencyDropdown() {
-    const was = this.calculator.isCurrencyDropdownOpen();
-    this.calculator.closeAllDropdowns();
-    this.calculator.isCurrencyDropdownOpen.set(!was);
-  }
+	calculator = inject(SpatialCostCalculator);
+	sanitizer = inject(DomSanitizer);
+	isCardCurrencyOpen = signal<boolean>(false);
+	formStep = signal<number>(1);
+	buildingModelIndex = signal<number>(0);
+
+	@HostListener('document:click', ['$event'])
+	onDocumentClick(event: Event) {
+		const target = event.target as HTMLElement;
+		if (!target.closest('.dropdown-toggle, .dropdown-panel')) {
+			this.calculator.closeAllDropdowns();
+			this.isCardCurrencyOpen.set(false);
+		}
+	}
+	isAnyDropdownOpen = computed(() =>
+		this.calculator.isBuildingTypeDropdownOpen() ||
+		this.calculator.isCadRequirementsOpen() ||
+		this.calculator.isCadScaleDropdownOpen() ||
+		this.calculator.isBimRequirementsOpen() ||
+		this.calculator.isBimAddOnsOpen() ||
+		this.calculator.isCurrencyDropdownOpen()
+	);
+
+	cycleModel() {
+		this.buildingModelIndex.update(i => (i + 1) % 3);
+		this.calculator.showNotification('Loading alternative building model representation...', 'info');
+	}
+
+	ngOnInit() {
+		const params = new URLSearchParams(window.location.search);
+		const stepParam = params.get('step');
+		if (stepParam) {
+			const step = parseInt(stepParam, 10);
+			if (step >= 1 && step <= 3) {
+				this.formStep.set(step);
+			}
+		}
+	}
+
+	isProjectDetailsValid(): boolean {
+		const c = this.calculator;
+		if (!c.smartProjectName().trim()) return false;
+		if (!c.smartScanSize() || c.smartScanSize() <= 0) return false;
+		if (!c.selectedBuildingType()) return false;
+		if (c.selectedModelingWay() === 'cad_to_bim') {
+			if (!c.cadRequirements().length) return false;
+			if (!c.cadScale()) return false;
+		} else {
+			if (!c.bimRequirements().length) return false;
+		}
+		if (!c.isEmailValid()) return false;
+		return true;
+	}
+
+	isLocationInfoValid(): boolean {
+		return true;
+	}
+
+	goToStep(step: number) {
+		if (step > this.formStep()) {
+			if (this.formStep() === 1 && !this.isProjectDetailsValid()) {
+				this.calculator.showNotification('Please complete all required fields in Step 1 first.', 'warn');
+				return;
+			}
+			if (this.formStep() === 2 && !this.isLocationInfoValid()) {
+				this.calculator.showNotification('Please complete Step 2 first.', 'warn');
+				return;
+			}
+		}
+		this.formStep.set(step);
+		const url = new URL(window.location.href);
+		url.searchParams.set('step', String(step));
+		window.history.replaceState({}, '', url.toString());
+	}
+
+	getSanitizedViewerUrl(): SafeResourceUrl {
+		const loc = this.calculator.smartLocationId() || 'a99e3def-fcea-4b5f-abc8-ebc91231b461';
+		const ver = this.calculator.smartVersionId() || '35441d5b-3402-4b47-964a-9e4caca8bda4';
+		const rawUrl = `https://ipx.integrated-projects.com/?location=${loc}&versions=${ver}`;
+		return this.sanitizer.bypassSecurityTrustResourceUrl(rawUrl);
+	}
+
+	getSelectedLODLabel(): string {
+		const lod = this.calculator.selectedModelingWay() === 'prebuilt'
+			? this.calculator.prebuiltLODLevel()
+			: this.calculator.smartLODLevel();
+		return lod === 'LOD_200' ? 'LOD 200' : (lod === 'LOD_300' ? 'LOD 300' : (lod === 'LOD_400' ? 'LOD 400' : 'LOD 500'));
+	}
+
+	getLODPreviewImage(): string {
+		const lod = this.calculator.selectedModelingWay() === 'prebuilt'
+			? this.calculator.prebuiltLODLevel()
+			: this.calculator.smartLODLevel();
+		if (lod === 'LOD_200') {
+			return 'lod200.webp';
+		} else if (lod === 'LOD_300') {
+			return 'lod300.webp';
+		} else if (lod === 'LOD_400') {
+			return 'lod400.webp';
+		} else {
+			return 'lod500.webp';
+		}
+	}
+
+	getLODOverlayText(): string {
+		const lod = this.calculator.selectedModelingWay() === 'prebuilt'
+			? this.calculator.prebuiltLODLevel()
+			: this.calculator.smartLODLevel();
+		if (lod === 'LOD_200') {
+			return 'BOUND: LOD 200 BASIC MINIMALIST CONCEPT SCHEME';
+		} else if (lod === 'LOD_300') {
+			return 'BOUND: LOD 300 MEDIUM DRAFTING STANDARD RENDER';
+		} else if (lod === 'LOD_400') {
+			return 'BOUND: LOD 400 FABRICATION AND DUCTWORK ASSEMBLY';
+		} else {
+			return 'BOUND: LOD 500 AS-BUILT & FIELD TO-CAD ACCURACY';
+		}
+	}
+
+	toggleCardCurrencyDropdown(event: Event) {
+		event.stopPropagation();
+		this.isCardCurrencyOpen.set(!this.isCardCurrencyOpen());
+	}
+
+	// File drag & drop triggers proxying to state service
+	onDragOver(event: DragEvent) {
+		event.preventDefault();
+		event.stopPropagation();
+		this.calculator.dragActive.set(true);
+	}
+
+	onDragLeave(event: DragEvent) {
+		event.preventDefault();
+		event.stopPropagation();
+		this.calculator.dragActive.set(false);
+	}
+
+	onFileDropped(event: DragEvent) {
+		event.preventDefault();
+		event.stopPropagation();
+		this.calculator.dragActive.set(false);
+
+		if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+			const file = event.dataTransfer.files[0];
+			this.readFileAndSubmit(file);
+		}
+	}
+
+	onFileSelected(event: Event) {
+		const input = event.target as HTMLInputElement;
+		if (input.files && input.files.length > 0) {
+			const file = input.files[0];
+			this.readFileAndSubmit(file);
+		}
+	}
+
+	private readFileAndSubmit(file: File) {
+		if (!file.type.startsWith('image/')) {
+			this.calculator.showNotification('Please upload an image file (PNG, JPG, SVG, WebP).', 'warn');
+			return;
+		}
+
+		const reader = new FileReader();
+		reader.onload = () => {
+			const base64Content = reader.result as string;
+			this.calculator.uploadedImagePreview.set(base64Content);
+			this.processUploadedImage(base64Content, file.type);
+		};
+		reader.onerror = () => {
+			this.calculator.showNotification('Error reading uploaded image file.', 'warn');
+		};
+		reader.readAsDataURL(file);
+	}
+
+	private async processUploadedImage(dataUrl: string, mimeType: string) {
+		this.calculator.isAnalyzing.set(true);
+		this.calculator.extractedRationale.set('');
+		this.calculator.showNotification('Image upload detected. Processing CAD scan with Gemini AI...', 'info');
+
+		try {
+			const base64Data = dataUrl.split(',')[1];
+			const response = await fetch('/api/estimate/extract', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					imageBase64: base64Data,
+					mimeType: mimeType,
+					prompt: 'Analyze this design scan drawing and extract appropriate civil values.'
+				})
+			});
+
+			if (!response.ok) {
+				throw new Error('Server returned an error status during parsing');
+			}
+
+			const result = await response.json();
+
+			// Successfully extracted state from image! Update form signals
+			if (result.spaceType) this.calculator.smartSpaceType.set(result.spaceType);
+			if (result.scanSize) this.calculator.smartScanSize.set(result.scanSize);
+
+			if (result.interiorScope) {
+				this.calculator.smartInteriorArchitecture.set(result.interiorScope.includes('Architecture'));
+				this.calculator.smartInteriorFurniture.set(result.interiorScope.includes('Furniture'));
+				this.calculator.smartInteriorMep.set(result.interiorScope.includes('MEP'));
+			}
+
+			this.calculator.smartIsComplexMepf.set(!!result.isComplexMepf);
+			this.calculator.smartIsExteriorRequired.set(!!result.isExteriorRequired);
+
+			if (result.exteriorScope) {
+				this.calculator.smartExteriorArchitecture.set(result.exteriorScope.includes('Architecture'));
+				this.calculator.smartExteriorFurniture.set(result.exteriorScope.includes('Furniture'));
+				this.calculator.smartExteriorMep.set(result.exteriorScope.includes('MEP'));
+			}
+
+			this.calculator.smartIsSiteRequired.set(!!result.isSiteRequired);
+			if (result.isSiteRequired) {
+				// assign reasonable initial site sft space
+				this.calculator.siteModelingSft.set(Math.round(result.scanSize * 1.5 || 2500));
+			}
+
+			if (result.shortRationale) {
+				this.calculator.extractedRationale.set(result.shortRationale);
+			}
+
+			this.calculator.showNotification('Drawing scan analysis complete! Estimates updated.', 'success');
+
+		} catch (err: unknown) {
+			console.error(err);
+			this.calculator.showNotification('Drawing analyzed. Synced properties successfully using local engine.', 'success');
+			// Simulate quick fallback to verify form behaves stably
+			this.calculator.extractedRationale.set('Local scanning complete. Extracted 1,500 Sq.ft area with active architectural layouts and MEP layers.');
+			this.calculator.smartSpaceType.set('Office');
+			this.calculator.smartScanSize.set(1500);
+			this.calculator.smartInteriorArchitecture.set(true);
+			this.calculator.smartInteriorFurniture.set(false);
+			this.calculator.smartInteriorMep.set(true);
+			this.calculator.smartIsComplexMepf.set(false);
+			this.calculator.smartIsExteriorRequired.set(true);
+			this.calculator.smartExteriorArchitecture.set(true);
+			this.calculator.smartExteriorFurniture.set(false);
+			this.calculator.smartExteriorMep.set(false);
+		} finally {
+			this.calculator.isAnalyzing.set(false);
+		}
+	}
+
+	async triggerEstimateDownload() {
+		this.calculator.showNotification('Preparing high-fidelity PDF document...', 'info');
+		try {
+			const { jsPDF } = await import('jspdf');
+			const doc = new jsPDF({
+				orientation: 'p',
+				unit: 'mm',
+				format: 'a4'
+			});
+
+			doc.setProperties({
+				title: `Valuation Report: ${this.calculator.resolvedProjectName()}`,
+				subject: 'BIM Spatial Scan Valuation',
+				author: 'Spatial Cost Calculator Pro',
+				creator: 'AI Studio Integration System'
+			});
+
+			const est = this.calculator.calculatedSmartEstimate();
+			const symbol = est.currencySymbol;
+			const totalStr = `${symbol}${est.totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${this.calculator.selectedCurrency()}`;
+
+			// 1. Theme Styling - Elegant header band (Deep Charcoal)
+			doc.setFillColor(15, 23, 42);
+			doc.rect(0, 0, 210, 42, 'F');
+
+			// Decorative accent line
+			doc.setFillColor(200, 107, 152);
+			doc.rect(0, 42, 210, 3, 'F');
+
+			// Title Text
+			doc.setTextColor(255, 255, 255);
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(18);
+			doc.text('SPATIAL SCAN VALUATION REPORT', 15, 18);
+
+			doc.setFont('helvetica', 'normal');
+			doc.setFontSize(9);
+			doc.setTextColor(200, 200, 200);
+			doc.text('AUTOMATED BIM MODELING & SPATIAL ESTIMATION SERVICE', 15, 26);
+
+			// Date & Report Status
+			doc.setFont('helvetica', 'normal');
+			doc.setFontSize(9);
+			doc.setTextColor(226, 232, 240);
+			const today = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+			doc.text(`DATE: ${today}`, 195, 18, { align: 'right' });
+			doc.text(`STATUS: CORE VERIFIED`, 195, 26, { align: 'right' });
+
+			// Reset text color for body
+			doc.setTextColor(51, 65, 85);
+
+			// Section 1: PROJECT ATTRIBUTES
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(14);
+			doc.text('1. Project Coordinates', 15, 60);
+
+			doc.setFillColor(226, 232, 240);
+			doc.rect(15, 63, 180, 0.5, 'F');
+
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(10);
+			doc.text('Project Title:', 15, 72);
+			doc.setFont('helvetica', 'normal');
+			doc.text(this.calculator.resolvedProjectName() || 'Untitled Project', 55, 72);
+
+			doc.setFont('helvetica', 'bold');
+			doc.text('Physical Location:', 15, 80);
+			doc.setFont('helvetica', 'normal');
+			doc.text(this.calculator.selectedModelingWay() === 'bim'
+				? (this.calculator.smartProjectAddress() || 'Standard Delivery Zone')
+				: `LOD Compliance: ${this.calculator.getPrebuiltLodLabel(this.calculator.prebuiltLODLevel())}`, 55, 80);
+
+			doc.setFont('helvetica', 'bold');
+			doc.text(this.calculator.selectedModelingWay() === 'bim' ? 'Revit Destination:' : 'Model Format:', 15, 88);
+			doc.setFont('helvetica', 'normal');
+			doc.text(this.calculator.selectedModelingWay() === 'bim'
+				? (this.calculator.smartRevitVersion() || 'Revit 2024 LTS')
+				: `${this.calculator.prebuiltFileFormat()} (Author: ${this.calculator.prebuiltDesignerFirm()})`, 55, 88);
+
+			doc.setFont('helvetica', 'bold');
+			doc.text('Authorized Contacts:', 15, 96);
+			doc.setFont('helvetica', 'normal');
+			doc.text(this.calculator.smartEmail() || 'N/A', 55, 96);
+
+			// Section 2: CALIBRATION SPECIFICATIONS (BIM SCAN CONFIG)
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(14);
+			doc.text('2. Scan Configuration', 15, 112);
+
+			doc.setFillColor(226, 232, 240);
+			doc.rect(15, 115, 180, 0.5, 'F');
+
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(10);
+			doc.text('Space Category Type:', 15, 124);
+			doc.setFont('helvetica', 'normal');
+			doc.text(this.calculator.smartSpaceType(), 55, 124);
+
+			doc.setFont('helvetica', 'bold');
+			doc.text('Total Boundary Area:', 15, 132);
+			doc.setFont('helvetica', 'normal');
+			doc.text(`${this.calculator.smartScanSize().toLocaleString()} ${this.calculator.smartIsMetric() ? 'Sq.M' : 'Sq.Ft'}`, 55, 132);
+
+			doc.setFont('helvetica', 'bold');
+			doc.text('Primary Modeling Mode:', 15, 140);
+			doc.setFont('helvetica', 'normal');
+			const modelingMode = this.calculator.selectedModelingWay() === 'bim' ? 'BIM Reconstruction from Scan' : 'Existing Model';
+			doc.text(modelingMode, 55, 140);
+
+			doc.setFont('helvetica', 'bold');
+			doc.text('Included Scope Items:', 15, 148);
+
+			const scopes: string[] = [];
+			if (this.calculator.smartInteriorArchitecture()) scopes.push('Interior Architecture');
+			if (this.calculator.smartInteriorFurniture()) scopes.push('Interior Furniture Layouts');
+			if (this.calculator.smartInteriorMep()) scopes.push('Interior MEP Distribution');
+			if (this.calculator.smartIsComplexMepf()) scopes.push('Complex MEPF Seismic Routing');
+			if (this.calculator.smartIsExteriorRequired()) {
+				if (this.calculator.smartExteriorArchitecture()) scopes.push('Exterior Architecture/Facade');
+				if (this.calculator.smartExteriorFurniture()) scopes.push('Exterior Furniture');
+				if (this.calculator.smartExteriorMep()) scopes.push('Exterior MEP Services');
+			}
+			if (this.calculator.smartIsSiteRequired()) scopes.push('Site Boundary Modeling');
+
+			if (scopes.length === 0) scopes.push('Base Setup Calibration');
+
+			doc.setFont('helvetica', 'normal');
+			doc.text(scopes.join('  |  '), 55, 154, { maxWidth: 140 });
+
+			// Section 3: COST ESTIMATION & SUMMARY
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(14);
+			doc.text('3. Cost & Delivery Estimation', 15, 172);
+
+			doc.setFillColor(226, 232, 240);
+			doc.rect(15, 175, 180, 0.5, 'F');
+
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(10);
+
+			doc.text('Interior Modeling Fees:', 15, 184);
+			doc.setFont('helvetica', 'normal');
+			doc.text(`${symbol}${est.interiorFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 65, 184);
+
+			doc.setFont('helvetica', 'bold');
+			doc.text('Exterior Modeling Fees:', 15, 192);
+			doc.setFont('helvetica', 'normal');
+			doc.text(`${symbol}${est.exteriorFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 65, 192);
+
+			doc.setFont('helvetica', 'bold');
+			doc.text('Terrain Site Fees:', 15, 200);
+			doc.setFont('helvetica', 'normal');
+			doc.text(`${symbol}${est.siteFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 65, 200);
+
+			doc.setFont('helvetica', 'bold');
+			doc.text('Target Timeline:', 15, 208);
+			doc.setFont('helvetica', 'normal');
+			doc.text(`${est.businessDaysText} (${est.dayRangeText})`, 65, 208);
+
+			// valuation card at bottom
+			doc.setFillColor(248, 250, 252);
+			doc.rect(15, 218, 180, 30, 'F');
+			doc.setDrawColor(226, 232, 240);
+			doc.rect(15, 218, 180, 30, 'S');
+
+			doc.setFillColor(200, 107, 152);
+			doc.rect(15, 218, 4, 30, 'F');
+
+			doc.setTextColor(15, 23, 42);
+			doc.setFont('helvetica', 'bold');
+			doc.text('ESTIMATED VALUATION TOTAL', 24, 230);
+			doc.setFont('helvetica', 'normal');
+			doc.setFontSize(8);
+			doc.setTextColor(100, 116, 139);
+			doc.text('Including all active SLA discounts and calibration multipliers.', 24, 238);
+
+			doc.setFont('helvetica', 'bold');
+			doc.setFontSize(16);
+			doc.setTextColor(200, 107, 152);
+			doc.text(totalStr, 190, 236, { align: 'right' });
+
+			// Footer
+			doc.setTextColor(148, 163, 184);
+			doc.setFont('helvetica', 'italic');
+			doc.setFontSize(7.5);
+			doc.text('Verification Token: SPATIAL-BIM-EST-SECURE-990-2A', 15, 275);
+			doc.text('This document acts as an initial non-binding valuation report generated in real-time.', 15, 280);
+
+			doc.save(`Valuation_Report_${this.calculator.resolvedProjectName().replace(/\s+/g, '_')}.pdf`);
+			this.calculator.showNotification('PDF downloaded successfully!', 'success');
+		} catch (e) {
+			console.error(e);
+			this.calculator.showNotification('Failed to generate PDF document. Check developer logs.', 'warn');
+		}
+	}
+
+	triggerQuoteRequest() {
+		const c = this.calculator;
+		const mode = c.selectedModelingWay() === 'bim' ? 'Scan to BIM' : 'Scan to CAD';
+		console.log('=== QUOTE REQUEST ===');
+		console.log('Mode:', mode);
+		console.log('--- Step 1: Project Specs ---');
+		console.log('Project Name:', c.smartProjectName());
+		// console.log('Type:', c.projectType());
+		console.log('Area:', c.smartScanSize(), c.smartIsMetric() ? 'Sq.m' : 'Sq.ft');
+		console.log('Building Type:', c.selectedBuildingType());
+		if (c.selectedModelingWay() === 'cad_to_bim') {
+			console.log('Requirements:', c.cadRequirements());
+			console.log('Scale:', c.cadScale());
+		} else {
+			console.log('Requirements:', c.bimRequirements());
+			console.log('Add Ons:', c.bimAddOns());
+			console.log('LOD Level:', c.smartLODLevel());
+		}
+		console.log('Currency:', c.selectedCurrency());
+		console.log('Email:', c.smartEmail());
+		console.log('--- Step 2: Upload & Project Info ---');
+		console.log('Upload Link:', c.uploadLink());
+		console.log('Point Cloud Link:', c.pointCloudLink());
+		console.log('Description Link:', c.descriptionLink());
+		console.log('Remark:', c.remark());
+		// console.log('Manual Estimation:', c.manualEstimation());
+		console.log('Send Proposal:', c.sendProposal());
+		console.log('Place Order:', c.placeOrder());
+		console.log('--- Step 3: Order Summary ---');
+		console.log('Project Number:', c.projectNumber());
+		console.log('Order Placed Date:', c.orderPlacedDate());
+		console.log('Point Cloud Issue Date:', c.pointCloudIssueDate());
+		console.log('Expected Delivery Date:', c.expectedDeliveryDate());
+		console.log('Total Price:', c.calculatedSmartEstimate().currencySymbol + c.calculatedSmartEstimate().totalPrice, c.selectedCurrency());
+		console.log('========================');
+		this.calculator.showNotification('Initiating connection with production director...', 'info');
+		setTimeout(() => {
+			this.calculator.showNotification(`Handshake complete. Production pipeline coordinates sent securely to ${c.smartEmail()}!`, 'success');
+		}, 2200);
+	}
+
+	toggleInteriorArchitecture() {
+		this.calculator.smartInteriorArchitecture.set(!this.calculator.smartInteriorArchitecture());
+	}
+
+	toggleInteriorFurniture() {
+		this.calculator.smartInteriorFurniture.set(!this.calculator.smartInteriorFurniture());
+	}
+
+	toggleInteriorMep() {
+		this.calculator.smartInteriorMep.set(!this.calculator.smartInteriorMep());
+	}
+
+	toggleComplexMepf() {
+		this.calculator.smartIsComplexMepf.set(!this.calculator.smartIsComplexMepf());
+	}
+
+	toggleExteriorRequired() {
+		this.calculator.smartIsExteriorRequired.set(!this.calculator.smartIsExteriorRequired());
+	}
+
+	toggleExteriorArchitecture() {
+		this.calculator.smartExteriorArchitecture.set(!this.calculator.smartExteriorArchitecture());
+	}
+
+	toggleExteriorFurniture() {
+		this.calculator.smartExteriorFurniture.set(!this.calculator.smartExteriorFurniture());
+	}
+
+	toggleExteriorMep() {
+		this.calculator.smartExteriorMep.set(!this.calculator.smartExteriorMep());
+	}
+
+	toggleSiteRequired() {
+		this.calculator.smartIsSiteRequired.set(!this.calculator.smartIsSiteRequired());
+	}
+
+	toggleBuildingTypeDropdown() {
+		const was = this.calculator.isBuildingTypeDropdownOpen();
+		this.calculator.closeAllDropdowns();
+		this.calculator.isBuildingTypeDropdownOpen.set(!was);
+	}
+	toggleCadRequirementsDropdown() {
+		const was = this.calculator.isCadRequirementsOpen();
+		this.calculator.closeAllDropdowns();
+		this.calculator.isCadRequirementsOpen.set(!was);
+	}
+	toggleCadScaleDropdown() {
+		const was = this.calculator.isCadScaleDropdownOpen();
+		this.calculator.closeAllDropdowns();
+		this.calculator.isCadScaleDropdownOpen.set(!was);
+	}
+	toggleBimRequirementsDropdown() {
+		const was = this.calculator.isBimRequirementsOpen();
+		this.calculator.closeAllDropdowns();
+		this.calculator.isBimRequirementsOpen.set(!was);
+	}
+	toggleBimAddOnsDropdown() {
+		const was = this.calculator.isBimAddOnsOpen();
+		this.calculator.closeAllDropdowns();
+		this.calculator.isBimAddOnsOpen.set(!was);
+	}
+	toggleCurrencyDropdown() {
+		const was = this.calculator.isCurrencyDropdownOpen();
+		this.calculator.closeAllDropdowns();
+		this.calculator.isCurrencyDropdownOpen.set(!was);
+	}
 }

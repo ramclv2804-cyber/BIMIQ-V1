@@ -148,6 +148,20 @@
   @if (calculator.activeTab() === 'config') {
     <div class="space-y-10 animate-fade-slide-up opacity-0 text-left">
       
+      <!-- Hero Banner -->
+      <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/5 pb-4">
+        <div>
+          <div class="inline-flex items-center gap-2 mb-2 select-none">
+            <span class="w-2 h-2 rounded-full col-primary pulse-pin bg-primary-custom"></span>
+            <span class="font-mono text-[10px] text-primary-custom uppercase tracking-widest font-mono">Financial Framework v4.0</span>
+          </div>
+          <h1 class="font-serif text-3xl md:text-5xl text-silver-leaf font-serif">Cost Estimation Configuration</h1>
+          <p class="text-[11px] text-on-surface-variant-custom mt-2 max-w-lg leading-relaxed font-sans">
+            Accurately configure pipeline systems and architectural specifications to generate high-fidelity commercial estimations instantly.
+          </p>
+        </div>
+      </div>
+
       <!-- Select Modeling Way (asked first) -->
       <app-bim-selection />
 
@@ -183,7 +197,7 @@
 
 <!-- FOOTER WITH COPYRIGHTS AND PARAMETERS (HIGH-FIDELITY DIGITAL TWIN REDESIGN) -->
 <footer class="w-full py-16 border-t border-silver-leaf/10 bg-[#0A0A0C] font-mono select-none">
-  <div class="max-w-[1280px] mx-auto px-6 md:px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10 text-xs text-on-surface-variant-custom text-left">
+  <div class="max-w-[1280px] mx-auto px-6 md:px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 text-xs text-on-surface-variant-custom text-left">
     
     <!-- Column 1: Brand & Pipeline Stream Status -->
     <div class="space-y-4">
@@ -238,34 +252,7 @@
       </div>
     </div>
 
-    <!-- Column 2: Interactive Digitized Models -->
-    <div class="space-y-4">
-      <div class="text-silver-leaf text-[11px] uppercase tracking-wider font-bold border-b border-white/5 pb-2">Technical Archive Nodes</div>
-      <div class="flex flex-col gap-2.5 text-[11px]">
-        <button type="button" (click)="calculator.openArchiveProject('Skylon', 'STRUCTURAL', 'Linked to Skylon Office Tower digital structural twin.')" 
-                class="text-left text-slate-400 hover:text-[#DF80AC] hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer flex items-center gap-2 font-mono">
-          <span class="material-symbols-outlined text-[13px] text-primary-custom">schema</span>
-          <span>NODE_091: Skylon Core Model</span>
-        </button>
-        <button type="button" (click)="calculator.openArchiveProject('Monolith', 'STRUCTURAL', 'Linked to Monolith Residence digital structural twin.')" 
-                class="text-left text-slate-400 hover:text-[#DF80AC] hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer flex items-center gap-2 font-mono">
-          <span class="material-symbols-outlined text-[13px] text-primary-custom">schema</span>
-          <span>NODE_110: Monolith Core Blocks</span>
-        </button>
-        <button type="button" (click)="calculator.openArchiveProject('Amber', 'MEP', 'Linked to Amber Lodge Suite digital MEP twin.')" 
-                class="text-left text-slate-400 hover:text-[#DF80AC] hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer flex items-center gap-2 font-mono">
-          <span class="material-symbols-outlined text-[13px] text-secondary-custom">air</span>
-          <span>NODE_304: Amber Climate Core</span>
-        </button>
-        <button type="button" (click)="calculator.openArchiveProject('Alpha', 'ARCHITECTURAL', 'Linked to Alpha Industrial Site digital architectural twin.')" 
-                class="text-left text-slate-400 hover:text-[#DF80AC] hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer flex items-center gap-2 font-mono">
-          <span class="material-symbols-outlined text-[13px] text-[#DF80AC]">architecture</span>
-          <span>NODE_006: Alpha Industrial Plan</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- Column 3: Digital Specifications & LOD Targets -->
+    <!-- Column 2: Digital Specifications & LOD Targets -->
     <div class="space-y-4 font-sans">
       <div class="text-silver-leaf text-[11px] uppercase tracking-wider font-bold border-b border-white/5 pb-2 font-mono">Digital Project Specifications</div>
       <ul class="space-y-2 text-[11px] text-slate-400 list-none p-0 m-0">

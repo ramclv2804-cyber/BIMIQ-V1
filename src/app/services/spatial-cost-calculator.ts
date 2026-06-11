@@ -253,7 +253,7 @@ export class SpatialCostCalculator {
   }
 
   // Step 1 fields — shared between Scan to CAD and Scan to BIM
-  projectType = signal<string>('');
+  // projectType = signal<string>('');
   selectedBuildingType = signal<string>('');
   isBuildingTypeDropdownOpen = signal<boolean>(false);
   buildingTypeOptions = [
@@ -375,7 +375,7 @@ export class SpatialCostCalculator {
   pointCloudLink = signal<string>('');
   descriptionLink = signal<string>('');
   remark = signal<string>('');
-  manualEstimation = signal<string>('');
+  // manualEstimation = signal<string>('');
   sendProposal = signal<boolean>(false);
   placeOrder = signal<boolean>(false);
 
