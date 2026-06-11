@@ -1,310 +1,193 @@
 @if (currentUrl() === '/login') {
   <app-signin />
+} @else if (currentUrl() === '/estimations') {
+  <app-estimation-dashboard />
 } @else {
-  <!-- Background Glows (only on main pages, not /estimations) -->
-  @if (currentUrl() !== '/estimations') {
-    <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
-      <div class="absolute top-[20%] -left-20 w-[500px] h-[500px] radial-glow"></div>
-      <div class="absolute bottom-[30%] -right-20 w-[600px] h-[600px] radial-glow" style="background: radial-gradient(circle at center, rgba(233, 195, 73, 0.03) 0%, transparent 70%);"></div>
+  <!-- Background Glows -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+    <div class="absolute top-[20%] -left-20 w-[500px] h-[500px] radial-glow"></div>
+    <div class="absolute bottom-[30%] -right-20 w-[600px] h-[600px] radial-glow" style="background: radial-gradient(circle at center, rgba(233, 195, 73, 0.03) 0%, transparent 70%);"></div>
+  </div>
+
+  <app-header />
+
+  <!-- Global Alert System Notifications -->
+  @if (calculator.notificationMessage()) {
+    <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] w-11/12 max-w-lg glass-panel px-6 py-4 rounded-xl border border-primary-custom/30 shadow-2xl flex items-center gap-3 animate-[fade-in_0.3s_ease] mb-1 bg-midnight-charcoal/95 backdrop-blur-md">
+      <span class="material-symbols-outlined text-primary-custom px-1 animate-pulse">
+        {{ calculator.notificationType() === 'success' ? 'verified' : calculator.notificationType() === 'warn' ? 'warning' : 'satellite_alt' }}
+      </span>
+      <div class="flex-1 font-mono text-xs tracking-wide text-left">
+        <p class="text-silver-leaf">{{ calculator.notificationMessage() }}</p>
+      </div>
     </div>
   }
 
-  <!-- TopAppBar Header -->
-  <header class="fixed top-0 w-full z-50 backdrop-blur-xl bg-midnight-charcoal/60 border-b border-silver-leaf/10 flex justify-between items-center px-6 md:px-20 h-20">
-    <button type="button" class="flex items-center gap-3 cursor-pointer text-left focus:outline-none bg-transparent border-none" (click)="setTab('dashboard')">
-      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 hover:scale-110 hover:rotate-3 transition-all duration-300">
-        <defs>
-          <linearGradient id="logo-blue" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#dae1ff" />
-            <stop offset="100%" stop-color="#a5b4fc" />
-          </linearGradient>
-          <linearGradient id="logo-gold" x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#e9c349" />
-            <stop offset="100%" stop-color="#fef08a" />
-          </linearGradient>
-          <linearGradient id="logo-pink" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#DF80AC" />
-            <stop offset="100%" stop-color="#f472b6" />
-          </linearGradient>
-        </defs>
-        <path d="M16 2L4 9V23L16 30" stroke="url(#logo-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-        <path d="M16 2L28 9V23L16 30" stroke="url(#logo-pink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
-        <path d="M16 2V16L4 23" stroke="url(#logo-gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        <path d="M16 16L28 23" stroke="url(#logo-gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-        <circle cx="16" cy="16" r="3.5" fill="url(#logo-gold)" class="animate-pulse" />
-        <circle cx="16" cy="16" r="5.5" stroke="url(#logo-gold)" stroke-width="1" opacity="0.4" />
-        <circle cx="4" cy="9" r="2" fill="url(#logo-blue)" />
-        <circle cx="28" cy="9" r="2" fill="url(#logo-pink)" />
-        <circle cx="16" cy="30" r="2" fill="url(#logo-pink)" />
-      </svg>
-      <span class="font-sans font-black text-2xl text-primary-custom tracking-wider flex items-center">
-        BIM<span class="text-secondary-custom font-light bg-secondary-custom/10 px-1.5 py-0.5 rounded-md ml-0.5 shadow-sm text-xs border border-secondary-custom/20 font-mono tracking-normal">IQ</span>
-      </span>
-    </button>
+  <!-- MAIN CONTENT CANVAS -->
+  <main class="relative pt-28 pb-32 max-w-[1280px] mx-auto px-6 md:px-20 min-h-screen">
 
-    <nav class="hidden md:flex items-center gap-8">
-      <button
-        type="button"
-        class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
-        [ngClass]="calculator.activeTab() === 'portfolio' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-        (click)="setTab('portfolio')">
-        <span class="hover-underline-animate pb-0.5" [class.after:scale-x-100]="calculator.activeTab() === 'portfolio'">Portfolio</span>
-      </button>
-      <button
-        type="button"
-        class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
-        [ngClass]="calculator.activeTab() === 'config' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-        (click)="setTab('config')">
-        <span class="hover-underline-animate pb-0.5" [class.after:scale-x-100]="calculator.activeTab() === 'config'">Price Estimate</span>
-      </button>
-      @if (calculator.isLoggedIn()) {
-        <button
-          type="button"
-          class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
-          [ngClass]="currentUrl() === '/estimations' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-          (click)="goToEstimations()">
-          <span class="hover-underline-animate pb-0.5" [class.after:scale-x-100]="currentUrl() === '/estimations'">Estimations</span>
-        </button>
-      }
-    </nav>
-
-    <div class="flex items-center gap-3">
-      <button
-        type="button"
-        class="hidden sm:inline-block bg-primary-custom text-on-primary-custom font-mono text-xs uppercase tracking-widest px-5 py-2 rounded-full border border-primary-custom/10 hover:opacity-90 hover:scale-[1.05] active:scale-95 transition-all focus:outline-none cursor-pointer border-none font-bold"
-        (click)="openAddModal()">
-        INITIATE PROJECT
-      </button>
-
-      @if (!calculator.isLoggedIn()) {
-        <button
-          type="button"
-          (click)="signIn()"
-          class="flex items-center gap-2 bg-[#DF80AC]/10 text-white border border-[#DF80AC]/30 font-mono text-[10px] uppercase tracking-widest px-4 py-2 rounded-full hover:bg-[#DF80AC]/20 hover:scale-[1.03] active:scale-95 transition-all focus:outline-none cursor-pointer font-bold">
-          <span class="material-symbols-outlined text-[14px] text-[#DF80AC] font-bold"></span>
-          <span>SIGN IN</span>
-        </button>
-      } @else {
-        <div class="relative group select-none z-[100]">
-          <button
-            type="button"
-            class="flex items-center gap-2 border border-[#DF80AC]/30 bg-[#DF80AC]/15 px-3 py-1.5 rounded-full text-slate-200 text-xs font-mono transition-all duration-300 hover:bg-[#DF80AC]/25 focus:outline-none cursor-pointer">
-            <span class="w-6 h-6 rounded-full bg-[#DF80AC] text-black flex items-center justify-center font-bold text-[10px]">
-              {{ calculator.currentUser()?.initials }}
-            </span>
-            <span class="hidden md:inline font-bold text-xs uppercase tracking-wider text-[#DF80AC]">{{ calculator.currentUser()?.name }}</span>
-            <span class="material-symbols-outlined text-sm transform group-hover:rotate-180 transition-transform">expand_more</span>
-          </button>
-          <div class="absolute right-0 mt-2 w-56 bg-[#121216] border border-white/10 rounded-xl shadow-2xl py-2 text-xs font-mono backdrop-blur-md opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-300 divide-y divide-white/5 z-[60] text-left">
-            <div class="px-4 py-2.5 text-left">
-              <p class="text-white font-bold leading-tight">{{ calculator.currentUser()?.name }}</p>
-              <p class="text-[9.5px] text-slate-400 mt-0.5 truncate">{{ calculator.currentUser()?.email }}</p>
-              <p class="text-[8.5px] text-[#DF80AC] uppercase font-bold mt-1.5 tracking-wider bg-[#DF80AC]/10 border border-[#DF80AC]/25 px-1.5 py-0.5 rounded inline-block">
-                {{ calculator.currentUser()?.role }}
-              </p>
-            </div>
-            <div class="py-1">
-              <button type="button" (click)="calculator.showNotification('Account integration synchronizing to cloud database.', 'info')" class="w-full text-left px-4 py-2 text-[10px] text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer border-none bg-transparent">
-                Account Node Settings
-              </button>
-              <button type="button" (click)="calculator.showNotification('Workspace synchronized with Live API Pipeline.', 'success')" class="w-full text-left px-4 py-2 text-[10px] text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer border-none bg-transparent">
-                Live Twin Pipelines
-              </button>
-            </div>
-            <div class="py-1">
-              <button type="button" (click)="calculator.logoutUser()" class="w-full text-left px-4 py-2 text-[10px] text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors flex items-center gap-1.5 cursor-pointer border-none bg-transparent">
-                <span class="material-symbols-outlined text-sm">logout</span>
-                <span>Disconnect Session</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-  </header>
-
-  @if (currentUrl() === '/estimations') {
-    <app-estimation-dashboard />
-  } @else {
-    <!-- Global Alert System Notifications -->
-    @if (calculator.notificationMessage()) {
-      <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] w-11/12 max-w-lg glass-panel px-6 py-4 rounded-xl border border-primary-custom/30 shadow-2xl flex items-center gap-3 animate-[fade-in_0.3s_ease] mb-1 bg-midnight-charcoal/95 backdrop-blur-md">
-        <span class="material-symbols-outlined text-primary-custom px-1 animate-pulse">
-          {{ calculator.notificationType() === 'success' ? 'verified' : calculator.notificationType() === 'warn' ? 'warning' : 'satellite_alt' }}
-        </span>
-        <div class="flex-1 font-mono text-xs tracking-wide text-left">
-          <p class="text-silver-leaf">{{ calculator.notificationMessage() }}</p>
-        </div>
+    <!-- VIEW 1: UNIFIED DASHBOARD -->
+    @if (calculator.activeTab() === 'dashboard') {
+      <div class="animate-fade-slide-up opacity-0 focus:outline-none">
+        <app-dashboard />
       </div>
     }
 
-    <!-- MAIN CONTENT CANVAS -->
-    <main class="relative pt-28 pb-32 max-w-[1280px] mx-auto px-6 md:px-20 min-h-screen">
+    <!-- VIEW 2: PORTFOLIO -->
+    @if (calculator.activeTab() === 'portfolio') {
+      <div class="animate-fade-slide-up opacity-0 focus:outline-none">
+        <app-portfolio />
+      </div>
+    }
 
-      <!-- VIEW 1: UNIFIED DASHBOARD -->
-      @if (calculator.activeTab() === 'dashboard') {
-        <div class="animate-fade-slide-up opacity-0 focus:outline-none">
-          <app-dashboard />
-        </div>
-      }
+    <!-- VIEW 3: COMPREHENSIVE ESTIMATOR CONFIGURATION -->
+    @if (calculator.activeTab() === 'config') {
+      <div class="space-y-10 animate-fade-slide-up opacity-0 text-left">
 
-      <!-- VIEW 2: PORTFOLIO -->
-      @if (calculator.activeTab() === 'portfolio') {
-        <div class="animate-fade-slide-up opacity-0 focus:outline-none">
-          <app-portfolio />
-        </div>
-      }
-
-      <!-- VIEW 3: COMPREHENSIVE ESTIMATOR CONFIGURATION -->
-      @if (calculator.activeTab() === 'config') {
-        <div class="space-y-10 animate-fade-slide-up opacity-0 text-left">
-
-          <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/5 pb-4">
-            <div>
-              <div class="inline-flex items-center gap-2 mb-2 select-none">
-                <span class="w-2 h-2 rounded-full col-primary pulse-pin bg-primary-custom"></span>
-                <span class="font-mono text-[10px] text-primary-custom uppercase tracking-widest font-mono">Financial Framework v4.0</span>
-              </div>
-              <h1 class="font-serif text-3xl md:text-5xl text-silver-leaf font-serif">Cost Estimation Configuration</h1>
-              <p class="text-[11px] text-on-surface-variant-custom mt-2 max-w-lg leading-relaxed font-sans">
-                Accurately configure pipeline systems and architectural specifications to generate high-fidelity commercial estimations instantly.
-              </p>
+        <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/5 pb-4">
+          <div>
+            <div class="inline-flex items-center gap-2 mb-2 select-none">
+              <span class="w-2 h-2 rounded-full col-primary pulse-pin bg-primary-custom"></span>
+              <span class="font-mono text-[10px] text-primary-custom uppercase tracking-widest font-mono">Financial Framework v4.0</span>
             </div>
-          </div>
-
-          <app-bim-selection />
-          <div class="pt-4 border-t border-silver-leaf/5">
-            <app-price-estimation />
-          </div>
-
-        </div>
-      }
-    </main>
-
-    <!-- Navigation Bottom Bar (Mobile Layout) -->
-    <nav class="fixed bottom-0 left-0 w-full z-50 backdrop-blur-xl bg-midnight-charcoal/80 border-t border-silver-leaf/10 md:hidden flex justify-around items-center py-3.5">
-      <button
-        type="button"
-        (click)="setTab('portfolio')"
-        [ngClass]="calculator.activeTab() === 'portfolio' ? 'text-primary-custom font-bold bg-white/5' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-        class="flex flex-col items-center justify-center rounded-lg py-1 px-3.5 transition-colors duration-300 focus:outline-none bg-transparent border-none cursor-pointer">
-        <span class="material-symbols-outlined text-[20px]">layers</span>
-        <span class="font-mono text-[9px] mt-0.5 tracking-wider">Portfolio</span>
-      </button>
-      <button
-        type="button"
-        (click)="setTab('config')"
-        [ngClass]="calculator.activeTab() === 'config' ? 'text-primary-custom font-bold bg-white/5' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-        class="flex flex-col items-center justify-center rounded-lg py-1 px-3.5 transition-colors duration-300 focus:outline-none bg-transparent border-none cursor-pointer">
-        <span class="material-symbols-outlined text-[20px]">tune</span>
-        <span class="font-mono text-[9px] mt-0.5 tracking-wider">Estimator</span>
-      </button>
-    </nav>
-
-    <!-- FOOTER -->
-    <footer class="w-full py-16 border-t border-silver-leaf/10 bg-[#0A0A0C] font-mono select-none">
-      <div class="max-w-[1280px] mx-auto px-6 md:px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 text-xs text-on-surface-variant-custom text-left">
-
-        <div class="space-y-4">
-          <div class="flex items-center gap-3">
-            <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6">
-              <defs>
-                <linearGradient id="logo-blue-f" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#dae1ff" />
-                  <stop offset="100%" stop-color="#a5b4fc" />
-                </linearGradient>
-                <linearGradient id="logo-gold-f" x1="0%" y1="100%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#e9c349" />
-                  <stop offset="100%" stop-color="#fef08a" />
-                </linearGradient>
-                <linearGradient id="logo-pink-f" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#DF80AC" />
-                  <stop offset="100%" stop-color="#f472b6" />
-                </linearGradient>
-              </defs>
-              <path d="M16 2L4 9V23L16 30" stroke="url(#logo-blue-f)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M16 2L28 9V23L16 30" stroke="url(#logo-pink-f)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
-              <path d="M16 2V16L4 23" stroke="url(#logo-gold-f)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M16 16L28 23" stroke="url(#logo-gold-f)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              <circle cx="16" cy="16" r="3.5" fill="url(#logo-gold-f)" />
-              <circle cx="4" cy="9" r="2" fill="url(#logo-blue-f)" />
-              <circle cx="28" cy="9" r="2" fill="url(#logo-pink-f)" />
-            </svg>
-            <span class="text-silver-leaf text-sm tracking-widest font-black uppercase transition-colors hover:text-[#DF80AC] duration-300">
-              BIM-<span class="text-secondary-custom font-normal">IQ</span>
-            </span>
-          </div>
-          <p class="leading-relaxed text-[11px] text-slate-400 font-sans">
-            Convert raw physical LiDAR scans into fully compliant Autodesk Revit sheets and CAD floor plans. Managed via automated geometric pipeline validation models.
-          </p>
-          <div class="inline-flex items-center gap-2 bg-[#DF80AC]/10 border border-[#DF80AC]/25 rounded-full px-3.5 py-1 text-[9.5px] font-bold text-[#DF80AC] shadow-[0_0_15px_rgba(223,128,172,0.1)]">
-            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span>
-            <span>PIPELINE COORDINATOR ACTIVE</span>
-          </div>
-          <div class="pt-2">
-            <button
-              id="btn-footer-add-project"
-              type="button"
-              (click)="calculator.openAddModal()"
-              class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary-custom/10 border border-primary-custom/25 text-primary-custom text-[10px] font-bold uppercase transition-all duration-300 hover:bg-primary-custom/20 hover:scale-[1.03] active:scale-95 cursor-pointer">
-              <span class="material-symbols-outlined text-sm">add_circle</span>
-              <span>Initiate Project Node</span>
-            </button>
+            <h1 class="font-serif text-3xl md:text-5xl text-silver-leaf font-serif">Cost Estimation Configuration</h1>
+            <p class="text-[11px] text-on-surface-variant-custom mt-2 max-w-lg leading-relaxed font-sans">
+              Accurately configure pipeline systems and architectural specifications to generate high-fidelity commercial estimations instantly.
+            </p>
           </div>
         </div>
 
-        <div class="space-y-4 font-sans">
-          <div class="text-silver-leaf text-[11px] uppercase tracking-wider font-bold border-b border-white/5 pb-2 font-mono">Digital Project Specifications</div>
-          <ul class="space-y-2 text-[11px] text-slate-400 list-none p-0 m-0">
-            <li class="flex items-center gap-2 mt-1 hover:text-white transition duration-200">
-              <span class="text-emerald-400 font-bold select-none text-[14px]">•</span>
-              <span>Orthophoto High-Res Floor Plans</span>
-            </li>
-            <li class="flex items-center gap-2 hover:text-white transition duration-200">
-              <span class="text-primary-custom font-bold select-none text-[14px]">•</span>
-              <span>LOD 200 schematic design layout</span>
-            </li>
-            <li class="flex items-center gap-2 hover:text-white transition duration-200">
-              <span class="text-primary-custom font-bold select-none text-[14px]">•</span>
-              <span>LOD 300 building information modeling</span>
-            </li>
-            <li class="flex items-center gap-2 hover:text-white transition duration-200">
-              <span class="text-secondary-custom font-bold select-none text-[14px]">•</span>
-              <span>LOD 350 precision clash co-ordinates</span>
-            </li>
-          </ul>
-        </div>
-
-        <div class="space-y-4">
-          <div class="text-silver-leaf text-[11px] uppercase tracking-wider font-bold border-b border-white/5 pb-2">Platform & Safety</div>
-          <div class="flex flex-col gap-2 text-[11px]">
-            <button type="button" (click)="calculator.showNotification('Documentation accessed successfully.', 'success')" class="text-left text-slate-400 hover:text-white hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer py-0.5 font-mono">
-              System Documentation Overview
-            </button>
-            <button type="button" (click)="calculator.showNotification('Core platform specifications loaded.', 'success')" class="text-left text-slate-400 hover:text-white hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer py-0.5 font-mono">
-              BIM Specifications Pipeline
-            </button>
-            <button type="button" (click)="calculator.showNotification('Global coverage maps telemetry synchronized.', 'success')" class="text-left text-slate-400 hover:text-white hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer py-0.5 font-mono">
-              Global Coverage Telemetry
-            </button>
-            <button type="button" (click)="calculator.showNotification('Privacy Framework fully compliant.', 'success')" class="text-left text-slate-400 hover:text-white hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer py-0.5 font-mono">
-              Privacy Protocol Framework
-            </button>
-          </div>
+        <app-bim-selection />
+        <div class="pt-4 border-t border-silver-leaf/5">
+          <app-price-estimation />
         </div>
 
       </div>
+    }
+  </main>
 
-      <div class="max-w-[1280px] mx-auto px-6 md:px-20 mt-12 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-500 font-mono">
-        <span>&copy; 2026 BIM-IQ / INTEGRATED PIPELINE NETWORK. ALL RIGHTS RESERVED.</span>
-        <span class="uppercase tracking-widest text-[#DF80AC] font-bold select-none flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block animate-ping"></span>
-          <span>AES-256 local encrypted node connected</span>
-        </span>
+  <!-- Navigation Bottom Bar (Mobile Layout) -->
+  <nav class="fixed bottom-0 left-0 w-full z-50 backdrop-blur-xl bg-midnight-charcoal/80 border-t border-silver-leaf/10 md:hidden flex justify-around items-center py-3.5">
+    <button
+      type="button"
+      (click)="setTab('portfolio')"
+      [ngClass]="calculator.activeTab() === 'portfolio' ? 'text-primary-custom font-bold bg-white/5' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+      class="flex flex-col items-center justify-center rounded-lg py-1 px-3.5 transition-colors duration-300 focus:outline-none bg-transparent border-none cursor-pointer">
+      <span class="material-symbols-outlined text-[20px]">layers</span>
+      <span class="font-mono text-[9px] mt-0.5 tracking-wider">Portfolio</span>
+    </button>
+    <button
+      type="button"
+      (click)="setTab('config')"
+      [ngClass]="calculator.activeTab() === 'config' ? 'text-primary-custom font-bold bg-white/5' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+      class="flex flex-col items-center justify-center rounded-lg py-1 px-3.5 transition-colors duration-300 focus:outline-none bg-transparent border-none cursor-pointer">
+      <span class="material-symbols-outlined text-[20px]">tune</span>
+      <span class="font-mono text-[9px] mt-0.5 tracking-wider">Estimator</span>
+    </button>
+  </nav>
+
+  <!-- FOOTER -->
+  <footer class="w-full py-16 border-t border-silver-leaf/10 bg-[#0A0A0C] font-mono select-none">
+    <div class="max-w-[1280px] mx-auto px-6 md:px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 text-xs text-on-surface-variant-custom text-left">
+
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6">
+            <defs>
+              <linearGradient id="logo-blue-f" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#dae1ff" />
+                <stop offset="100%" stop-color="#a5b4fc" />
+              </linearGradient>
+              <linearGradient id="logo-gold-f" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#e9c349" />
+                <stop offset="100%" stop-color="#fef08a" />
+              </linearGradient>
+              <linearGradient id="logo-pink-f" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#DF80AC" />
+                <stop offset="100%" stop-color="#f472b6" />
+              </linearGradient>
+            </defs>
+            <path d="M16 2L4 9V23L16 30" stroke="url(#logo-blue-f)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M16 2L28 9V23L16 30" stroke="url(#logo-pink-f)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+            <path d="M16 2V16L4 23" stroke="url(#logo-gold-f)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M16 16L28 23" stroke="url(#logo-gold-f)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="16" cy="16" r="3.5" fill="url(#logo-gold-f)" />
+            <circle cx="4" cy="9" r="2" fill="url(#logo-blue-f)" />
+            <circle cx="28" cy="9" r="2" fill="url(#logo-pink-f)" />
+          </svg>
+          <span class="text-silver-leaf text-sm tracking-widest font-black uppercase transition-colors hover:text-[#DF80AC] duration-300">
+            BIM-<span class="text-secondary-custom font-normal">IQ</span>
+          </span>
+        </div>
+        <p class="leading-relaxed text-[11px] text-slate-400 font-sans">
+          Convert raw physical LiDAR scans into fully compliant Autodesk Revit sheets and CAD floor plans. Managed via automated geometric pipeline validation models.
+        </p>
+        <div class="inline-flex items-center gap-2 bg-[#DF80AC]/10 border border-[#DF80AC]/25 rounded-full px-3.5 py-1 text-[9.5px] font-bold text-[#DF80AC] shadow-[0_0_15px_rgba(223,128,172,0.1)]">
+          <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span>
+          <span>PIPELINE COORDINATOR ACTIVE</span>
+        </div>
+        <div class="pt-2">
+          <button
+            id="btn-footer-add-project"
+            type="button"
+            (click)="calculator.openAddModal()"
+            class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary-custom/10 border border-primary-custom/25 text-primary-custom text-[10px] font-bold uppercase transition-all duration-300 hover:bg-primary-custom/20 hover:scale-[1.03] active:scale-95 cursor-pointer">
+            <span class="material-symbols-outlined text-sm">add_circle</span>
+            <span>Initiate Project Node</span>
+          </button>
+        </div>
       </div>
-    </footer>
-  }
 
+      <div class="space-y-4 font-sans">
+        <div class="text-silver-leaf text-[11px] uppercase tracking-wider font-bold border-b border-white/5 pb-2 font-mono">Digital Project Specifications</div>
+        <ul class="space-y-2 text-[11px] text-slate-400 list-none p-0 m-0">
+          <li class="flex items-center gap-2 mt-1 hover:text-white transition duration-200">
+            <span class="text-emerald-400 font-bold select-none text-[14px]">•</span>
+            <span>Orthophoto High-Res Floor Plans</span>
+          </li>
+          <li class="flex items-center gap-2 hover:text-white transition duration-200">
+            <span class="text-primary-custom font-bold select-none text-[14px]">•</span>
+            <span>LOD 200 schematic design layout</span>
+          </li>
+          <li class="flex items-center gap-2 hover:text-white transition duration-200">
+            <span class="text-primary-custom font-bold select-none text-[14px]">•</span>
+            <span>LOD 300 building information modeling</span>
+          </li>
+          <li class="flex items-center gap-2 hover:text-white transition duration-200">
+            <span class="text-secondary-custom font-bold select-none text-[14px]">•</span>
+            <span>LOD 350 precision clash co-ordinates</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="space-y-4">
+        <div class="text-silver-leaf text-[11px] uppercase tracking-wider font-bold border-b border-white/5 pb-2">Platform & Safety</div>
+        <div class="flex flex-col gap-2 text-[11px]">
+          <button type="button" (click)="calculator.showNotification('Documentation accessed successfully.', 'success')" class="text-left text-slate-400 hover:text-white hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer py-0.5 font-mono">
+            System Documentation Overview
+          </button>
+          <button type="button" (click)="calculator.showNotification('Core platform specifications loaded.', 'success')" class="text-left text-slate-400 hover:text-white hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer py-0.5 font-mono">
+            BIM Specifications Pipeline
+          </button>
+          <button type="button" (click)="calculator.showNotification('Global coverage maps telemetry synchronized.', 'success')" class="text-left text-slate-400 hover:text-white hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer py-0.5 font-mono">
+            Global Coverage Telemetry
+          </button>
+          <button type="button" (click)="calculator.showNotification('Privacy Framework fully compliant.', 'success')" class="text-left text-slate-400 hover:text-white hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer py-0.5 font-mono">
+            Privacy Protocol Framework
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="max-w-[1280px] mx-auto px-6 md:px-20 mt-12 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-500 font-mono">
+      <span>&copy; 2026 BIM-IQ / INTEGRATED PIPELINE NETWORK. ALL RIGHTS RESERVED.</span>
+      <span class="uppercase tracking-widest text-[#DF80AC] font-bold select-none flex items-center gap-1.5">
+        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block animate-ping"></span>
+        <span>AES-256 local encrypted node connected</span>
+      </span>
+    </div>
+  </footer>
   <!-- INITIATE PROJECT DIALOG MODAL -->
   @if (calculator.isAddModalOpen()) {
     <div class="fixed inset-0 bg-midnight-charcoal/90 backdrop-blur-md z-[200] flex justify-center items-center p-4 animate-[fade-in_0.25s_ease] text-left">

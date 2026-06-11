@@ -2,131 +2,91 @@
   <div class="dash-orb dash-orb-1"></div>
   <div class="dash-orb dash-orb-2"></div>
 
-  <div class="dash-body">
-    @if (user(); as u) {
-      <div class="dash-welcome">
-        <span class="dash-welcome-avatar">{{ u.initials }}</span>
-        <div>
-          <p class="dash-welcome-greeting">Welcome back, <strong>{{ u.name }}</strong></p>
-          <p class="dash-welcome-sub">{{ u.role }} &middot; {{ u.email }}</p>
-        </div>
-      </div>
-    }
+  <app-header />
 
-    <!-- Estimator Hub Nav Bar -->
-    <div class="dash-nav">
-      <span class="dash-nav-brand">Estimator Hub</span>
-      <div class="dash-nav-links">
-        <button class="dash-nav-link active">Pipeline</button>
-        <button class="dash-nav-link" (click)="setTab('portfolio')">Archive</button>
-        <button class="dash-nav-link" (click)="setTab('config')">New Estimate</button>
+  <!-- Notifications -->
+  @if (calculator.notificationMessage()) {
+    <div class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] w-11/12 max-w-lg glass-panel px-6 py-4 rounded-xl border border-primary-custom/30 shadow-2xl flex items-center gap-3 animate-[fade-in_0.3s_ease] mb-1 bg-midnight-charcoal/95 backdrop-blur-md">
+      <span class="material-symbols-outlined text-primary-custom px-1 animate-pulse">
+        {{ calculator.notificationType() === 'success' ? 'verified' : calculator.notificationType() === 'warn' ? 'warning' : 'satellite_alt' }}
+      </span>
+      <div class="flex-1 font-mono text-xs tracking-wide text-left">
+        <p class="text-silver-leaf">{{ calculator.notificationMessage() }}</p>
       </div>
-      @if (user(); as u) {
-        <div class="dash-nav-user">
-          <span class="dash-nav-avatar">{{ u.initials }}</span>
-          <span class="dash-nav-role">{{ u.role }}</span>
-        </div>
-      }
     </div>
+  }
 
-    <!-- Stage Progress Cards -->
+  <!-- Order Status Overview -->
+  <div class="dash-body">
     <div class="dash-section">
       <div class="dash-section-header">
         <div>
-          <span class="dash-section-label">STAGE BREAKDOWN</span>
-          <h2 class="dash-section-title">Estimation Workflow Status</h2>
+          <span class="dash-section-label">ORDER PIPELINE</span>
+          <h2 class="dash-section-title">Project Order Status Overview</h2>
         </div>
-        <span class="dash-table-count">{{ totalProjects() }} total</span>
+        <span class="dash-table-count">{{ totalCount() }} total orders</span>
       </div>
-      <div class="stage-grid">
-        @for (s of stageData; track s.key) {
-          <div class="stage-card" [style.--stage-color]="s.color">
-            <div class="stage-card-top">
-              <span class="stage-card-icon">
-                <span class="material-symbols-outlined">{{ s.icon }}</span>
+      <div class="status-grid">
+        @for (s of statusMeta; track s.key) {
+          <button type="button" class="status-card" [class.active]="filterStatus() === s.key"
+            [style.--card-color]="s.color" (click)="setFilter(s.key)">
+            <div class="status-card-row">
+              <span class="status-card-icon" [style.background]="s.color + '12'">
+                <span class="material-symbols-outlined" [style.color]="s.color">{{ s.icon }}</span>
               </span>
-              <span class="stage-card-value">{{ stageCount(s.key) }}</span>
+              <span class="status-card-label">{{ s.key }}</span>
+              <span class="status-card-value">{{ countFor(s.key) }}</span>
             </div>
-            <span class="stage-card-label">{{ s.label }}</span>
-            @if (s.key !== 'total') {
-              <div class="stage-card-bar">
-                <div class="stage-card-fill" [style.width.%]="stagePct(s.key)" [style.background]="s.color"></div>
-              </div>
-            }
-          </div>
+          </button>
         }
       </div>
     </div>
 
-    <!-- Estimations Metrics -->
-    <div class="dash-metrics">
-      @for (m of metrics; track m.label) {
-        <div class="metric-card">
-          <div class="metric-icon">
-            <span class="material-symbols-outlined">{{ m.icon }}</span>
-          </div>
-          <div class="metric-info">
-            <span class="metric-value">{{ m.value() }}</span>
-            <span class="metric-label">{{ m.label }}</span>
-            <span class="metric-change">{{ m.change() }}</span>
-          </div>
-        </div>
-      }
-    </div>
-
-    <!-- Recent Estimations -->
+    <!-- Order Cards -->
     <div class="dash-section">
       <div class="dash-section-header">
-        <h2 class="dash-section-title">Recent Estimations</h2>
-        <span class="dash-table-count">{{ recentEstimations.length }} items</span>
+        <div>
+          <span class="dash-section-label">ORDER DETAILS</span>
+          <h2 class="dash-section-title">Project Estimations</h2>
+        </div>
+        <span class="dash-table-count">{{ filteredOrders().length }} / {{ totalCount() }} records</span>
       </div>
-      <div class="dash-table-wrapper">
-        <table class="dash-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Project</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Stage</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (item of recentEstimations; track item.id) {
-              <tr>
-                <td class="cell-id">{{ item.id }}</td>
-                <td class="cell-project">{{ item.project }}</td>
-                <td>
-                  <span class="type-badge" [class.type-mep]="item.type === 'MEP'" [class.type-arch]="item.type === 'Architectural'" [class.type-struct]="item.type === 'Structural'">{{ item.type }}</span>
-                </td>
-                <td class="cell-amount">{{ item.amount }}</td>
-                <td>
-                  <span class="status-badge" [class.status-pending]="item.status === 'Pending'" [class.status-approved]="item.status === 'Approved'" [class.status-draft]="item.status === 'Draft'">{{ item.status }}</span>
-                </td>
-                <td>
-                  <span class="step-badge" [class.step-done]="item.step === 3" [class.step-two]="item.step === 2" [class.step-one]="item.step === 1">
-                    Step {{ item.step }}/3
-                  </span>
-                </td>
-                <td class="cell-date">{{ item.date }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
+      <div class="order-grid">
+        @for (item of filteredOrders(); track item.projectName) {
+          <div class="order-card" [class.card-recent]="item.status === 'recent'"
+            [class.card-ongoing]="item.status === 'ongoing'"
+            [class.card-rejected]="item.status === 'rejected'"
+            [class.card-hold]="item.status === 'hold'"
+            [class.card-completed]="item.status === 'completed'">
+            <div class="order-accent"></div>
+            <div class="order-inner">
+              <div class="order-header">
+                <div class="order-title">
+                  <span class="order-name">{{ item.projectName }}</span>
+                  <span class="order-email">{{ item.email }}</span>
+                </div>
+                <div class="order-pricing">
+                  <span class="order-price">{{ item.currency }}{{ item.price.toLocaleString() }}</span>
+                  <span class="order-sft">{{ item.sft.toLocaleString() }} <span class="order-sft-label">sft</span></span>
+                </div>
+              </div>
+              <div class="order-tags">
+                <span class="order-source-tag">{{ getSourceLabel(item.source) }}</span>
+                <span class="order-type-tag">{{ item.buildingType }}</span>
+                
+              </div>
+              <div class="order-req">{{ item.requirements }}</div>
+              @if (item.addons && item.addons.trim()) {
+                <div class="order-addons">{{ item.addons }}</div>
+              }
+              <div class="order-footer">
+                <span class="order-date">{{ item.date }}</span>
+              </div>
+            </div>
+          </div>
+        }
       </div>
     </div>
-
-    <div class="dash-footer">
-      <span>&copy; 2026 BIM-IQ Estimations Pipeline</span>
-      <span class="dash-footer-status">
-        <span class="dash-dot"></span>
-        System Online
-      </span>
-    </div>
-  </div>
-</div>
 
 @if (calculator.isAddModalOpen()) {
   <div class="fixed inset-0 bg-midnight-charcoal/90 backdrop-blur-md z-[200] flex justify-center items-center p-4 animate-[fade-in_0.25s_ease] text-left">
@@ -176,4 +136,38 @@
       </div>
     </div>
   </div>
+
+  <!-- USER SIGN IN DIALOG MODAL -->
+  @if (calculator.isLoginModalOpen()) {
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-md z-[200] flex justify-center items-center p-4 animate-fade-in text-left">
+      <div class="glass-panel w-full max-w-sm rounded-2xl border border-white/10 shadow-2xl p-6 relative flex flex-col gap-4 bg-[#121216]">
+        <div class="flex justify-between items-center pb-2 border-b border-white/5">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[#DF80AC]">.</span>
+            <span class="font-mono text-xs uppercase tracking-widest text-[#DF80AC] font-bold">Authenticate Node Access</span>
+          </div>
+          <button type="button" (click)="calculator.isLoginModalOpen.set(false)" class="text-slate-400 hover:text-white focus:outline-none bg-transparent border-none cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+        <div class="space-y-4 font-mono text-xs">
+          <p class="text-[10px] text-slate-400 normal-case leading-relaxed font-sans mt-1">
+            Welcome to BIM-IQ. Authenticate to synchronize your digital twin estimates directly to realityxd.axisxd.com.
+          </p>
+          <div class="space-y-1">
+            <label for="loginEmailE" class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Corporate Identity Email</label>
+            <input id="loginEmailE" [value]="calculator.loginEmailInput()" (input)="calculator.loginEmailInput.set($any($event.target).value)" type="email" placeholder="engineer@axisxd.com" class="w-full bg-[#191922] border border-white/10 rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-[#DF80AC]"/>
+          </div>
+          <div class="space-y-1">
+            <label for="loginPasswordE" class="text-[10px] text-slate-400 uppercase tracking-wider block font-bold">Access Token Key</label>
+            <input id="loginPasswordE" [value]="calculator.loginPasswordInput()" (input)="calculator.loginPasswordInput.set($any($event.target).value)" type="password" placeholder="Digital token hash" class="w-full bg-[#191922] border border-white/10 rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-[#DF80AC]"/>
+          </div>
+        </div>
+        <div class="flex gap-3 pt-2">
+          <button type="button" (click)="calculator.isLoginModalOpen.set(false)" class="flex-1 py-2.5 border border-white/10 bg-transparent text-slate-300 rounded-lg hover:bg-white/5 font-mono text-xs font-bold uppercase transition-all cursor-pointer">CANCEL</button>
+          <button type="button" [disabled]="!calculator.loginEmailInput().trim() || !calculator.loginEmailInput().includes('@')" (click)="calculator.loginUser(calculator.loginEmailInput())" class="flex-1 py-2.5 bg-[#DF80AC] text-black rounded-lg hover:opacity-90 active:scale-95 disabled:opacity-45 disabled:scale-100 disabled:cursor-not-allowed font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-md">AUTHENTICATE</button>
+        </div>
+      </div>
+    </div>
+  }
 }

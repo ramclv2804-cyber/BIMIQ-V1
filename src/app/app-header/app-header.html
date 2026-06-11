@@ -1,0 +1,111 @@
+<header class="app-header">
+  <button type="button" class="flex items-center gap-3 cursor-pointer text-left focus:outline-none bg-transparent border-none" (click)="goHome()">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 hover:scale-110 hover:rotate-3 transition-all duration-300">
+      <defs>
+        <linearGradient id="logo-hdr" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#dae1ff" />
+          <stop offset="100%" stop-color="#a5b4fc" />
+        </linearGradient>
+        <linearGradient id="logo-hdr-g" x1="0%" y1="100%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#e9c349" />
+          <stop offset="100%" stop-color="#fef08a" />
+        </linearGradient>
+        <linearGradient id="logo-hdr-p" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#DF80AC" />
+          <stop offset="100%" stop-color="#f472b6" />
+        </linearGradient>
+      </defs>
+      <path d="M16 2L4 9V23L16 30" stroke="url(#logo-hdr)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M16 2L28 9V23L16 30" stroke="url(#logo-hdr-p)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+      <path d="M16 2V16L4 23" stroke="url(#logo-hdr-g)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M16 16L28 23" stroke="url(#logo-hdr-g)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <circle cx="16" cy="16" r="3.5" fill="url(#logo-hdr-g)" class="animate-pulse" />
+      <circle cx="16" cy="16" r="5.5" stroke="url(#logo-hdr-g)" stroke-width="1" opacity="0.4" />
+      <circle cx="4" cy="9" r="2" fill="url(#logo-hdr)" />
+      <circle cx="28" cy="9" r="2" fill="url(#logo-hdr-p)" />
+      <circle cx="16" cy="30" r="2" fill="url(#logo-hdr-p)" />
+    </svg>
+    <span class="font-sans font-black text-2xl text-primary-custom tracking-wider flex items-center">
+      BIM<span class="text-secondary-custom font-light bg-secondary-custom/10 px-1.5 py-0.5 rounded-md ml-0.5 shadow-sm text-xs border border-secondary-custom/20 font-mono tracking-normal">IQ</span>
+    </span>
+  </button>
+
+  <nav class="hidden md:flex items-center gap-8">
+    <button type="button"
+      class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
+      [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'portfolio' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+      (click)="setTab('portfolio')">
+      <span class="hover-underline-animate pb-0.5" [class.after:scale-x-100]="currentUrl() === '/' && calculator.activeTab() === 'portfolio'">Portfolio</span>
+    </button>
+    <button type="button"
+      class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
+      [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'config' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+      (click)="setTab('config')">
+      <span class="hover-underline-animate pb-0.5" [class.after:scale-x-100]="currentUrl() === '/' && calculator.activeTab() === 'config'">Price Estimate</span>
+    </button>
+    @if (isLoggedIn()) {
+      <button type="button"
+        class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
+        [ngClass]="currentUrl() === '/estimations' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+        (click)="goToEstimations()">
+        <span class="hover-underline-animate pb-0.5" [class.after:scale-x-100]="currentUrl() === '/estimations'">Estimations</span>
+      </button>
+      <button type="button"
+        class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
+        [ngClass]="currentUrl() === '/userDashboard' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+        (click)="goToDashboard()">
+        <span class="hover-underline-animate pb-0.5" [class.after:scale-x-100]="currentUrl() === '/userDashboard'">userDashboard</span>
+      </button>
+    }
+  </nav>
+
+  <div class="flex items-center gap-3">
+      <button type="button"
+        class="hidden sm:inline-block bg-primary-custom text-on-primary-custom font-mono text-xs uppercase tracking-widest px-5 py-2 rounded-full border border-primary-custom/10 hover:opacity-90 hover:scale-[1.05] active:scale-95 transition-all focus:outline-none cursor-pointer border-none font-bold"
+        (click)="openAddModal()">
+        INITIATE PROJECT
+      </button>
+
+    @if (!isLoggedIn()) {
+      <button type="button" (click)="signIn()"
+        class="flex items-center gap-2 bg-[#DF80AC]/10 text-white border border-[#DF80AC]/30 font-mono text-[10px] uppercase tracking-widest px-4 py-2 rounded-full hover:bg-[#DF80AC]/20 hover:scale-[1.03] active:scale-95 transition-all focus:outline-none cursor-pointer font-bold">
+        <span class="material-symbols-outlined text-[14px] text-[#DF80AC] font-bold"></span>
+        <span>SIGN IN</span>
+      </button>
+    } @else {
+      <div class="relative user-menu-container select-none z-[100]">
+        <button type="button" (click)="toggleUserMenu()"
+          class="flex items-center gap-2 border border-[#DF80AC]/30 bg-[#DF80AC]/15 px-3 py-1.5 rounded-full text-slate-200 text-xs font-mono transition-all duration-300 hover:bg-[#DF80AC]/25 focus:outline-none cursor-pointer">
+          <span class="w-6 h-6 rounded-full bg-[#DF80AC] text-black flex items-center justify-center font-bold text-[10px]">
+            {{ user()?.initials }}
+          </span>
+          <span class="hidden md:inline font-bold text-xs uppercase tracking-wider text-[#DF80AC]">{{ user()?.name }}</span>
+          <span class="material-symbols-outlined text-sm transition-transform duration-300" [class.rotate-180]="isUserMenuOpen()">expand_more</span>
+        </button>
+        @if (isUserMenuOpen()) {
+          <div class="absolute right-0 mt-2 w-56 bg-[#121216] border border-white/10 rounded-xl shadow-2xl py-2 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 z-[60] text-left">
+            <div class="px-4 py-2.5 text-left">
+              <p class="text-white font-bold leading-tight">{{ user()?.name }}</p>
+              <p class="text-[9.5px] text-slate-400 mt-0.5 truncate">{{ user()?.email }}</p>
+              <p class="text-[8.5px] text-[#DF80AC] uppercase font-bold mt-1.5 tracking-wider bg-[#DF80AC]/10 border border-[#DF80AC]/25 px-1.5 py-0.5 rounded inline-block">{{ user()?.role }}</p>
+            </div>
+            <div class="py-1">
+              <button type="button" (click)="calculator.showNotification('Account integration synchronizing to cloud database.', 'info')" class="w-full text-left px-4 py-2 text-[10px] text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer border-none bg-transparent">
+                Account Node Settings
+              </button>
+              <button type="button" (click)="calculator.showNotification('Workspace synchronized with Live API Pipeline.', 'success')" class="w-full text-left px-4 py-2 text-[10px] text-slate-300 hover:bg-white/5 hover:text-white transition-colors cursor-pointer border-none bg-transparent">
+                Live Twin Pipelines
+              </button>
+            </div>
+            <div class="py-1">
+              <button type="button" (click)="logout()" class="w-full text-left px-4 py-2 text-[10px] text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-colors flex items-center gap-1.5 cursor-pointer border-none bg-transparent">
+                <span class="material-symbols-outlined text-sm">logout</span>
+                <span>Disconnect Session</span>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</header>

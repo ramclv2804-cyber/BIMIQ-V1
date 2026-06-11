@@ -9,12 +9,14 @@ import { PriceEstimation } from './price-estimation/price-estimation';
 import { BimSelection } from './bim-selection/bim-selection';
 import { Signin } from './signin/signin';
 import { EstimationDashboard } from './estimation-dashboard/estimation-dashboard';
+import { AppHeader } from './app-header/app-header';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-root',
   imports: [
     CommonModule,
+    AppHeader,
     Dashboard,
     Portfolio,
     PriceEstimation,
@@ -40,19 +42,7 @@ export class App {
     });
   }
 
-  setTab(tab: 'dashboard' | 'portfolio' | 'config') {
-    this.calculator.setTab(tab);
-  }
-
-  openAddModal() {
-    this.calculator.openAddModal();
-  }
-
-  signIn() {
-    this.router.navigate(['/login']);
-  }
-
-  goToEstimations() {
-    this.router.navigate(['/estimations']);
+  setTab(tab: string) {
+    this.calculator.setTab(tab as 'dashboard' | 'portfolio' | 'config');
   }
 }
