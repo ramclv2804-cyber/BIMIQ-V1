@@ -489,7 +489,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           <div class="lg:col-span-5 space-y-4">
             
             <!-- Card 1 -->
-            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-primary-custom/25 transition-all group hover:bg-[#151619]/40">
+            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-primary-custom/25 transition-all group hover:bg-[#151619]/40 animate-fade-slide-up opacity-0" style="animation-delay: 60ms;">
               <div class="flex items-center gap-3 mb-2 font-mono">
                 <span class="material-symbols-outlined text-primary-custom" style="font-variation-settings: 'FILL' 1;">architecture</span>
                 <h4 class="font-serif text-lg text-silver-leaf font-bold">Native CAD Precision</h4>
@@ -500,7 +500,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             </div>
 
             <!-- Card 2 -->
-            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#DF80AC]/25 transition-all group hover:bg-[#151619]/40">
+            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#DF80AC]/25 transition-all group hover:bg-[#151619]/40 animate-fade-slide-up opacity-0" style="animation-delay: 140ms;">
               <div class="flex items-center gap-3 mb-2 font-mono">
                 <span class="material-symbols-outlined text-[#DF80AC]" style="font-variation-settings: 'FILL' 1;">photo_camera_back</span>
                 <h4 class="font-serif text-lg text-silver-leaf font-bold">360° Continuity</h4>
@@ -511,7 +511,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             </div>
 
             <!-- Card 3 -->
-            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#e9c349]/25 transition-all group hover:bg-[#151619]/40">
+            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#e9c349]/25 transition-all group hover:bg-[#151619]/40 animate-fade-slide-up opacity-0" style="animation-delay: 220ms;">
               <div class="flex items-center gap-3 mb-2 font-mono">
                 <span class="material-symbols-outlined text-[#e9c349]">sync</span>
                 <h4 class="font-serif text-lg text-silver-leaf font-bold">BIM Coordination</h4>

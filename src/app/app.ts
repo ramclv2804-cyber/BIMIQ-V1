@@ -9,6 +9,7 @@ import { PriceEstimation } from './price-estimation/price-estimation';
 import { BimSelection } from './bim-selection/bim-selection';
 import { Signin } from './signin/signin';
 import { EstimationDashboard } from './estimation-dashboard/estimation-dashboard';
+import { Projects } from './projects/projects';
 import { AppHeader } from './app-header/app-header';
 
 @Component({
@@ -23,6 +24,7 @@ import { AppHeader } from './app-header/app-header';
     BimSelection,
     Signin,
     EstimationDashboard,
+    Projects,
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',

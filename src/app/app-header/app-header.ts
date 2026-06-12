@@ -44,9 +44,11 @@ export class AppHeader {
     this.router.navigate(['/estimations']);
   }
 
-  goToDashboard() {
-    this.router.navigate(['/userDashboard']);
+  goToProjects() {
+    this.router.navigate(['/projects']);
   }
+
+ 
 
   openAddModal() {
     this.calculator.openAddModal();

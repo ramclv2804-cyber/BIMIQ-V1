@@ -22,7 +22,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
             <!-- STEP 1: Project Specifications -->
             @if (formStep() === 1) {
-              <div class="animate-[fade-slide-up_0.35s_ease] space-y-5">
+              <div class="animate-fade-slide-up opacity-0 space-y-5">
                 <div class="flex items-center gap-2 mb-1 select-none">
                   <span class="text-[10px] text-primary-custom uppercase tracking-widest font-bold font-mono">Step 1 of 3</span>
                   <div class="h-px flex-1 bg-white/10"></div>
@@ -362,7 +362,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
             <!-- STEP 2: Location Information -->
             @if (formStep() === 2) {
-              <div class="animate-[fade-slide-up_0.35s_ease] space-y-5">
+              <div class="animate-fade-slide-up opacity-0 space-y-5">
                 <div class="flex items-center gap-2 mb-1 select-none">
                   <span class="text-[10px] text-primary-custom uppercase tracking-widest font-bold font-mono">Step 2 of 3</span>
                   <div class="h-px flex-1 bg-white/10"></div>
@@ -441,7 +441,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
             <!-- STEP 3: Order Summary -->
             @if (formStep() === 3) {
-              <div class="animate-[fade-slide-up_0.35s_ease] space-y-5">
+              <div class="animate-fade-slide-up opacity-0 space-y-5">
                 <div class="flex items-center gap-2 mb-1 select-none">
                   <span class="text-[10px] text-primary-custom uppercase tracking-widest font-bold font-mono">Step 3 of 3</span>
                   <div class="h-px flex-1 bg-white/10"></div>
@@ -589,8 +589,8 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                 <div class="absolute left-[10%] right-[10%] top-[14px] h-0.5 bg-white/10 -translate-y-1/2"></div>
                 <div class="absolute left-[10%] top-[14px] h-0.5 bg-emerald-500 -translate-y-1/2 transition-all duration-500"
                   [style.width.%]="formStep() === 1 ? 0 : formStep() === 2 ? 40 : 80"></div>
-                @for (step of [1, 2, 3]; track step) {
-                  <div class="flex flex-col items-center gap-1.5 z-10">
+                @for (step of [1, 2, 3]; track step; let i = $index) {
+                  <div class="flex flex-col items-center gap-1.5 z-10 animate-fade-slide-up opacity-0" [style.animation-delay]="(i * 80) + 'ms'">
                     <div (click)="goToStep(step)"
                       [ngClass]="formStep() > step ? 'bg-emerald-500 border-emerald-500 cursor-pointer' : formStep() === step ? 'bg-primary-custom border-primary-custom ring-2 ring-primary-custom/30' : 'bg-[#19191D] border-white/10 cursor-pointer hover:border-white/30'"
                       class="w-7 h-7 rounded-full border flex items-center justify-center text-[10px] font-bold font-mono transition-all duration-300 hover:scale-110 active:scale-95">

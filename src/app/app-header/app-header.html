@@ -46,15 +46,15 @@
     @if (isLoggedIn()) {
       <button type="button"
         class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
-        [ngClass]="currentUrl() === '/estimations' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-        (click)="goToEstimations()">
-        <span class="hover-underline-animate pb-0.5" [class.after:scale-x-100]="currentUrl() === '/estimations'">Estimations</span>
+        [ngClass]="currentUrl() === '/projects' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+        (click)="goToProjects()">
+        <span class="hover-underline-animate pb-0.5" [class.after:scale-x-100]="currentUrl() === '/projects'">Projects</span>
       </button>
       <button type="button"
         class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
-        [ngClass]="currentUrl() === '/userDashboard' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-        (click)="goToDashboard()">
-        <span class="hover-underline-animate pb-0.5" [class.after:scale-x-100]="currentUrl() === '/userDashboard'">userDashboard</span>
+        [ngClass]="currentUrl() === '/estimations' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+        (click)="goToEstimations()">
+        <span class="hover-underline-animate pb-0.5" [class.after:scale-x-100]="currentUrl() === '/estimations'">Estimations</span>
       </button>
     }
   </nav>

@@ -27,9 +27,9 @@
         <span class="dash-table-count">{{ totalCount() }} total orders</span>
       </div>
       <div class="status-grid">
-        @for (s of statusMeta; track s.key) {
-          <button type="button" class="status-card" [class.active]="filterStatus() === s.key"
-            [style.--card-color]="s.color" (click)="setFilter(s.key)">
+        @for (s of statusMeta; track s.key; let i = $index) {
+          <button type="button" class="status-card animate-fade-slide-up opacity-0" [class.active]="filterStatus() === s.key"
+            [style.--card-color]="s.color" [style.animation-delay]="(i * 60) + 'ms'" (click)="setFilter(s.key)">
             <div class="status-card-row">
               <span class="status-card-icon" [style.background]="s.color + '12'">
                 <span class="material-symbols-outlined" [style.color]="s.color">{{ s.icon }}</span>
@@ -52,12 +52,13 @@
         <span class="dash-table-count">{{ filteredOrders().length }} / {{ totalCount() }} records</span>
       </div>
       <div class="order-grid">
-        @for (item of filteredOrders(); track item.projectName) {
-          <div class="order-card" [class.card-recent]="item.status === 'recent'"
+        @for (item of filteredOrders(); track item.projectName; let i = $index) {
+          <div class="order-card animate-fade-slide-up opacity-0" [class.card-recent]="item.status === 'recent'"
             [class.card-ongoing]="item.status === 'ongoing'"
             [class.card-rejected]="item.status === 'rejected'"
             [class.card-hold]="item.status === 'hold'"
-            [class.card-completed]="item.status === 'completed'">
+            [class.card-completed]="item.status === 'completed'"
+            [style.animation-delay]="(i * 70) + 'ms'">
             <div class="order-accent"></div>
             <div class="order-inner">
               <div class="order-header">
