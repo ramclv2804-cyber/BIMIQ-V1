@@ -95,7 +95,7 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
   z-index: 1;
   animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  margin-top: 2rem;
+  margin-top: 5rem;
 }
 
 @keyframes cardIn {
@@ -255,6 +255,32 @@
   border-color: #DF80AC;
   background: rgba(223, 128, 172, 0.05);
   box-shadow: 0 0 0 3px rgba(223, 128, 172, 0.1);
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.password-wrapper input {
+  padding-right: 2.5rem;
+}
+.pwd-toggle {
+  position: absolute;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  line-height: 0;
+}
+.pwd-toggle:hover {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .submit-btn {

@@ -50,6 +50,7 @@ export class SpatialCostCalculator {
             initials: nameStr.substring(0, 2).toUpperCase(),
             role: 'Project Chief Coordinator'
           });
+          this.smartEmail.set(data.email);
           this.isLoggedIn.set(true);
         }
       }
@@ -80,6 +81,7 @@ export class SpatialCostCalculator {
       initials: initials,
       role: 'Project Chief Coordinator'
     });
+    this.smartEmail.set(trimmed);
     this.isLoggedIn.set(true);
     this.isLoginModalOpen.set(false);
     this.setSessionCookie(trimmed);
@@ -89,6 +91,7 @@ export class SpatialCostCalculator {
   logoutUser() {
     this.isLoggedIn.set(false);
     this.currentUser.set(null);
+    this.smartEmail.set('');
     this.clearSessionCookie();
     this.showNotification('Authorized session disconnected.', 'info');
   }
@@ -274,6 +277,7 @@ export class SpatialCostCalculator {
   // 'prebuilt': Prebuilt Scan to BIM (formerly Prebuilt / Existing Model / Prebuilt BIM Modeling)
   // 'cad_to_bim': CAD to BIM transition
   selectedModelingWay = signal<'bim' | 'prebuilt' | 'cad_to_bim'>('bim');
+  modelingSelectionLocked = signal<boolean>(false);
 
   // CAD to BIM fields
   cadSheetCount = signal<number>(4);

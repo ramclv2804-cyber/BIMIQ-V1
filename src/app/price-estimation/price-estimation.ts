@@ -295,12 +295,8 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                         </button>
                       </div>
                     </div>
-                  </div>
-                }
 
-                <!-- Common Fields: Currency + Email -->
-                <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
-                  <div class="space-y-1.5 flex flex-col relative">
+                    <div class="space-y-1.5 flex flex-col relative  hidden">
                     <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Quotation Currency <span class="text-red-400">*</span></span>
                     <div class="relative font-mono">
                       <button type="button" (click)="toggleCurrencyDropdown(); $event.stopPropagation()" class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
@@ -329,7 +325,13 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <input id="smartEmailInputField" [value]="calculator.smartEmail()" (input)="calculator.smartEmail.set($any($event.target).value)" type="email" placeholder="john@mycompany.com" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 tracking-wide text-silver-leaf focus:outline-none focus:border-[#DF80AC] font-mono text-xs"/>
                     @if (!calculator.isEmailValid() && calculator.smartEmail().length > 0) { <p class="text-[10px] text-red-400 font-mono italic">Please enter a valid active email with an '@' and '.' symbol</p> }
                   </div>
-                </div>
+                  </div>
+                }
+
+                <!-- Common Fields: Currency + Email
+                <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
+                  
+                </div> -->
 
                 <!-- Validation errors -->
                 @if (!isProjectDetailsValid()) {
@@ -750,6 +752,7 @@ export class PriceEstimation implements OnInit {
       const step = parseInt(stepParam, 10);
       if (step >= 1 && step <= 3) {
         this.formStep.set(step);
+        if (step > 1) this.calculator.modelingSelectionLocked.set(true);
       }
     }
   }
@@ -785,6 +788,7 @@ export class PriceEstimation implements OnInit {
       }
     }
     this.formStep.set(step);
+    this.calculator.modelingSelectionLocked.set(step > 1);
     const url = new URL(window.location.href);
     url.searchParams.set('step', String(step));
     window.history.replaceState({}, '', url.toString());

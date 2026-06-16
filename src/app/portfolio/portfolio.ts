@@ -98,16 +98,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           }
         </div>
 
-        <!-- Request full zip archive compile -->
-        <div class="mt-20 flex justify-center">
-          <button 
-            type="button"
-            (click)="triggerArchiveDownload()"
-            class="group flex items-center gap-4 px-8 py-4 glass-panel rounded-full hover:bg-primary-custom hover:text-on-primary-custom hover:border-primary-custom transition-all duration-300 active:scale-95 focus:outline-none cursor-pointer">
-            <span class="font-mono text-xs uppercase tracking-widest">Request Full Technical Archive</span>
-            <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-          </button>
-        </div>
+       
       } @else {
         <div class="glass-panel p-12 text-center rounded-2xl border border-dashed border-silver-leaf/10">
           <span class="material-symbols-outlined text-4xl text-primary-custom/50 animate-pulse">database_off</span>
@@ -118,14 +109,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         </div>
       }
 
-      <!-- Interactive FAB to insert custom designs -->
-      <button 
-        type="button"
-        (click)="calculator.openAddModal()"
-        class="fixed bottom-24 right-6 md:bottom-12 md:right-12 w-14 h-14 bg-primary-custom text-on-primary-custom rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-90 z-40 group focus:outline-none cursor-pointer">
-        <span class="material-symbols-outlined">add</span>
-        <span class="absolute right-full mr-4 bg-midnight-charcoal border border-silver-leaf/10 px-3 py-1.5 rounded-lg text-primary-custom font-mono text-[9px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">INITIATE PROJECT</span>
-      </button>
+      
     </div>
   `,
 })

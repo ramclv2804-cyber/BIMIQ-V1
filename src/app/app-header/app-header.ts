@@ -48,7 +48,9 @@ export class AppHeader {
     this.router.navigate(['/projects']);
   }
 
- 
+ goToResources() {
+    this.router.navigate(['/resources']);
+  }
 
   openAddModal() {
     this.calculator.openAddModal();

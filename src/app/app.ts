@@ -11,6 +11,7 @@ import { Signin } from './signin/signin';
 import { EstimationDashboard } from './estimation-dashboard/estimation-dashboard';
 import { Projects } from './projects/projects';
 import { AppHeader } from './app-header/app-header';
+import { Resources } from './resources/resources';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +26,8 @@ import { AppHeader } from './app-header/app-header';
     Signin,
     EstimationDashboard,
     Projects,
+    Resources
+    
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -46,5 +49,10 @@ export class App {
 
   setTab(tab: string) {
     this.calculator.setTab(tab as 'dashboard' | 'portfolio' | 'config');
+  }
+
+  goToEstimator() {
+    this.calculator.setTab('config');
+    this.router.navigate(['/']);
   }
 }

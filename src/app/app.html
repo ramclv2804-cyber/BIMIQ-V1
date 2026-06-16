@@ -4,6 +4,8 @@
   <app-estimation-dashboard />
 } @else if (currentUrl() === '/projects') {
   <app-projects />
+} @else if (currentUrl() === '/resources') {
+  <app-resources />
 } @else {
   <!-- Background Glows -->
   <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
@@ -132,7 +134,7 @@
           <button
             id="btn-footer-add-project"
             type="button"
-            (click)="calculator.openAddModal()"
+            (click)="goToEstimator()"
             class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary-custom/10 border border-primary-custom/25 text-primary-custom text-[10px] font-bold uppercase transition-all duration-300 hover:bg-primary-custom/20 hover:scale-[1.03] active:scale-95 cursor-pointer">
             <span class="material-symbols-outlined text-sm">add_circle</span>
             <span>Initiate Project Node</span>
@@ -190,95 +192,17 @@
       </span>
     </div>
   </footer>
-  <!-- INITIATE PROJECT DIALOG MODAL -->
-  @if (calculator.isAddModalOpen()) {
-    <div class="fixed inset-0 bg-midnight-charcoal/90 backdrop-blur-md z-[200] flex justify-center items-center p-4 animate-[fade-in_0.25s_ease] text-left">
-      <div class="glass-panel w-full max-w-md rounded-2xl border-primary-custom/25 shadow-2xl p-6 relative flex flex-col gap-4 animate-[scale-up_0.3s_cubic-bezier(0.16,1,0.3,1)] bg-midnight-charcoal">
-        <div class="flex justify-between items-center pb-2 border-b border-silver-leaf/10">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary-custom">rocket_launch</span>
-            <span class="font-mono text-xs uppercase tracking-widest text-silver-leaf font-bold">Initiate Project Node</span>
-          </div>
-          <button type="button" (click)="calculator.closeAddModal()" class="text-on-surface-variant-custom hover:text-white focus:outline-none bg-transparent border-none cursor-pointer">
-            <span class="material-symbols-outlined text-[18px]">close</span>
-          </button>
-        </div>
+}
 
-        <div class="space-y-4 font-mono text-xs">
-          <div class="space-y-1">
-            <label for="newProjTitle" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Title</label>
-            <input
-              id="newProjTitle"
-              [value]="calculator.newProjectTitle()"
-              (input)="calculator.newProjectTitle.set($any($event.target).value)"
-              type="text"
-              placeholder="Crystal Atrium"
-              class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom"/>
-          </div>
-          <div class="space-y-1">
-            <label for="newProjCat" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Technical Category</label>
-            <select
-              id="newProjCat"
-              [value]="calculator.newProjectCategory()"
-              (change)="calculator.newProjectCategory.set($any($event.target).value)"
-              class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom font-mono text-xs cursor-pointer">
-              <option value="STRUCTURAL">STRUCTURAL Civil Skeleton</option>
-              <option value="ARCHITECTURAL">ARCHITECTURAL Aesthetics</option>
-              <option value="MEP">MEP Infrastructure Pipeline</option>
-            </select>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="space-y-1">
-              <label for="newProjType" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Typology</label>
-              <input
-                id="newProjType"
-                [value]="calculator.newProjectTypology()"
-                (input)="calculator.newProjectTypology.set($any($event.target).value)"
-                type="text"
-                placeholder="Commercial"
-                class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom"/>
-            </div>
-            <div class="space-y-1">
-              <label for="newProjMag" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Scale Size</label>
-              <input
-                id="newProjMag"
-                [value]="calculator.newProjectMagnitude()"
-                (input)="calculator.newProjectMagnitude.set($any($event.target).value)"
-                type="text"
-                placeholder="12,000 SQ FT"
-                class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom"/>
-            </div>
-          </div>
-          <div class="space-y-1">
-            <label for="newProjDesc" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Short Design Description</label>
-            <textarea
-              id="newProjDesc"
-              [value]="calculator.newProjectDescription()"
-              (input)="calculator.newProjectDescription.set($any($event.target).value)"
-              rows="3"
-              placeholder="Bespoke faceted steel workspace with parametric light ventilation integration."
-              class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-primary-custom resize-none"></textarea>
-          </div>
-        </div>
-
-        <div class="flex gap-3 pt-2">
-          <button
-            type="button"
-            (click)="calculator.closeAddModal()"
-            class="flex-1 py-2.5 border border-silver-leaf/20 bg-transparent text-silver-leaf rounded-lg hover:bg-white/5 font-mono text-xs font-bold uppercase transition-all cursor-pointer">
-            CANCEL
-          </button>
-          <button
-            type="button"
-            [disabled]="!calculator.newProjectTitle().trim()"
-            (click)="calculator.submitNewProject()"
-            class="flex-1 py-2.5 bg-primary-custom text-on-primary-custom rounded-lg hover:opacity-90 active:scale-95 disabled:opacity-40 disabled:scale-100 disabled:cursor-not-allowed font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-md shadow-primary-custom/10">
-            SUBMIT NODE
-          </button>
-        </div>
-
-      </div>
-    </div>
+  <!-- Floating Initiate Project FAB (all pages except login) -->
+  @if (currentUrl() !== '/login') {
+    <button
+      type="button"
+      (click)="goToEstimator()"
+      class="fixed bottom-24 right-6 md:bottom-6 md:right-6 w-14 h-14 bg-primary-custom text-on-primary-custom rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-90 z-40 group focus:outline-none cursor-pointer">
+      <span class="material-symbols-outlined">add</span>
+      <span class="absolute right-full mr-4 bg-midnight-charcoal border border-silver-leaf/10 px-3 py-1.5 rounded-lg text-primary-custom font-mono text-[9px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">INITIATE PROJECT</span>
+    </button>
   }
 
   <!-- USER SIGN IN DIALOG MODAL -->
@@ -295,7 +219,7 @@
           </button>
         </div>
 
-        <div class="space-y-4 font-mono text-xs">
+        <form (ngSubmit)="calculator.loginUser(calculator.loginEmailInput())" class="space-y-4 font-mono text-xs">
           <p class="text-[10px] text-slate-400 normal-case leading-relaxed font-sans mt-1">
             Welcome to BIM-IQ. Authenticate to synchronize your digital twin estimates directly to realityxd.axisxd.com.
           </p>
@@ -317,27 +241,26 @@
               (input)="calculator.loginPasswordInput.set($any($event.target).value)"
               type="password"
               placeholder="Digital token hash"
+              autocomplete="current-password"
               class="w-full bg-[#191922] border border-white/10 rounded-lg px-3 py-2 text-silver-leaf focus:outline-none focus:border-[#DF80AC]"/>
           </div>
-        </div>
 
-        <div class="flex gap-3 pt-2">
-          <button
-            type="button"
-            (click)="calculator.isLoginModalOpen.set(false)"
-            class="flex-1 py-2.5 border border-white/10 bg-transparent text-slate-300 rounded-lg hover:bg-white/5 font-mono text-xs font-bold uppercase transition-all cursor-pointer">
-            CANCEL
-          </button>
-          <button
-            type="button"
-            [disabled]="!calculator.loginEmailInput().trim() || !calculator.loginEmailInput().includes('@')"
-            (click)="calculator.loginUser(calculator.loginEmailInput())"
-            class="flex-1 py-2.5 bg-[#DF80AC] text-black rounded-lg hover:opacity-90 active:scale-95 disabled:opacity-45 disabled:scale-100 disabled:cursor-not-allowed font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-md">
-            AUTHENTICATE
-          </button>
-        </div>
+          <div class="flex gap-3 pt-2">
+            <button
+              type="button"
+              (click)="calculator.isLoginModalOpen.set(false)"
+              class="flex-1 py-2.5 border border-white/10 bg-transparent text-slate-300 rounded-lg hover:bg-white/5 font-mono text-xs font-bold uppercase transition-all cursor-pointer">
+              CANCEL
+            </button>
+            <button
+              type="submit"
+              [disabled]="!calculator.loginEmailInput().trim() || !calculator.loginEmailInput().includes('@')"
+              class="flex-1 py-2.5 bg-[#DF80AC] text-black rounded-lg hover:opacity-90 active:scale-95 disabled:opacity-45 disabled:scale-100 disabled:cursor-not-allowed font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-md">
+              AUTHENTICATE
+            </button>
+          </div>
+        </form>
 
       </div>
     </div>
   }
-}

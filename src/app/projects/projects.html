@@ -8,40 +8,132 @@
         <h1>My Projects</h1>
         <p class="hero-sub">Track, manage and oversee all your BIM projects in one place</p>
       </div>
-      <div class="hero-stats">
-        <div class="stat-item" *ngFor="let s of [
-          { label: 'Total', value: totalCount(), color: '#8a92e8' },
-          { label: 'Active', value: activeCount(), color: '#7aadf0' },
-          { label: 'Ongoing', value: ongoingCount(), color: '#e8b438' },
-          { label: 'Review', value: reviewCount(), color: '#a78bfa' },
-          { label: 'Done', value: completedCount(), color: '#50c48e' },
-          { label: 'Hold', value: holdCount(), color: '#9aa6b4' }
-        ]">
-          <span class="stat-value" [style.color]="s.color">{{ s.value }}</span>
-          <span class="stat-label">{{ s.label }}</span>
+      <div class="hero-stats-grid">
+        <div class="stat-group">
+          <span class="stat-group-label">Scope</span>
+          <div class="stat-group-items">
+            <div class="stat-item"><span class="stat-value" style="color:#8a92e8">{{ totalCount() }}</span><span
+                class="stat-label">Total</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#668dc1">{{ scanToBimCount() }}</span><span
+                class="stat-label">BIM</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#b59954">{{ scanToCadCount() }}</span><span
+                class="stat-label">CAD</span></div>
+          </div>
+        </div>
+        <div class="stat-group">
+          <span class="stat-group-label">LOD</span>
+          <div class="stat-group-items">
+            <div class="stat-item"><span class="stat-value" style="color:#a78bfa">{{ lod200Count() }}</span><span
+                class="stat-label">200</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#50c48e">{{ lod300Count() }}</span><span
+                class="stat-label">300</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#f472b6">{{ lod400Count() }}</span><span
+                class="stat-label">400</span></div>
+          </div>
+        </div>
+        <div class="stat-group">
+          <span class="stat-group-label">Status</span>
+          <div class="stat-group-items">
+            <div class="stat-item"><span class="stat-value" style="color:#9aa6b4">{{ yetToAwardCount() }}</span><span
+                class="stat-label">Award</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#668dc1">{{ inProgressCount() }}</span><span
+                class="stat-label">Progress</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#b59954">{{ underRevisionCount() }}</span><span
+                class="stat-label">Revision</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#50c48e">{{ completeCount() }}</span><span
+                class="stat-label">Complete</span></div>
+          </div>
+        </div>
+        <div class="stat-group">
+          <span class="stat-group-label">Billing</span>
+          <div class="stat-group-items">
+            <div class="stat-item"><span class="stat-value" style="color:#d65454">{{ yetToInvoiceCount() }}</span><span
+                class="stat-label">No Invoice</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#668dc1">{{ invoicedCount() }}</span><span
+                class="stat-label">Invoiced</span></div>
+          </div>
+        </div>
+        <div class="stat-group">
+          <span class="stat-group-label">Payment</span>
+          <div class="stat-group-items">
+            <div class="stat-item"><span class="stat-value" style="color:#d65454">{{ yetToPayCount() }}</span><span
+                class="stat-label">Due</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#50c48e">{{ paidCount() }}</span><span
+                class="stat-label">Paid</span></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="filters-row">
-    <button class="filter-btn" [class.active]="filterStatus() === f.key" *ngFor="let f of statusFilters" (click)="setFilter(f.key)">
-      <span class="filter-dot" [style.background]="f.color"></span>
-      {{ f.label }}
-      <span class="filter-count">{{ countFor(f.key) }}</span>
-    </button>
+  <div class="filter-bar">
+    <div class="filter-card total-card" (click)="resetAllFilters()">
+      <span class="filter-label">All Projects</span>
+      <span class="filter-total">{{ totalCount() }}</span>
+    </div>
+    <div class="filter-card">
+      <label class="filter-label">Scope</label>
+      <select class="filter-select" [value]="filterScope()" (change)="filterScope.set($any($event.target).value)">
+        <option value="all">All</option>
+        <option value="Scan to BIM">Scan to BIM</option>
+        <option value="Scan to CAD">Scan to CAD</option>
+      </select>
+    </div>
+    <div class="filter-card">
+      <label class="filter-label">LOD</label>
+      <select class="filter-select" [value]="filterLod()" (change)="filterLod.set($any($event.target).value)">
+        <option value="all">All</option>
+        <option value="LOD 200">LOD 200</option>
+        <option value="LOD 300">LOD 300</option>
+        <option value="LOD 400">LOD 400</option>
+      </select>
+    </div>
+    <div class="filter-card">
+      <label class="filter-label">Status</label>
+      <select class="filter-select" [value]="filterProjStatus()"
+        (change)="filterProjStatus.set($any($event.target).value)">
+        <option value="all">All</option>
+        <option value="Yet to Award">Yet to Award</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Under Revision">Under Revision</option>
+        <option value="Complete">Complete</option>
+      </select>
+    </div>
+    <div class="filter-card">
+      <label class="filter-label">Billing</label>
+      <select class="filter-select" [value]="filterBilling()" (change)="filterBilling.set($any($event.target).value)">
+        <option value="all">All</option>
+        <option value="Yet to Invoice">Yet to Invoice</option>
+        <option value="Invoiced">Invoiced</option>
+      </select>
+    </div>
+    <div class="filter-card">
+      <label class="filter-label">Payment</label>
+      <select class="filter-select" [value]="filterPayment()" (change)="filterPayment.set($any($event.target).value)">
+        <option value="all">All</option>
+        <option value="Yet to Pay">Yet to Pay</option>
+        <option value="Paid">Paid</option>
+      </select>
+    </div>
   </div>
 
   <div class="projects-grid">
-    <div class="project-card" *ngFor="let p of filteredProjects(); trackBy: trackCard; let i = index" (click)="openDetail(p)" [style.animation-delay]="(i * 0.15) + 's'">
-      <div class="card-accent" [style.background]="getStatusColor(p.status)"></div>
+    <div class="project-card" *ngFor="let p of filteredProjects(); trackBy: trackCard; let i = index"
+      (click)="openDetail(p)" [style.animation-delay]="(i * 0.15) + 's'">
       <div class="card-body">
-        <div class="card-header">
-          <span class="card-status" [style.background]="getStatusColor(p.status) + '18'" [style.color]="getStatusColor(p.status)">
-            <span class="status-bullet"></span>
-            {{ getStatusLabel(p.status) }}
-          </span>
-          <span class="card-category">{{ p.category }}</span>
+        <div class="card-header-row" >
+          <div class="card-header">
+            <span class="card-category">{{ p.category }}</span>
+          </div>
+          <div class="card-header-bottom">
+            <span class="card-workflow-status" [class.award]="p.workflowStatus === 'Yet to Award'"
+              [class.progress]="p.workflowStatus === 'In Progress'"
+              [class.revision]="p.workflowStatus === 'Under Revision'"
+              [class.complete]="p.workflowStatus === 'Complete'">
+              <span class="status-bullet"></span>
+              {{ p.workflowStatus }}
+            </span>
+          </div>
         </div>
         <h3 class="card-title">{{ p.projectName }}</h3>
         <p class="card-desc">{{ p.description }}</p>
@@ -59,15 +151,17 @@
             {{ p.source }}
           </span>
         </div>
+        <div class="card-tags">
+          <span class="tag-chip tag-lod">{{ p.lod }}</span>
+          <span class="tag-chip tag-workflow">{{ p.workflowStatus }}</span>
+          <span class="tag-chip tag-billing">{{ p.billing }}</span>
+          <span class="tag-chip tag-payment" [class.paid]="p.payment === 'Paid'">{{ p.payment }}</span>
+        </div>
         <div class="card-footer">
           <div class="card-cost">
             <span class="cost-value">{{ p.currency }}{{ p.cost | number }}</span>
             <span class="cost-label">Total Cost</span>
           </div>
-          <!-- <div class="card-cost">
-            <span class="cost-value">{{ p.currency }}{{ (p.cost / p.sft * 1000 | number:'1.0-0') || '0' }}/sft</span>
-            <span class="cost-label">per sft</span>
-          </div> -->
           <button class="card-arrow" (click)="$event.stopPropagation(); openDetail(p)">
             <span class="arrow-icon">arrow_forward</span>
           </button>
@@ -96,7 +190,8 @@
       <div class="banner-overlay"></div>
       <div class="banner-content">
         <div class="banner-chips">
-          <span class="detail-status" [style.background]="getStatusColor(p.status) + '18'" [style.color]="getStatusColor(p.status)">
+          <span class="detail-status" [style.background]="getStatusColor(p.status) + '18'"
+            [style.color]="getStatusColor(p.status)">
             <span class="status-bullet"></span>
             {{ getStatusLabel(p.status) }}
           </span>
@@ -104,9 +199,34 @@
         </div>
         <h1 class="detail-title">{{ p.projectName }}</h1>
         <div class="detail-meta-row">
-          <span class="detail-chip"><span class="chip-icon">business</span> {{ p.buildingType }}</span>
-          <span class="detail-chip"><span class="chip-icon">straighten</span> {{ p.sft | number }} sft</span>
-          <span class="detail-chip"><span class="chip-icon">source</span> {{ p.source }}</span>
+          <span class="detail-chip">
+            <span class="chip-label">Scope</span>
+            <span class="chip-value"><span class="chip-icon">business</span> {{ p.buildingType }}</span>
+          </span>
+          <span class="detail-chip">
+            <span class="chip-label">Area</span>
+            <span class="chip-value"><span class="chip-icon">straighten</span> {{ p.sft | number }} sft</span>
+          </span>
+          <span class="detail-chip">
+            <span class="chip-label">Source</span>
+            <span class="chip-value"><span class="chip-icon">source</span> {{ p.source }}</span>
+          </span>
+          <span class="detail-chip">
+            <span class="chip-label">LOD</span>
+            <span class="chip-value"><span class="chip-icon">layers</span> {{ p.lod }}</span>
+          </span>
+          <span class="detail-chip">
+            <span class="chip-label">Status</span>
+            <span class="chip-value"><span class="chip-icon">assignment</span> {{ p.workflowStatus }}</span>
+          </span>
+          <span class="detail-chip">
+            <span class="chip-label">Billing</span>
+            <span class="chip-value"><span class="chip-icon">receipt</span> {{ p.billing }}</span>
+          </span>
+          <span class="detail-chip">
+            <span class="chip-label">Payment</span>
+            <span class="chip-value"><span class="chip-icon">payments</span> {{ p.payment }}</span>
+          </span>
         </div>
       </div>
     </div>
@@ -118,22 +238,22 @@
           <h3 class="section-title">Overview</h3>
           <div class="ring-container">
             <svg class="ring-svg" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="52" fill="none" stroke="#1a1d2e" stroke-width="8"/>
-              <circle cx="60" cy="60" r="52" fill="none" stroke="#50c48e" stroke-width="8"
-                stroke-dasharray="326.7" stroke-dashoffset="98" stroke-linecap="round"
-                transform="rotate(-90 60 60)"/>
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#1a1d2e" stroke-width="8" />
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#50c48e" stroke-width="8" stroke-dasharray="326.7"
+                stroke-dashoffset="98" stroke-linecap="round" transform="rotate(-90 60 60)" />
               <text x="60" y="52" text-anchor="middle" class="ring-pct" fill="#e8edf5">70%</text>
               <text x="60" y="70" text-anchor="middle" class="ring-label" fill="#6b7280">Complete</text>
             </svg>
             <div class="ring-rows">
               <div class="ring-row" *ngFor="let c of [
                 { label: 'BIM Ready', val: '92%', color: '#50c48e' },
-                { label: 'Schedules', val: '78%', color: '#7aadf0' },
-                { label: 'Shop Drawings', val: '65%', color: '#e8b438' },
-                { label: 'RFIs', val: '88%', color: '#a78bfa' }
-              ]">
+                { label: 'Schedules', val: '78%', color: '#668dc1' },
+                { label: 'Shop Drawings', val: '65%', color: '#b59954' },
+                { label: 'RFIs', val: '88%', color: '#a78bfa' } ]">
                 <span class="ring-row-label">{{ c.label }}</span>
-                <div class="ring-bar-bg"><div class="ring-bar-fill" [style.width]="c.val" [style.background]="c.color"></div></div>
+                <div class="ring-bar-bg">
+                  <div class="ring-bar-fill" [style.width]="c.val" [style.background]="c.color"></div>
+                </div>
                 <span class="ring-row-val" [style.color]="c.color">{{ c.val }}</span>
               </div>
             </div>
@@ -145,21 +265,6 @@
             <span class="stat-card-icon">{{ s.icon }}</span>
             <span class="stat-card-value">{{ s.value }}</span>
             <span class="stat-card-label">{{ s.label }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Team -->
-      <div class="detail-section">
-        <h3 class="section-title">Project Team</h3>
-        <div class="team-grid">
-          <div class="team-member" *ngFor="let m of team; let i = index">
-            <div class="team-avatar" [style.background]="getAvatarColor(i)">{{ m.initials }}</div>
-            <div class="team-info">
-              <span class="team-name">{{ m.name }}</span>
-              <span class="team-role">{{ m.role }}</span>
-            </div>
-            <div class="team-status-dot" [style.background]="i < 5 ? '#50c48e' : '#e8b438'"></div>
           </div>
         </div>
       </div>
@@ -176,8 +281,10 @@
             </div>
           </div>
           <div class="dates-row">
-            <div class="date-item"><span class="date-icon">calendar_today</span> Started <strong>{{ p.startDate | date:'MMM d, y' }}</strong></div>
-            <div class="date-item"><span class="date-icon">event</span> Ends <strong>{{ p.endDate | date:'MMM d, y' }}</strong></div>
+            <div class="date-item"><span class="date-icon">calendar_today</span> Started <strong>{{ p.startDate |
+                date:'MMM d, y' }}</strong></div>
+            <div class="date-item"><span class="date-icon">event</span> Ends <strong>{{ p.endDate | date:'MMM d, y'
+                }}</strong></div>
           </div>
         </div>
       </div>
@@ -187,7 +294,8 @@
         <h3 class="section-title">Project Timeline</h3>
         <div class="timeline">
           <div class="tl-item" *ngFor="let m of milestones">
-            <div class="tl-marker" [class.completed]="m.status === 'completed'" [class.current]="m.status === 'current'" [class.upcoming]="m.status === 'upcoming'">
+            <div class="tl-marker" [class.completed]="m.status === 'completed'" [class.current]="m.status === 'current'"
+              [class.upcoming]="m.status === 'upcoming'">
               <span class="tl-marker-icon" *ngIf="m.status === 'completed'">check</span>
               <span class="tl-marker-dot" *ngIf="m.status !== 'completed'"></span>
             </div>
@@ -195,34 +303,12 @@
               <span class="tl-title">{{ m.title }}</span>
               <span class="tl-date">{{ m.date }}</span>
             </div>
-            <span class="tl-status" [class.completed]="m.status === 'completed'" [class.current]="m.status === 'current'" [class.upcoming]="m.status === 'upcoming'">{{ m.status }}</span>
+            <span class="tl-status" [class.completed]="m.status === 'completed'"
+              [class.current]="m.status === 'current'" [class.upcoming]="m.status === 'upcoming'">{{ m.status }}</span>
           </div>
         </div>
       </div>
 
-      <!-- Activity -->
-      <div class="detail-section">
-        <h3 class="section-title">Recent Activity</h3>
-        <div class="activity-feed">
-          <div class="activity-item" *ngFor="let a of activities">
-            <div class="activity-avatar" [style.background]="getAvatarColor(activities.indexOf(a))">{{ a.initials }}</div>
-            <div class="activity-body">
-              <div class="activity-header">
-                <span class="activity-user">{{ a.user }}</span>
-                <span class="activity-action">{{ a.action }}</span>
-              </div>
-              <p class="activity-detail">{{ a.detail }}</p>
-              <div class="activity-footer">
-                <span class="activity-badge" [style.background]="getActivityColor(a.type) + '18'" [style.color]="getActivityColor(a.type)">
-                  <span class="badge-icon">{{ getActivityIcon(a.type) }}</span>
-                  {{ a.type }}
-                </span>
-                <span class="activity-time">{{ a.timestamp }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </div>

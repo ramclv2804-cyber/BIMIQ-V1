@@ -30,8 +30,21 @@
 .detail-category { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; color: #6b7280; background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 4px; }
 .detail-title { font-size: 28px; font-weight: 700; color: #e8edf5; margin: 0 0 14px; line-height: 1.2; }
 .detail-meta-row { display: flex; gap: 10px; flex-wrap: wrap; }
-.detail-chip { display: flex; align-items: center; gap: 5px; font-size: 13px; color: #9ca3af; background: rgba(255,255,255,0.04); padding: 5px 12px; border-radius: 6px; }
-.detail-chip .chip-icon { font-size: 15px; color: #6b7280; }
+.detail-chip {
+  display: flex; flex-direction: column; gap: 3px;
+  background: rgba(255,255,255,0.03); padding: 8px 14px 7px;
+  border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);
+  min-width: 90px;
+}
+.chip-label {
+  font-size: 9px; font-weight: 700; color: #6b7280;
+  text-transform: uppercase; letter-spacing: 0.8px;
+}
+.chip-value {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 14px; font-weight: 600; color: #e8edf5;
+}
+.detail-chip .chip-icon { font-size: 16px; color: #7aadf0; }
 .detail-body { padding: 28px 36px 40px; display: flex; flex-direction: column; gap: 28px; }
 
 .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
