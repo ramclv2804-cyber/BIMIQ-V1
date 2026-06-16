@@ -28,7 +28,7 @@
   }
 
   <!-- MAIN CONTENT CANVAS -->
-  <main class="relative pt-28 pb-32 max-w-[1280px] mx-auto px-6 md:px-20 min-h-screen">
+  <main class="relative pt-30 pb-32 max-w-[1280px] mx-auto px-6 md:px-20 min-h-screen">
 
     <!-- VIEW 1: UNIFIED DASHBOARD -->
     @if (calculator.activeTab() === 'dashboard') {
@@ -70,25 +70,7 @@
     }
   </main>
 
-  <!-- Navigation Bottom Bar (Mobile Layout) -->
-  <nav class="fixed bottom-0 left-0 w-full z-50 backdrop-blur-xl bg-midnight-charcoal/80 border-t border-silver-leaf/10 md:hidden flex justify-around items-center py-3.5">
-    <button
-      type="button"
-      (click)="setTab('portfolio')"
-      [ngClass]="calculator.activeTab() === 'portfolio' ? 'text-primary-custom font-bold bg-white/5' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-      class="flex flex-col items-center justify-center rounded-lg py-1 px-3.5 transition-colors duration-300 focus:outline-none bg-transparent border-none cursor-pointer">
-      <span class="material-symbols-outlined text-[20px]">layers</span>
-      <span class="font-mono text-[9px] mt-0.5 tracking-wider">Portfolio</span>
-    </button>
-    <button
-      type="button"
-      (click)="setTab('config')"
-      [ngClass]="calculator.activeTab() === 'config' ? 'text-primary-custom font-bold bg-white/5' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-      class="flex flex-col items-center justify-center rounded-lg py-1 px-3.5 transition-colors duration-300 focus:outline-none bg-transparent border-none cursor-pointer">
-      <span class="material-symbols-outlined text-[20px]">tune</span>
-      <span class="font-mono text-[9px] mt-0.5 tracking-wider">Estimator</span>
-    </button>
-  </nav>
+
 
   <!-- FOOTER -->
   <footer class="w-full py-16 border-t border-silver-leaf/10 bg-[#0A0A0C] font-mono select-none">
@@ -199,7 +181,7 @@
     <button
       type="button"
       (click)="goToEstimator()"
-      class="fixed bottom-24 right-6 md:bottom-6 md:right-6 w-14 h-14 bg-primary-custom text-on-primary-custom rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-90 z-40 group focus:outline-none cursor-pointer">
+      class="fixed bottom-6 right-6 md:bottom-6 md:right-6 w-12 h-12 bg-primary-custom text-on-primary-custom rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-90 z-40 group focus:outline-none cursor-pointer">
       <span class="material-symbols-outlined">add</span>
       <span class="absolute right-full mr-4 bg-midnight-charcoal border border-silver-leaf/10 px-3 py-1.5 rounded-lg text-primary-custom font-mono text-[9px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">INITIATE PROJECT</span>
     </button>

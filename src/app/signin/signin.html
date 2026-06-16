@@ -66,26 +66,26 @@
     <!-- Form -->
     @if (isLoginMode) {
       <div class="form">
-        <div class="field">
+        <div class="field" [class.field-error]="hasError('loginEmail')">
           <label for="loginEmail">Email</label>
           <input
             id="loginEmail"
             type="email"
             [value]="loginEmail"
-            (input)="loginEmail = $any($event.target).value"
+            (input)="loginEmail = $any($event.target).value; clearFieldErrors()"
             (keydown.enter)="onLogin()"
             placeholder="you@company.com"
             autocomplete="email"
           />
         </div>
-        <div class="field">
+        <div class="field" [class.field-error]="hasError('loginPassword')">
           <label for="loginPassword">Password</label>
           <div class="password-wrapper">
             <input
               id="loginPassword"
               [type]="showLoginPassword ? 'text' : 'password'"
               [value]="loginPassword"
-              (input)="loginPassword = $any($event.target).value"
+              (input)="loginPassword = $any($event.target).value; clearFieldErrors()"
               (keydown.enter)="onLogin()"
               placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
               autocomplete="current-password"
@@ -116,38 +116,38 @@
       </div>
     } @else {
       <div class="form">
-        <div class="field">
+        <div class="field" [class.field-error]="hasError('signupUsername')">
           <label for="signupUsername">Username</label>
           <input
             id="signupUsername"
             type="text"
             [value]="signupUsername"
-            (input)="signupUsername = $any($event.target).value"
+            (input)="signupUsername = $any($event.target).value; clearFieldErrors()"
             (keydown.enter)="onSignup()"
             placeholder="Choose a username"
             autocomplete="username"
           />
         </div>
-        <div class="field">
+        <div class="field" [class.field-error]="hasError('signupEmail')">
           <label for="signupEmail">Email</label>
           <input
             id="signupEmail"
             type="email"
             [value]="signupEmail"
-            (input)="signupEmail = $any($event.target).value"
+            (input)="signupEmail = $any($event.target).value; clearFieldErrors()"
             (keydown.enter)="onSignup()"
             placeholder="you@company.com"
             autocomplete="email"
           />
         </div>
-        <div class="field">
+        <div class="field" [class.field-error]="hasError('signupPassword')">
           <label for="signupPassword">Password</label>
           <div class="password-wrapper">
             <input
               id="signupPassword"
               [type]="showSignupPassword ? 'text' : 'password'"
               [value]="signupPassword"
-              (input)="signupPassword = $any($event.target).value"
+              (input)="signupPassword = $any($event.target).value; clearFieldErrors()"
               (keydown.enter)="onSignup()"
               placeholder="Create a password"
               autocomplete="new-password"
@@ -165,14 +165,14 @@
             </button>
           </div>
         </div>
-        <div class="field">
+        <div class="field" [class.field-error]="hasError('signupConfirm')">
           <label for="signupConfirm">Confirm Password</label>
           <div class="password-wrapper">
             <input
               id="signupConfirm"
               [type]="showSignupConfirm ? 'text' : 'password'"
               [value]="signupConfirm"
-              (input)="signupConfirm = $any($event.target).value"
+              (input)="signupConfirm = $any($event.target).value; clearFieldErrors()"
               (keydown.enter)="onSignup()"
               placeholder="Confirm your password"
               autocomplete="new-password"

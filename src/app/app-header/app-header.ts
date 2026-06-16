@@ -16,6 +16,7 @@ export class AppHeader {
   user = computed(() => this.calculator.currentUser());
   isLoggedIn = computed(() => this.calculator.isLoggedIn());
   isUserMenuOpen = signal(false);
+  isMobileMenuOpen = signal(false);
   currentUrl = computed(() => this.router.url);
 
   @HostListener('document:click', ['$event'])
@@ -24,10 +25,25 @@ export class AppHeader {
     if (!target.closest('.user-menu-container')) {
       this.isUserMenuOpen.set(false);
     }
+    if (!target.closest('.mobile-menu-container') && !target.closest('.hamburger-btn')) {
+      this.isMobileMenuOpen.set(false);
+    }
   }
 
   toggleUserMenu() {
     this.isUserMenuOpen.update(v => !v);
+  }
+
+  toggleMobileMenu() {
+    this.isMobileMenuOpen.update(v => !v);
+  }
+
+  navigateAndClose(url: string, tab?: string) {
+    this.isMobileMenuOpen.set(false);
+    if (tab) {
+      this.calculator.setTab(tab as 'dashboard' | 'portfolio' | 'config');
+    }
+    this.router.navigate([url]);
   }
 
   goHome() {

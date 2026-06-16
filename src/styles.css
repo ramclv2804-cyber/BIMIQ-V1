@@ -29,7 +29,7 @@
   --animate-scan-line: scan-line 3s infinite ease-in-out;
   --animate-pulse-pink: pulse-pink 2s infinite alternate ease-in-out;
   --animate-shimmer: shimmer 1.5s infinite linear;
-  --spacing: 0.3rem;
+  --spacing: 0.25rem;
 
   @keyframes fade-in {
     from { opacity: 0; transform: translateY(6px); }

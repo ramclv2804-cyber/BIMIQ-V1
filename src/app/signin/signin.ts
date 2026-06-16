@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
@@ -12,6 +12,7 @@ import { AppHeader } from '../app-header/app-header';
 })
 export class Signin {
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
   calculator = inject(SpatialCostCalculator);
 
   constructor() {
@@ -35,6 +36,20 @@ export class Signin {
 
   errorMessage = '';
   isLoading = false;
+  fieldErrors: Record<string, boolean> = {};
+
+  clearFieldErrors() {
+    this.fieldErrors = {};
+    this.errorMessage = '';
+  }
+
+  setFieldErrors(fields: string[]) {
+    this.fieldErrors = fields.reduce((acc, f) => ({ ...acc, [f]: true }), {});
+  }
+
+  hasError(field: string): boolean {
+    return !!this.fieldErrors[field];
+  }
   users = [
     {
       'username': 'clove',
@@ -57,8 +72,13 @@ export class Signin {
 
   onLogin() {
     this.errorMessage = '';
-    if (!this.loginEmail.trim() || !this.loginPassword.trim()) {
-      this.errorMessage = 'Please enter both email and password.';
+    this.clearFieldErrors();
+    const errFields: string[] = [];
+    if (!this.loginEmail.trim()) errFields.push('loginEmail');
+    if (!this.loginPassword.trim()) errFields.push('loginPassword');
+    if (errFields.length) {
+      this.setFieldErrors(errFields);
+      this.errorMessage = 'Please fill in all fields.';
       return;
     }
     this.isLoading = true;
@@ -74,18 +94,37 @@ export class Signin {
 
       } else {
         this.errorMessage = 'Invalid email or password.';
+        this.setFieldErrors(['loginEmail', 'loginPassword']);
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
-    }, 800);
+    }, 500);
+  }
+
+  isSignupEmailValid(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   }
 
   onSignup() {
     this.errorMessage = '';
-    if (!this.signupUsername.trim() || !this.signupEmail.trim() || !this.signupPassword.trim()) {
-      this.errorMessage = 'All fields are required.';
+    this.clearFieldErrors();
+    const errFields: string[] = [];
+    if (!this.signupUsername.trim()) errFields.push('signupUsername');
+    if (!this.signupEmail.trim()) errFields.push('signupEmail');
+    if (!this.signupPassword.trim()) errFields.push('signupPassword');
+    if (!this.signupConfirm.trim()) errFields.push('signupConfirm');
+    if (errFields.length) {
+      this.setFieldErrors(errFields);
+      this.errorMessage = 'Please fill in all fields.';
+      return;
+    }
+    if (!this.isSignupEmailValid(this.signupEmail)) {
+      this.setFieldErrors(['signupEmail']);
+      this.errorMessage = 'Please enter a valid email address.';
       return;
     }
     if (this.signupPassword !== this.signupConfirm) {
+      this.setFieldErrors(['signupPassword', 'signupConfirm']);
       this.errorMessage = 'Passwords do not match.';
       return;
     }

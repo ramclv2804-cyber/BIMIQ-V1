@@ -1,2 +1,24 @@
 .app-header{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(12,13,18,.97);border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;padding:0 1.5rem;height:5rem;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 @media(min-width:768px){.app-header{padding:0 5rem}}
+
+.hamburger-btn {
+  cursor: pointer;
+}
+
+.mobile-menu-container {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mobile-menu-container .animate-fade-slide-up {
+  animation: slideUp 0.25s ease both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}

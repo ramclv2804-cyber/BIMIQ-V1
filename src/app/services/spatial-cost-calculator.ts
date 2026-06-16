@@ -322,7 +322,7 @@ export class SpatialCostCalculator {
   bimRequirementsOptions = ['Architectural', 'Structural', 'Mechanical', 'Electrical', 'Plumbing', 'Fire Protection', 'Furniture'];
   isBimRequirementsOpen = signal<boolean>(false);
   bimAddOns = signal<string[]>([]);
-  bimAddOnsOptions = ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'MEP', 'Furniture', 'Sheets'];
+  bimAddOnsOptions = ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'MEP', 'Furniture', 'Sheets', 'Scan to BIM', 'Scan to CAD'];
   isBimAddOnsOpen = signal<boolean>(false);
 
   toggleMultiSelection(arr: string[], value: string): string[] {
@@ -341,6 +341,7 @@ export class SpatialCostCalculator {
     this.isSpaceTypeDropdownOpen.set(false);
     this.isCurrencyDropdownOpen.set(false);
     this.isRevitDropdownOpen.set(false);
+    this.isAutocadDropdownOpen.set(false);
     this.isPrebuiltFormatDropdownOpen.set(false);
     this.isPrebuiltLodDropdownOpen.set(false);
     this.isCadFormatDropdownOpen.set(false);
@@ -437,6 +438,7 @@ export class SpatialCostCalculator {
   isSpaceTypeDropdownOpen = signal<boolean>(false);
   isCurrencyDropdownOpen = signal<boolean>(false);
   isRevitDropdownOpen = signal<boolean>(false);
+  isAutocadDropdownOpen = signal<boolean>(false);
   isHeaderCurrencyOpen = signal<boolean>(false);
 
   spaceTypeOptions = [
@@ -469,6 +471,14 @@ export class SpatialCostCalculator {
     { value: 'Revit 2025', label: 'Revit 2025 (Next-Gen Preview)' },
   ];
 
+  autocadOptions = [
+    { value: 'AutoCAD 2021', label: 'AutoCAD 2021 (LTS Legacy)' },
+    { value: 'AutoCAD 2022', label: 'AutoCAD 2022 (Standard)' },
+    { value: 'AutoCAD 2023', label: 'AutoCAD 2023 (Standard)' },
+    { value: 'AutoCAD 2024', label: 'AutoCAD 2024 (Active Core)' },
+    { value: 'AutoCAD 2025', label: 'AutoCAD 2025 (Next-Gen Preview)' },
+  ];
+
   toggleSpaceTypeDropdown() {
     this.closeAllDropdowns();
     this.isSpaceTypeDropdownOpen.set(true);
@@ -480,8 +490,21 @@ export class SpatialCostCalculator {
   }
 
   toggleRevitDropdown() {
-    this.closeAllDropdowns();
-    this.isRevitDropdownOpen.set(true);
+    if (this.isRevitDropdownOpen()) {
+      this.isRevitDropdownOpen.set(false);
+    } else {
+      this.closeAllDropdowns();
+      this.isRevitDropdownOpen.set(true);
+    }
+  }
+
+  toggleAutocadDropdown() {
+    if (this.isAutocadDropdownOpen()) {
+      this.isAutocadDropdownOpen.set(false);
+    } else {
+      this.closeAllDropdowns();
+      this.isAutocadDropdownOpen.set(true);
+    }
   }
 
   getSpaceTypeLabel(value: string): string {
@@ -499,12 +522,18 @@ export class SpatialCostCalculator {
     return found ? found.label : (value || 'Revit 2024 (Active Core)');
   }
 
+  getAutocadLabel(value: string): string {
+    const found = this.autocadOptions.find(o => o.value === value);
+    return found ? found.label : (value || 'AutoCAD 2024 (Active Core)');
+  }
+
   // Active inputs
   selectedCurrency = signal<string>('USD');
   smartStep = signal<number>(1); // Step 1: Specifications, Step 2: Project Details, Step 3: Summary
   smartProjectName = signal<string>('Vertex HQ');
   smartProjectAddress = signal<string>('742 Custom Boulevard, Sector 4');
-  smartRevitVersion = signal<string>('Revit 2024');
+  smartRevitVersion = signal<string>('');
+  smartAutocadVersion = signal<string>('');
 
   resolvedProjectName = computed(() => {
     return this.selectedModelingWay() === 'bim'

@@ -145,6 +145,31 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                         }
                       </div>
                     </div>
+
+                      <div class="space-y-1.5 flex flex-col relative">
+                        <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">AutoCAD Version <span class="text-red-400">*</span></span>
+                        <div class="relative">
+                          <button type="button" (click)="calculator.toggleAutocadDropdown(); $event.stopPropagation()"
+                            class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
+                            <span>{{ calculator.smartAutocadVersion() || 'Select AutoCAD version' }}</span>
+                            <span class="material-symbols-outlined text-sm text-on-surface-variant-custom shrink-0" [class.rotate-180]="calculator.isAutocadDropdownOpen()">expand_more</span>
+                          </button>
+                          @if (calculator.isAutocadDropdownOpen()) {
+                            <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                              @for (option of calculator.autocadOptions; track option.value) {
+                                <button type="button" (click)="calculator.smartAutocadVersion.set(option.value); calculator.isAutocadDropdownOpen.set(false)"
+                                  [ngClass]="calculator.smartAutocadVersion() === option.value ? 'bg-primary-custom/15 text-primary-custom font-semibold' : 'text-on-surface-variant-custom hover:bg-white/5 hover:text-white'"
+                                  class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent">
+                                  <span>{{ option.label }}</span>
+                                  @if (calculator.smartAutocadVersion() === option.value) {
+                                    <span class="material-symbols-outlined text-xs text-primary-custom">done</span>
+                                  }
+                                </button>
+                              }
+                            </div>
+                          }
+                        </div>
+                      </div>
                   </div>
                 } @else {
                   <!-- === SCAN TO BIM FORM === -->
@@ -296,6 +321,31 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                       </div>
                     </div>
 
+                    <div class="space-y-1.5 flex flex-col relative">
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Revit Version <span class="text-red-400">*</span></span>
+                      <div class="relative">
+                          <button type="button" (click)="calculator.toggleRevitDropdown(); $event.stopPropagation()"
+                            class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
+                            <span>{{ calculator.smartRevitVersion() || 'Select Revit version' }}</span>
+                            <span class="material-symbols-outlined text-sm text-on-surface-variant-custom shrink-0" [class.rotate-180]="calculator.isRevitDropdownOpen()">expand_more</span>
+                          </button>
+                        @if (calculator.isRevitDropdownOpen()) {
+                          <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
+                            @for (option of calculator.revitOptions; track option.value) {
+                              <button type="button" (click)="calculator.smartRevitVersion.set(option.value); calculator.isRevitDropdownOpen.set(false)"
+                                [ngClass]="calculator.smartRevitVersion() === option.value ? 'bg-primary-custom/15 text-primary-custom font-semibold' : 'text-on-surface-variant-custom hover:bg-white/5 hover:text-white'"
+                                class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent">
+                                <span>{{ option.label }}</span>
+                                @if (calculator.smartRevitVersion() === option.value) {
+                                  <span class="material-symbols-outlined text-xs text-primary-custom">done</span>
+                                }
+                              </button>
+                            }
+                          </div>
+                        }
+                      </div>
+                    </div>
+
                     <div class="space-y-1.5 flex flex-col relative  hidden">
                     <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Quotation Currency <span class="text-red-400">*</span></span>
                     <div class="relative font-mono">
@@ -344,9 +394,11 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                       @if (calculator.selectedModelingWay() === 'cad_to_bim') {
                         @if (!calculator.cadRequirements().length) { <li>Please select at least one Requirement.</li> }
                         @if (!calculator.cadScale()) { <li>Please select a Scale.</li> }
+                        @if (!calculator.smartAutocadVersion()) { <li>Please select an AutoCAD Version.</li> }
                       }
                       @if (calculator.selectedModelingWay() === 'bim') {
                         @if (!calculator.bimRequirements().length) { <li>Please select at least one Requirement.</li> }
+                        @if (!calculator.smartRevitVersion()) { <li>Please select a Revit Version.</li> }
                       }
                       @if (!calculator.isEmailValid()) { <li>A valid email address is required.</li> }
                     </ul>
@@ -765,8 +817,10 @@ export class PriceEstimation implements OnInit {
     if (c.selectedModelingWay() === 'cad_to_bim') {
       if (!c.cadRequirements().length) return false;
       if (!c.cadScale()) return false;
+      if (!c.smartAutocadVersion()) return false;
     } else {
       if (!c.bimRequirements().length) return false;
+      if (!c.smartRevitVersion()) return false;
     }
     if (!c.isEmailValid()) return false;
     return true;
@@ -1178,10 +1232,12 @@ export class PriceEstimation implements OnInit {
     if (c.selectedModelingWay() === 'cad_to_bim') {
       console.log('Requirements:', c.cadRequirements());
       console.log('Scale:', c.cadScale());
+      console.log('AutoCAD Version:', c.smartAutocadVersion());
     } else {
       console.log('Requirements:', c.bimRequirements());
       console.log('Add Ons:', c.bimAddOns());
       console.log('LOD Level:', c.smartLODLevel());
+      console.log('Revit Version:', c.smartRevitVersion());
     }
     console.log('Currency:', c.selectedCurrency());
     console.log('Email:', c.smartEmail());

@@ -23,10 +23,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         <div class="absolute inset-0 z-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:30px_30px] opacity-80 pointer-events-none select-none"></div>
         
         <div class="max-w-3xl mx-auto space-y-6 relative z-10">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-primary-custom/30 bg-primary-custom/10 animate-pulse">
-            <span class="w-1.5 h-1.5 rounded-full bg-primary-custom"></span>
-            <span class="font-mono text-[9px] uppercase tracking-widest text-primary-custom font-bold">Platform Release 4.0</span>
-          </div>
+        
           
           <h1 class="font-serif text-4xl md:text-6xl leading-tight tracking-tight text-white font-bold select-none text-center drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
             Your building, online.
