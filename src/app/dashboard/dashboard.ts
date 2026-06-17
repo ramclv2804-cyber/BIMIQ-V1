@@ -50,8 +50,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             <p class="font-mono text-[10px] uppercase tracking-widest text-[#C86B98] font-bold text-center select-none">TRUSTED BY STRATEGIC PARTNERS</p>
             
             <div class="relative w-full overflow-hidden py-2">
-              <div class="flex" [class.animate-marquee]="partners.length > 6">
-                <!-- First list of partners -->
+              <div class="flex w-max" [style.animation]="'marquee ' + marqueeDuration() + 's linear infinite'">
                 <div class="flex items-center gap-x-16 px-8 shrink-0">
                   @for (p of partners; track p.name) {
                     <button type="button" 
@@ -63,20 +62,17 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     </button>
                   }
                 </div>
-                <!-- Duplicate list for seamless infinite loop scroll when length > 6 -->
-                @if (partners.length > 6) {
-                  <div class="flex items-center gap-x-16 px-8 shrink-0">
-                    @for (p of partners; track p.name + '-dup') {
-                      <button type="button"
-                           (click)="calculator.showNotification('Strategic alignment verified with: ' + p.name, 'success')"
-                           [style.animation-delay]="(($index + partners.length) * 40) + 'ms'"
-                           class="bg-transparent border-none text-left p-0 flex items-center gap-3.5 hover:text-white transition-all duration-300 cursor-pointer group shrink-0 select-none focus:outline-none animate-fade-slide-up opacity-0">
-                        <span class="material-symbols-outlined text-2xl transition-transform group-hover:scale-110 duration-300" [style.color]="p.color">{{ p.icon }}</span>
-                        <span class="font-bold tracking-widest text-sm text-on-surface-variant-custom group-hover:text-[#E2E8F0] font-mono hover-underline-animate-pink pb-0.5">{{ p.name }}</span>
-                      </button>
-                    }
-                  </div>
-                }
+                <div class="flex items-center gap-x-16 px-8 shrink-0">
+                  @for (p of partners; track p.name) {
+                    <button type="button"
+                         (click)="calculator.showNotification('Strategic alignment verified with: ' + p.name, 'success')"
+                         [style.animation-delay]="(($index + partners.length) * 40) + 'ms'"
+                         class="bg-transparent border-none text-left p-0 flex items-center gap-3.5 hover:text-white transition-all duration-300 cursor-pointer group shrink-0 select-none focus:outline-none animate-fade-slide-up opacity-0">
+                      <span class="material-symbols-outlined text-2xl transition-transform group-hover:scale-110 duration-300" [style.color]="p.color">{{ p.icon }}</span>
+                      <span class="font-bold tracking-widest text-sm text-on-surface-variant-custom group-hover:text-[#E2E8F0] font-mono hover-underline-animate-pink pb-0.5">{{ p.name }}</span>
+                    </button>
+                  }
+                </div>
               </div>
             </div>
             
@@ -627,12 +623,15 @@ export class Dashboard {
     { name: 'Autodesk 360', icon: 'architecture', color: '#e9c349' },
     { name: 'Bentley Systems', icon: 'deployed_code', color: '#2dd4bf' },
     { name: 'Trimble Vico', icon: 'construction', color: '#3b82f6' },
-    { name: 'Procore Connect', icon: 'handshake', color: '#f97316' },
-    { name: 'Hexagon GIS', icon: 'hexagon', color: '#a855f7' },
-    { name: 'Archicad', icon: 'home_pin', color: '#22c55e' },
-    { name: 'Tekla Skeleton', icon: 'foundation', color: '#06b6d4' },
-    { name: 'Vectorworks', icon: 'draw', color: '#ec4899' },
   ];
+
+  // Constant speed marquee: ~80px/s regardless of item count
+  marqueeDuration = computed(() => {
+    const itemWidth = 180;
+    const gap = 64;
+    const setWidth = this.partners.length * (itemWidth + gap);
+    return Math.max(setWidth / 80, 3);
+  });
 
   toggleCountryDropdown() {
     this.isCountryDropdownOpen.update(v => !v);

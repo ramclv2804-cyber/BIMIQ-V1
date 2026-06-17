@@ -54,7 +54,7 @@
         [class.after:scale-x-100]="currentUrl() === '/' && calculator.activeTab() === 'config'">Price Estimate</span>
     </button>
     @if (isLoggedIn()) {
-    @if (user()?.name === 'clove') {
+    @if (user()?.name === 'Clove' || user()?.name === 'clove') {
     <button type="button"
       class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
       [ngClass]="currentUrl() === '/estimations' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
@@ -188,7 +188,7 @@
               [ngClass]="currentUrl() === '/projects' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
               <span class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-sm">folder</span>
-                Projects
+                Projects 
               </span>
             </button>
           }

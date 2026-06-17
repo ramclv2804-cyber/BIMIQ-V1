@@ -46,20 +46,20 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
 
         <!-- OPTION 3: Scan to CAD -->
-        @let isCadDisabled = calculator.modelingSelectionLocked() && calculator.selectedModelingWay() !== 'cad_to_bim';
+        @let isCadDisabled = calculator.modelingSelectionLocked() && calculator.selectedModelingWay() !== 'scan_to_cad';
         <button 
           type="button" 
-          (click)="selectMode('cad_to_bim')"
+          (click)="selectMode('scan_to_cad')"
           [disabled]="isCadDisabled"
-          [class.border-primary-custom]="calculator.selectedModelingWay() === 'cad_to_bim'"
-          [class.bg-primary-custom/5]="calculator.selectedModelingWay() === 'cad_to_bim'"
-          [class.border-white/10]="!isCadDisabled && calculator.selectedModelingWay() !== 'cad_to_bim'"
+          [class.border-primary-custom]="calculator.selectedModelingWay() === 'scan_to_cad'"
+          [class.bg-primary-custom/5]="calculator.selectedModelingWay() === 'scan_to_cad'"
+          [class.border-white/10]="!isCadDisabled && calculator.selectedModelingWay() !== 'scan_to_cad'"
           [class.border-white/5]="isCadDisabled"
           [class.opacity-40]="isCadDisabled"
           [ngClass]="isCadDisabled ? 'cursor-not-allowed' : 'cursor-pointer'"
           class="w-full flex items-start gap-4 p-5 rounded-2xl border text-left transition-all hover:bg-white/5 focus:outline-none relative group select-none">
           <div class="mt-1 flex items-center justify-center">
-            @if (calculator.selectedModelingWay() === 'cad_to_bim') {
+            @if (calculator.selectedModelingWay() === 'scan_to_cad') {
               <span class="material-symbols-outlined text-primary-custom text-2xl fill-1">radio_button_checked</span>
             } @else {
               <span class="material-symbols-outlined text-on-surface-variant-custom text-2xl">radio_button_unchecked</span>
@@ -81,7 +81,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 export class BimSelection {
   calculator = inject(SpatialCostCalculator);
 
-  selectMode(mode: 'bim' | 'cad_to_bim') {
+  selectMode(mode: 'bim' | 'scan_to_cad') {
     this.calculator.selectedModelingWay.set(mode);
   }
 }

@@ -29,7 +29,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                   <span class="text-[9px] text-on-surface-variant-custom font-mono">Project Specifications</span>
                 </div>
 
-                @if (calculator.selectedModelingWay() === 'cad_to_bim') {
+                @if (calculator.selectedModelingWay() === 'scan_to_cad') {
                   <!-- === SCAN TO CAD FORM === -->
                   <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
                     <div class="flex items-center gap-2 mb-2 select-none">
@@ -170,6 +170,17 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                           }
                         </div>
                       </div>
+
+                    <div class="space-y-1.5 flex flex-col">
+                      <label for="step1Desc" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Description</label>
+                      <textarea id="step1Desc" [value]="calculator.description()" (input)="calculator.description.set($any($event.target).value)" rows="3" placeholder="Any additional notes or instructions..." class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all resize-none"></textarea>
+                    </div>
+
+                    <div class="space-y-1.5 flex flex-col font-mono">
+                      <label for="smartEmailInputField" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold">Email Address ID <span class="text-red-400">*</span></label>
+                      <input id="smartEmailInputField" [value]="calculator.smartEmail()" (input)="calculator.smartEmail.set($any($event.target).value)" type="email" placeholder="john@mycompany.com" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 tracking-wide text-silver-leaf focus:outline-none focus:border-[#DF80AC] font-mono text-xs"/>
+                      @if (!calculator.isEmailValid() && calculator.smartEmail().length > 0) { <p class="text-[10px] text-red-400 font-mono italic">Please enter a valid active email with an '@' and '.' symbol</p> }
+                    </div>
                   </div>
                 } @else {
                   <!-- === SCAN TO BIM FORM === -->
@@ -346,6 +357,11 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                       </div>
                     </div>
 
+                    <div class="space-y-1.5 flex flex-col">
+                      <label for="step1Desc" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Description</label>
+                      <textarea id="step1Desc" [value]="calculator.description()" (input)="calculator.description.set($any($event.target).value)" rows="3" placeholder="Any additional notes or instructions..." class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all resize-none"></textarea>
+                    </div>
+
                     <div class="space-y-1.5 flex flex-col relative  hidden">
                     <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Quotation Currency <span class="text-red-400">*</span></span>
                     <div class="relative font-mono">
@@ -391,7 +407,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                       @if (!calculator.smartProjectName().trim()) { <li>Project Name is required.</li> }
                       @if (!calculator.smartScanSize() || calculator.smartScanSize() <= 0) { <li>Area must have a value greater than 0.</li> }
                       @if (!calculator.selectedBuildingType()) { <li>Please select a Building Type.</li> }
-                      @if (calculator.selectedModelingWay() === 'cad_to_bim') {
+                      @if (calculator.selectedModelingWay() === 'scan_to_cad') {
                         @if (!calculator.cadRequirements().length) { <li>Please select at least one Requirement.</li> }
                         @if (!calculator.cadScale()) { <li>Please select a Scale.</li> }
                         @if (!calculator.smartAutocadVersion()) { <li>Please select an AutoCAD Version.</li> }
@@ -814,7 +830,7 @@ export class PriceEstimation implements OnInit {
     if (!c.smartProjectName().trim()) return false;
     if (!c.smartScanSize() || c.smartScanSize() <= 0) return false;
     if (!c.selectedBuildingType()) return false;
-    if (c.selectedModelingWay() === 'cad_to_bim') {
+    if (c.selectedModelingWay() === 'scan_to_cad') {
       if (!c.cadRequirements().length) return false;
       if (!c.cadScale()) return false;
       if (!c.smartAutocadVersion()) return false;
@@ -1024,198 +1040,325 @@ export class PriceEstimation implements OnInit {
   }
 
   async triggerEstimateDownload() {
-    this.calculator.showNotification('Preparing high-fidelity PDF document...', 'info');
+    this.calculator.showNotification('Preparing proposal PDF...', 'info');
     try {
       const { jsPDF } = await import('jspdf');
-      const doc = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4'
+      const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+      const c = this.calculator;
+      const est = c.calculatedSmartEstimate();
+      const isCad = c.selectedModelingWay() === 'scan_to_cad';
+      const mode = isCad ? 'Scan to CAD' : 'Scan to BIM';
+      const today = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+      const area = `${c.smartScanSize().toLocaleString()} sq.ft`;
+      const totalStr = `${est.currencySymbol}${est.totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${c.selectedCurrency()}`;
+
+      // ── Margins & Layout Helpers ──
+      let y = 32;
+      const margin = 20;
+      const bodyW = 170;
+      const lineH = 5.5;
+
+      // ── First Page Logo (White Elements) ──
+      const whiteLogoSvg = `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112.918 40">
+          <g transform="translate(-0.749 -1)">
+            <path d="M73.807,11.411a13.36,13.36,0,0,0-1.871-4.367,13.516,13.516,0,0,0-3.822-3.822,13.421,13.421,0,0,0-14.774,0,13.527,13.527,0,0,0-3.822,3.822,13.452,13.452,0,0,0-2.214,7.387,13.42,13.42,0,0,0,6.036,11.206,13.359,13.359,0,0,0,7.367,2.215l.021,0,.021,0a13.352,13.352,0,0,0,7.366-2.215,13.5,13.5,0,0,0,3.822-3.822,13.417,13.417,0,0,0,1.871-10.4m-13.079,10.4H60.7a7.386,7.386,0,1,1,7.413-7.392v.013a7.385,7.385,0,0,1-7.36,7.378Z" transform="translate(-7.759 -0.001)" fill="#fff"/>
+            <path d="M33.753,21.816V1.008H27.714V27.853H41.089L42.7,21.816Z" transform="translate(-4.494 -0.001)" fill="#fff"/>
+            <path d="M14.146,21.815a7.385,7.385,0,0,1,.027-14.771h4.217L20,1.007H14.174A13.36,13.36,0,0,0,6.787,3.223,13.505,13.505,0,0,0,2.966,7.045a13.307,13.307,0,0,0-1.871,4.367,13.348,13.348,0,0,0,0,6.037,13.322,13.322,0,0,0,1.871,4.367,13.505,13.505,0,0,0,3.822,3.822,13.355,13.355,0,0,0,7.367,2.215l.02,0,.02,0h4.2L20,21.815Z" transform="translate(0 -0.001)" fill="#fff"/>
+            <path d="M120.636,21.815V17.448h8.41V11.411h-8.41V7.044h10.4l1.607-6.037H114.6V27.852h16.438l1.607-6.037Z" transform="translate(-18.975 -0.001)" fill="#fff"/>
+            <path d="M83.949,1.007H77.91L91.589,27.853l3.021-5.921Z" transform="translate(-12.86 -0.001)" fill="#fff"/>
+          </g>
+          <g>
+            <path d="M99.348,17.7q-.253.614-.556,1.252c-.046.1-.092.193-.14.289L107.948,1H94.031a10.347,10.347,0,0,1,4.651,3.481h0a10.3,10.3,0,0,1,.763,1.172,10.546,10.546,0,0,1,.68,1.479c.088.241.168.489.242.744a11.8,11.8,0,0,1,.426,3.693A17.82,17.82,0,0,1,99.348,17.7Z" transform="translate(-15.547)" fill="#f9a64a"/>
+            <path d="M102.367,12.813a17.158,17.158,0,0,0,.365-4.351,11.761,11.761,0,0,1-1.414.658,11.8,11.8,0,0,1,.426,3.692,17.82,17.82,0,0,1-1.444,6.133q-.252.614-.556,1.252c.207-.424.4-.84.582-1.252A29.717,29.717,0,0,0,102.367,12.813Z" transform="translate(-16.499 -1.244)" fill="#ffcd7b"/>
+            <path d="M100.767,3.058A8.908,8.908,0,0,0,99.4,1H94.031a10.347,10.347,0,0,1,4.651,3.481,13.754,13.754,0,0,0,1.411-.1c.388-.048.765-.112,1.132-.188A9.655,9.655,0,0,0,100.767,3.058Z" transform="translate(-15.547)" fill="#f9a64a"/>
+            <path d="M102.705,7.771a11.47,11.47,0,0,0-.551-2.94c-.367.076-.743.139-1.132.188a13.991,13.991,0,0,1-1.411.1,10.3,10.3,0,0,1,.762,1.172,10.546,10.546,0,0,1,.68,1.479c.088.241.168.489.242.744a12.947,12.947,0,0,0,1.414-.658Z" transform="translate(-16.477 -0.639)" fill="#fcba63"/>
+            <path d="M104.515,1H100.47a8.908,8.908,0,0,1,1.37,2.058,9.657,9.657,0,0,1,.457,1.135,15.256,15.256,0,0,0,2.574-.777A7.312,7.312,0,0,0,104.515,1Z" transform="translate(-16.62)" fill="#f69333"/>
+            <path d="M102.663,4.676a11.468,11.468,0,0,1,.551,2.94l0,.086.155-.086a13.853,13.853,0,0,0,1.6-1.048c.008-.047.261-1.847.262-2.668A15.257,15.257,0,0,1,102.663,4.676Z" transform="translate(-16.986 -0.483)" fill="#f9a64a"/>
+            <path d="M102.859,8.149l-.155.086a17.158,17.158,0,0,1-.365,4.351,29.718,29.718,0,0,1-2.041,6.133c-.183.412-.376.828-.583,1.252-.046.1-.092.192-.14.289.2-.389.457-.913.757-1.541.747-1.563,1.739-3.768,2.592-6.133a37.386,37.386,0,0,0,1.327-4.437c.08-.353.148-.7.209-1.048A13.853,13.853,0,0,1,102.859,8.149Z" transform="translate(-16.471 -1.017)" fill="#fcba63"/>
+            <path d="M105.324,1a7.313,7.313,0,0,1,.357,2.416A15.549,15.549,0,0,0,109.831,1Z" transform="translate(-17.429)" fill="#f48120"/>
+            <path d="M105.7,3.416c0,.822-.254,2.622-.263,2.668.153-.122.3-.252.453-.385a24.711,24.711,0,0,0,3.893-4.6l.067-.1A15.55,15.55,0,0,1,105.7,3.416Z" transform="translate(-17.448)" fill="#f69333"/>
+            <path d="M108.792,1.1A24.711,24.711,0,0,1,104.9,5.7c-.149.133-.3.263-.453.385-.061.346-.129.7-.209,1.048a37.383,37.383,0,0,1-1.327,4.437c-.853,2.364-1.845,4.569-2.592,6.133-.3.628-.56,1.152-.757,1.541l-.068.138.856-1.679,3.125-6.133,2.26-4.437L108.859,1Z" transform="translate(-16.458)" fill="#f9a64a"/>
+          </g>
+        </svg>`)}`;
+
+      // ── New/Subsequent Pages Logo (Black Elements with Subtext Paths) ──
+      const blackLogoSvg = `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="112.918" height="40" viewBox="0 0 112.918 40">
+          <g transform="translate(-0.749 -1)">
+            <path d="M73.807,11.411a13.36,13.36,0,0,0-1.871-4.367,13.516,13.516,0,0,0-3.822-3.822,13.421,13.421,0,0,0-14.774,0,13.527,13.527,0,0,0-3.822,3.822,13.452,13.452,0,0,0-2.214,7.387,13.42,13.42,0,0,0,6.036,11.206,13.359,13.359,0,0,0,7.367,2.215l.021,0,.021,0a13.352,13.352,0,0,0,7.366-2.215,13.5,13.5,0,0,0,3.822-3.822,13.417,13.417,0,0,0,1.871-10.4m-13.079,10.4H60.7a7.386,7.386,0,1,1,7.413-7.392v.013a7.385,7.385,0,0,1-7.36,7.378Z" transform="translate(-7.759 -0.001)" fill="#000"/>
+            <path d="M33.753,21.816V1.008H27.714V27.853H41.089L42.7,21.816Z" transform="translate(-4.494 -0.001)" fill="#000"/>
+            <path d="M14.146,21.815a7.385,7.385,0,0,1,.027-14.771h4.217L20,1.007H14.174A13.36,13.36,0,0,0,6.787,3.223,13.505,13.505,0,0,0,2.966,7.045a13.307,13.307,0,0,0-1.871,4.367,13.348,13.348,0,0,0,0,6.037,13.322,13.322,0,0,0,1.871,4.367,13.505,13.505,0,0,0,3.822,3.822,13.355,13.355,0,0,0,7.367,2.215l.02,0,.02,0h4.2L20,21.815Z" transform="translate(0 -0.001)" fill="#000"/>
+            <path d="M120.636,21.815V17.448h8.41V11.411h-8.41V7.044h10.4l1.607-6.037H114.6V27.852h16.438l1.607-6.037Z" transform="translate(-18.975 -0.001)" fill="#000"/>
+            <path d="M83.949,1.007H77.91L91.589,27.853l3.021-5.921Z" transform="translate(-12.86 -0.001)" fill="#000"/>
+            <path d="M.75,43.823H2.3v4.09h.877v-4.09H4.726v-.815H.75Z" transform="translate(0 -7.001)" fill="#000"/>
+            <path d="M13.568,45.793H16.05v-.814H13.568V43.823h2.65v-.814H12.692v4.9h3.557V47.1H13.568Z" transform="translate(-1.991 -7.002)" fill="#000"/>
+            <path d="M39.889,44.941H37.7V43.009h-.877v4.9H37.7V45.757h2.191v2.156h.877v-4.9h-.877Z" transform="translate(-6.012 -7.001)" fill="#000"/>
+            <path d="M52.372,46.289l-2.261-3.281h-.818v4.9h.877v-3.28l2.26,3.28h.821v-4.9h-.878Z" transform="translate(-8.091 -7.001)" fill="#000"/>
+            <path d="M65.571,43.68a2.146,2.146,0,0,0-.734-.572,2.551,2.551,0,0,0-2.032,0,2.162,2.162,0,0,0-.736.572,2.443,2.443,0,0,0-.433.813,3.257,3.257,0,0,0,0,1.9,2.413,2.413,0,0,0,.434.812,2.165,2.165,0,0,0,.735.567,2.531,2.531,0,0,0,2.034,0,2.159,2.159,0,0,0,.73-.567A2.41,2.41,0,0,0,66,46.389a3.255,3.255,0,0,0,0-1.894,2.469,2.469,0,0,0-.433-.814m-2.4,3.35a1.262,1.262,0,0,1-.442-.377,1.764,1.764,0,0,1-.265-.557,2.514,2.514,0,0,1-.088-.654,2.473,2.473,0,0,1,.088-.655,1.743,1.743,0,0,1,.264-.555,1.282,1.282,0,0,1,.443-.379,1.593,1.593,0,0,1,1.306,0,1.317,1.317,0,0,1,.441.379,1.753,1.753,0,0,1,.265.553,2.472,2.472,0,0,1,0,1.31,1.725,1.725,0,0,1-.265.557,1.275,1.275,0,0,1-.441.378,1.573,1.573,0,0,1-1.306,0" transform="translate(-10.124 -6.983)" fill="#000"/>
+            <path d="M75.412,43.009h-.877v4.9h3.372V47.1H75.412Z" transform="translate(-12.298 -7.001)" fill="#000"/>
+            <path d="M89.557,43.68a2.152,2.152,0,0,0-.732-.572,2.555,2.555,0,0,0-2.033,0,2.138,2.138,0,0,0-.735.572,2.451,2.451,0,0,0-.433.814,3.271,3.271,0,0,0,0,1.893,2.374,2.374,0,0,0,.435.812,2.147,2.147,0,0,0,.733.569,2.336,2.336,0,0,0,1.019.213,2.3,2.3,0,0,0,1.015-.213,2.135,2.135,0,0,0,.73-.568,2.37,2.37,0,0,0,.435-.811,3.239,3.239,0,0,0,0-1.9,2.423,2.423,0,0,0-.433-.815m-1.747.031a1.393,1.393,0,0,1,.65.141,1.286,1.286,0,0,1,.442.381,1.649,1.649,0,0,1,.263.553,2.429,2.429,0,0,1,0,1.31,1.679,1.679,0,0,1-.263.556,1.275,1.275,0,0,1-.442.378,1.565,1.565,0,0,1-1.3,0,1.242,1.242,0,0,1-.443-.379,1.654,1.654,0,0,1-.265-.555,2.431,2.431,0,0,1,0-1.311,1.672,1.672,0,0,1,.265-.552,1.263,1.263,0,0,1,.443-.379,1.4,1.4,0,0,1,.655-.142" transform="translate(-14.122 -6.983)" fill="#000"/>
+            <path d="M111.316,47.913h.877v-4.9h-.877v4.9Z" transform="translate(-18.428 -7.001)" fill="#000"/>
+            <path d="M121.031,45.793h2.482v-.814h-2.482V43.823h2.651v-.814h-3.528v4.9h3.559V47.1h-2.682Z" transform="translate(-19.901 -7.002)" fill="#000"/>
+            <path d="M27.625,45.871l-.008.078a1.714,1.714,0,0,1-.125.491,1.357,1.357,0,0,1-.251.386,1.084,1.084,0,0,1-.359.254,1.394,1.394,0,0,1-1.122-.05,1.252,1.252,0,0,1-.443-.379,1.668,1.668,0,0,1-.264-.555,2.49,2.49,0,0,1-.089-.653,2.454,2.454,0,0,1,.09-.657,1.693,1.693,0,0,1,.263-.553,1.263,1.263,0,0,1,.443-.379,1.427,1.427,0,0,1,1.051-.082,1.255,1.255,0,0,1,.339.173,1.075,1.075,0,0,1,.255.282h0a1.224,1.224,0,0,1,.154.384l.007.029h.876l-.013-.105a1.773,1.773,0,0,0-.241-.71,1.881,1.881,0,0,0-.469-.513A2.011,2.011,0,0,0,27.1,43a2.428,2.428,0,0,0-1.7.108,2.161,2.161,0,0,0-.735.572,2.422,2.422,0,0,0-.432.815,3.243,3.243,0,0,0,0,1.893,2.358,2.358,0,0,0,.434.812,2.155,2.155,0,0,0,.733.569,2.331,2.331,0,0,0,1.019.213,2.176,2.176,0,0,0,.8-.141,1.91,1.91,0,0,0,.636-.4,2.073,2.073,0,0,0,.432-.63A2.574,2.574,0,0,0,28.49,46l.013-.125Z" transform="translate(-3.89 -6.982)" fill="#000"/>
+            <path d="M100.395,45.994H101.9a1.547,1.547,0,0,1-.074.356,1.194,1.194,0,0,1-.249.435,1.157,1.157,0,0,1-.412.284,1.588,1.588,0,0,1-1.224-.038,1.254,1.254,0,0,1-.444-.379,1.666,1.666,0,0,1-.263-.555,2.453,2.453,0,0,1,0-1.311,1.68,1.68,0,0,1,.263-.553,1.289,1.289,0,0,1,.443-.378,1.517,1.517,0,0,1,1.144-.057,1.322,1.322,0,0,1,.374.225,1.186,1.186,0,0,1,.245.3.845.845,0,0,1,.06.18h.891a2.014,2.014,0,0,0-.239-.662A1.885,1.885,0,0,0,101.321,43a2.562,2.562,0,0,0-1.744.108,2.165,2.165,0,0,0-.734.572,2.406,2.406,0,0,0-.432.815,3.216,3.216,0,0,0,0,1.893,2.36,2.36,0,0,0,.432.812,2.161,2.161,0,0,0,.735.569,2.339,2.339,0,0,0,1.018.213,2.415,2.415,0,0,0,.52-.056,1.825,1.825,0,0,0,.487-.182,1.781,1.781,0,0,0,.362-.265l.03.414h.742V45.178h-2.342Z" transform="translate(-16.253 -6.983)" fill="#000"/>
+            <path d="M135.353,45.926a1.151,1.151,0,0,0-.308-.4,1.677,1.677,0,0,0-.423-.259,3.311,3.311,0,0,0-.483-.165l-1.088-.268a1.7,1.7,0,0,1-.223-.072.515.515,0,0,1-.154-.092.337.337,0,0,1-.089-.119.428.428,0,0,1-.033-.177.62.62,0,0,1,.066-.307.543.543,0,0,1,.174-.193.8.8,0,0,1,.28-.118,1.506,1.506,0,0,1,.754.013,1,1,0,0,1,.31.158.763.763,0,0,1,.207.246.824.824,0,0,1,.088.352l0,.038h.874v-.051a1.483,1.483,0,0,0-.579-1.215,1.81,1.81,0,0,0-.6-.3,2.474,2.474,0,0,0-1.551.059,1.568,1.568,0,0,0-.547.382,1.249,1.249,0,0,0-.283.5,1.582,1.582,0,0,0-.072.443,1.3,1.3,0,0,0,.105.538,1.189,1.189,0,0,0,.274.377,1.233,1.233,0,0,0,.389.242,3.319,3.319,0,0,0,.409.137l.989.242a2.808,2.808,0,0,1,.294.09,1.033,1.033,0,0,1,.245.127.568.568,0,0,1,.155.161.4.4,0,0,1,.051.208.484.484,0,0,1-.079.286.719.719,0,0,1-.229.216,1.115,1.115,0,0,1-.319.132,1.776,1.776,0,0,1-.849-.011,1.041,1.041,0,0,1-.382-.161.687.687,0,0,1-.235-.281v0a1,1,0,0,1-.085-.468l0-.058h-.877l0,.043a1.818,1.818,0,0,0,.128.806,1.443,1.443,0,0,0,.433.569,1.819,1.819,0,0,0,.655.318,3.066,3.066,0,0,0,.788.1,3.017,3.017,0,0,0,.731-.078,1.983,1.983,0,0,0,.533-.214,1.273,1.273,0,0,0,.36-.315,1.5,1.5,0,0,0,.2-.333,1.258,1.258,0,0,0,.093-.326,2.044,2.044,0,0,0,.015-.227A1.312,1.312,0,0,0,135.353,45.926Z" transform="translate(-21.797 -6.983)" fill="#000"/>
+          </g>
+          <g>
+            <path d="M99.348,17.7q-.253.614-.556,1.252c-.046.1-.092.193-.14.289L107.948,1H94.031a10.347,10.347,0,0,1,4.651,3.481h0a10.3,10.3,0,0,1,.763,1.172,10.546,10.546,0,0,1,.68,1.479c.088.241.168.489.242.744a11.8,11.8,0,0,1,.426,3.693A17.82,17.82,0,0,1,99.348,17.7Z" transform="translate(-15.547)" fill="#f9a64a"/>
+            <path d="M102.367,12.813a17.158,17.158,0,0,0,.365-4.351,11.761,11.761,0,0,1-1.414.658,11.8,11.8,0,0,1,.426,3.692,17.82,17.82,0,0,1-1.444,6.133q-.252.614-.556,1.252c.207-.424.4-.84.582-1.252A29.717,29.717,0,0,0,102.367,12.813Z" transform="translate(-16.499 -1.244)" fill="#ffcd7b"/>
+            <path d="M100.767,3.058A8.908,8.908,0,0,0,99.4,1H94.031a10.347,10.347,0,0,1,4.651,3.481,13.754,13.754,0,0,0,1.411-.1c.388-.048.765-.112,1.132-.188A9.655,9.655,0,0,0,100.767,3.058Z" transform="translate(-15.547)" fill="#f9a64a"/>
+            <path d="M102.705,7.771a11.47,11.47,0,0,0-.551-2.94c-.367.076-.743.139-1.132.188a13.991,13.991,0,0,1-1.411.1,10.3,10.3,0,0,1,.762,1.172,10.546,10.546,0,0,1,.68,1.479c.088.241.168.489.242.744a12.947,12.947,0,0,0,1.414-.658Z" transform="translate(-16.477 -0.639)" fill="#fcba63"/>
+            <path d="M104.515,1H100.47a8.908,8.908,0,0,1,1.37,2.058,9.657,9.657,0,0,1,.457,1.135,15.256,15.256,0,0,0,2.574-.777A7.312,7.312,0,0,0,104.515,1Z" transform="translate(-16.62)" fill="#f69333"/>
+            <path d="M102.663,4.676a11.468,11.468,0,0,1,.551,2.94l0,.086.155-.086a13.853,13.853,0,0,0,1.6-1.048c.008-.047.261-1.847.262-2.668A15.257,15.257,0,0,1,102.663,4.676Z" transform="translate(-16.986 -0.483)" fill="#f9a64a"/>
+            <path d="M102.859,8.149l-.155.086a17.158,17.158,0,0,1-.365,4.351,29.718,29.718,0,0,1-2.041,6.133c-.183.412-.376.828-.583,1.252-.046.1-.092.192-.14.289.2-.389.457-.913.757-1.541.747-1.563,1.739-3.768,2.592-6.133a37.386,37.386,0,0,0,1.327-4.437c.08-.353.148-.7.209-1.048A13.853,13.853,0,0,1,102.859,8.149Z" transform="translate(-16.471 -1.017)" fill="#fcba63"/>
+            <path d="M105.324,1a7.313,7.313,0,0,1,.357,2.416A15.549,15.549,0,0,0,109.831,1Z" transform="translate(-17.429)" fill="#f48120"/>
+            <path d="M105.7,3.416c0,.822-.254,2.622-.263,2.668.153-.122.3-.252.453-.385a24.711,24.711,0,0,0,3.893-4.6l.067-.1A15.55,15.55,0,0,1,105.7,3.416Z" transform="translate(-17.448)" fill="#f69333"/>
+            <path d="M108.792,1.1A24.711,24.711,0,0,1,104.9,5.7c-.149.133-.3.263-.453.385-.061.346-.129.7-.209,1.048a37.383,37.383,0,0,1-1.327,4.437c-.853,2.364-1.845,4.569-2.592,6.133-.3.628-.56,1.152-.757,1.541l-.068.138.856-1.679,3.125-6.133,2.26-4.437L108.859,1Z" transform="translate(-16.458)" fill="#f9a64a"/>
+          </g>
+        </svg>`)}`;
+
+      // ── Process White Logo Image ──
+      const whiteImgObj = new Image();
+      const whiteLogoPng = await new Promise<string>(r => {
+        whiteImgObj.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = whiteImgObj.naturalWidth;
+          canvas.height = whiteImgObj.naturalHeight;
+          canvas.getContext('2d')!.drawImage(whiteImgObj, 0, 0);
+          r(canvas.toDataURL('image/png'));
+        };
+        whiteImgObj.src = whiteLogoSvg;
       });
 
-      doc.setProperties({
-        title: `Valuation Report: ${this.calculator.resolvedProjectName()}`,
-        subject: 'BIM Spatial Scan Valuation',
-        author: 'Spatial Cost Calculator Pro',
-        creator: 'AI Studio Integration System'
+      // ── Process Black Logo Image ──
+      const blackImgObj = new Image();
+      const blackLogoPng = await new Promise<string>(r => {
+        blackImgObj.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = blackImgObj.naturalWidth;
+          canvas.height = blackImgObj.naturalHeight;
+          canvas.getContext('2d')!.drawImage(blackImgObj, 0, 0);
+          r(canvas.toDataURL('image/png'));
+        };
+        blackImgObj.src = blackLogoSvg;
       });
 
-      const est = this.calculator.calculatedSmartEstimate();
-      const symbol = est.currencySymbol;
-      const totalStr = `${symbol}${est.totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${this.calculator.selectedCurrency()}`;
+      // ── Page Content Printer ──
+      const write = (text: string, size = 10, style: 'normal' | 'bold' | 'italic' = 'normal') => {
+        if (y > 270) {
+          doc.addPage();
 
-      // 1. Theme Styling - Elegant header band (Deep Charcoal)
+          // Remaining pages only get the thin red line accent at the very top (No navy background block)
+          // doc.setFillColor(255, 103, 36);
+          doc.rect(0, 0, 210, 1.5, 'F');
+
+          // ADDED: Embed the updated Black Clove Logo with subtext in top left corner of subsequent pages
+          doc.addImage(blackLogoPng, 'PNG', 15, 8, 20, 7.1);
+
+          y = 22; // Setup custom high-boundary line break safety index
+        }
+        doc.setFont('helvetica', style);
+        doc.setFontSize(size);
+        doc.text(text, margin, y);
+        y += lineH;
+      };
+
+      const writeLines = (lines: string[], size = 10, style: 'normal' | 'bold' | 'italic' = 'normal') => {
+        for (const l of lines) write(l, size, style);
+      };
+
+      // ── First Page Header (Only page with dark navy background) ──
       doc.setFillColor(15, 23, 42);
-      doc.rect(0, 0, 210, 42, 'F');
+      doc.rect(0, 0, 210, 22, 'F');
+      doc.setFillColor(255, 103, 36);
+      doc.rect(0, 22, 210, 1.5, 'F');
 
-      // Decorative accent line
-      doc.setFillColor(200, 107, 152);
-      doc.rect(0, 42, 210, 3, 'F');
-
-      // Title Text
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(18);
-      doc.text('SPATIAL SCAN VALUATION REPORT', 15, 18);
-
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(200, 200, 200);
-      doc.text('AUTOMATED BIM MODELING & SPATIAL ESTIMATION SERVICE', 15, 26);
-
-      // Date & Report Status
-      doc.setFont('helvetica', 'normal');
+      // First Page Logo (White elements) & Date Placement
+      doc.addImage(whiteLogoPng, 'PNG', 15, 6, 30, 10);
       doc.setFontSize(9);
       doc.setTextColor(226, 232, 240);
-      const today = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-      doc.text(`DATE: ${today}`, 195, 18, { align: 'right' });
-      doc.text(`STATUS: CORE VERIFIED`, 195, 26, { align: 'right' });
-
-      // Reset text color for body
+      doc.text(`DATE: ${today}`, 195, 8, { align: 'right' });
       doc.setTextColor(51, 65, 85);
 
-      // Section 1: PROJECT ATTRIBUTES
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(14);
-      doc.text('1. Project Coordinates', 15, 60);
-
-      doc.setFillColor(226, 232, 240);
-      doc.rect(15, 63, 180, 0.5, 'F');
+      // ── Salutation & Introduction ──
+      write(`Hello, ${this.calculator.currentUser()?.name}`, 11, 'bold');
+      y += 1;
 
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.text('Project Title:', 15, 72);
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.calculator.resolvedProjectName() || 'Untitled Project', 55, 72);
+      doc.setFontSize(11);
+      const proposalTitle = `Proposal: ${c.projectNumber() || '(Project Number)'} - ${mode} - ${c.smartProjectName() || 'Project'} Project.`;
+      doc.text(proposalTitle, margin, y, { maxWidth: bodyW });
+      y += 6;
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Physical Location:', 15, 80);
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.calculator.selectedModelingWay() === 'bim'
-        ? (this.calculator.smartProjectAddress() || 'Standard Delivery Zone')
-        : `LOD Compliance: ${this.calculator.getPrebuiltLodLabel(this.calculator.prebuiltLODLevel())}`, 55, 80);
+      write(`Size: ${area} - (Actual area will be confirmed once we receive the point cloud)`, 10, 'italic');
+      y += 3;
 
-      doc.setFont('helvetica', 'bold');
-      doc.text(this.calculator.selectedModelingWay() === 'bim' ? 'Revit Destination:' : 'Model Format:', 15, 88);
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.calculator.selectedModelingWay() === 'bim'
-        ? (this.calculator.smartRevitVersion() || 'Revit 2024 LTS')
-        : `${this.calculator.prebuiltFileFormat()} (Author: ${this.calculator.prebuiltDesignerFirm()})`, 55, 88);
+      // ── 1. Project Overview ──
+      write('1. Project Overview', 11, 'bold');
+      const overview = isCad
+        ? 'This proposal outlines the scope, methodology, and deliverables for developing CAD layouts using the provided scan data.'
+        : 'This proposal outlines the scope, methodology, and deliverables for developing Revit model using the provided scan data.';
+      writeLines(doc.splitTextToSize(overview, bodyW), 10);
+      y += 3;
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Authorized Contacts:', 15, 96);
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.calculator.smartEmail() || 'N/A', 55, 96);
-
-      // Section 2: CALIBRATION SPECIFICATIONS (BIM SCAN CONFIG)
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(14);
-      doc.text('2. Scan Configuration', 15, 112);
-
-      doc.setFillColor(226, 232, 240);
-      doc.rect(15, 115, 180, 0.5, 'F');
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.text('Space Category Type:', 15, 124);
-      doc.setFont('helvetica', 'normal');
-      doc.text(this.calculator.smartSpaceType(), 55, 124);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text('Total Boundary Area:', 15, 132);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${this.calculator.smartScanSize().toLocaleString()} ${this.calculator.smartIsMetric() ? 'Sq.M' : 'Sq.Ft'}`, 55, 132);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text('Primary Modeling Mode:', 15, 140);
-      doc.setFont('helvetica', 'normal');
-      const modelingMode = this.calculator.selectedModelingWay() === 'bim' ? 'BIM Reconstruction from Scan' : 'Existing Model';
-      doc.text(modelingMode, 55, 140);
-
-      doc.setFont('helvetica', 'bold');
-      doc.text('Included Scope Items:', 15, 148);
-
-      const scopes: string[] = [];
-      if (this.calculator.smartInteriorArchitecture()) scopes.push('Interior Architecture');
-      if (this.calculator.smartInteriorFurniture()) scopes.push('Interior Furniture Layouts');
-      if (this.calculator.smartInteriorMep()) scopes.push('Interior MEP Distribution');
-      if (this.calculator.smartIsComplexMepf()) scopes.push('Complex MEPF Seismic Routing');
-      if (this.calculator.smartIsExteriorRequired()) {
-        if (this.calculator.smartExteriorArchitecture()) scopes.push('Exterior Architecture/Facade');
-        if (this.calculator.smartExteriorFurniture()) scopes.push('Exterior Furniture');
-        if (this.calculator.smartExteriorMep()) scopes.push('Exterior MEP Services');
+      // ── 2. Scope of Work ──
+      write('2. Scope of Work', 11, 'bold');
+      if (isCad) {
+        const reqs = c.cadRequirements() || [];
+        if (reqs.includes('Floor Plan')) write('• Architectural Floor Plan (Excluding furniture)');
+        if (reqs.includes('Furniture')) write('• Architectural Floor Plan (Including furniture)');
+        if (reqs.includes('MEP')) write('• MEP Layout');
+      } else {
+        const reqs = c.bimRequirements() || [];
+        const hasArch = reqs.includes('Architectural');
+        const hasFurn = reqs.includes('Furniture');
+        if (hasArch && !hasFurn) write('• Architectural model (Excluding furniture)');
+        if (hasArch && hasFurn) write('• Architectural model (Including furniture)');
+        if (reqs.includes('Structural')) write('• Structural model');
+        if (reqs.includes('Mechanical')) write('• Mechanical model');
+        if (reqs.includes('Electrical')) write('• Electrical model');
+        if (reqs.includes('Plumbing')) write('• Plumbing model');
+        if (reqs.includes('Fire Protection')) write('• Fire Protection model');
       }
-      if (this.calculator.smartIsSiteRequired()) scopes.push('Site Boundary Modeling');
+      y += 2;
 
-      if (scopes.length === 0) scopes.push('Base Setup Calibration');
+      // Add Ons
+      const addOns = c.bimAddOns() || [];
+      write("Add On's Selected:", 10, 'bold');
+      if (addOns.length) {
+        for (const ao of addOns) write(`• ${ao}`);
+      } else {
+        write('• None selected');
+      }
+      y += 3;
 
-      doc.setFont('helvetica', 'normal');
-      doc.text(scopes.join('  |  '), 55, 154, { maxWidth: 140 });
+      if (isCad) {
+        write('3. Scale', 11, 'bold');
+        const scale = c.cadScale() || 'N/A';
+        const acadVer = c.smartAutocadVersion() || 'AutoCAD';
+        write(`All the above drawings will be drafted to ${scale} using ${acadVer}.`);
+        y += 3;
+      } else {
+        write('3. LOD & Version', 11, 'bold');
+        const lod = c.smartLODLevel().replace('_', ' ') || 'LOD 300';
+        const revitVer = c.smartRevitVersion() || 'Revit';
+        write(`The model will be developed to ${lod} using ${revitVer}.`);
+        y += 3;
+      }
 
-      // Section 3: COST ESTIMATION & SUMMARY
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(14);
-      doc.text('3. Cost & Delivery Estimation', 15, 172);
+      // ── 4. Data Requirements ──
+      write('4. Data Requirements', 11, 'bold');
+      writeLines(doc.splitTextToSize('To ensure an accurate and efficient modelling workflow, the following inputs are requested:', bodyW));
+      write('• .e57 point cloud file (preferred and sufficient for documentation)');
+      write('• Virtual tour access for visual cross-verification');
+      y += 3;
 
-      doc.setFillColor(226, 232, 240);
-      doc.rect(15, 175, 180, 0.5, 'F');
+      // ── 5. Deliverables ──
+      write('5. Deliverables', 11, 'bold');
+      writeLines(doc.splitTextToSize('Upon completion, the following will be provided:', bodyW));
+      if (isCad) {
+        write('• AutoCAD drawings, .dwg');
+        write('• PDF documentation, .pdf');
+      } else {
+        const hasSheets = addOns.includes('Sheets');
+        write('• Revit model, .rvt');
+        write(`• AutoCAD drawings, .dwg ${hasSheets ? '' : '(If sheets are selected)'}`);
+        write(`• PDF documentation, .pdf ${hasSheets ? '' : '(If sheets are selected)'}`);
+      }
+      y += 3;
 
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10);
+      // ── 6. Exclusions ──
+      write('6. Exclusions', 11, 'bold');
+      writeLines(doc.splitTextToSize('The following items are outside the current scope unless specifically requested:', bodyW));
+      if (isCad) {
+        const reqs = c.cadRequirements() || [];
+        if (!reqs.includes('MEP')) write('• MEP drawings (If MEP is not selected in the scope of work)');
+        for (const opt of ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'Furniture']) {
+          if (!reqs.includes(opt) && !addOns.includes(opt)) write(`• ${opt}`);
+        }
+      } else {
+        const reqs = c.bimRequirements() || [];
+        const allScope = ['Architectural', 'Structural', 'Mechanical', 'Electrical', 'Plumbing', 'Fire Protection', 'Furniture'];
+        for (const s of allScope) {
+          if (!reqs.includes(s)) write(`• ${s} model`);
+        }
+        for (const ao of ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'MEP', 'Furniture', 'Sheets']) {
+          if (!addOns.includes(ao)) write(`• ${ao}`);
+        }
+      }
+      y += 4;
 
-      doc.text('Interior Modeling Fees:', 15, 184);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${symbol}${est.interiorFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 65, 184);
+      // ── 7. Assumptions ──
+      write('7. Assumptions', 11, 'bold');
+      const asIsText = isCad ? 'drafted as-is' : 'modeled as-is';
+      writeLines(doc.splitTextToSize('• Accuracy is dependent on the quality and completeness of the point cloud.', bodyW));
+      writeLines(doc.splitTextToSize(`• Areas obstructed or not captured will be ${asIsText} or left incomplete.`, bodyW));
+      y += 3;
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Exterior Modeling Fees:', 15, 192);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${symbol}${est.exteriorFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 65, 192);
+      // ── 8. Pricing Estimate ──
+      write('8. Pricing Estimate', 11, 'bold');
+      const pricingDesc = isCad
+        ? 'Based on the provided project description and typical drafting requirements:'
+        : `Based on the provided project description and typical ${c.smartLODLevel().replace('_', ' ')} modeling requirements:`;
+      writeLines(doc.splitTextToSize(pricingDesc, bodyW));
+      const serviceLabel = isCad ? 'AutoCAD Drafting:' : 'Revit Modeling:';
+      write(serviceLabel, 10, 'bold');
+      write(`Estimated Area: ${area}`);
+      write(`Estimated Cost: ${totalStr} (Actual Rate arrived from Rate Card)`);
+      y += 2;
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Terrain Site Fees:', 15, 200);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${symbol}${est.siteFees.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 65, 200);
+      // ── 9. Timeline ──
+      write('9. Timeline', 11, 'bold');
+      write(`Will be delivered within ${est.businessDaysText} business days.`);
+      y += 4;
 
-      doc.setFont('helvetica', 'bold');
-      doc.text('Target Timeline:', 15, 208);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${est.businessDaysText} (${est.dayRangeText})`, 65, 208);
+      // ── Closing & Sign-off ──
+      write('Looking forward to your GO Order.', 10);
+      y += 2;
+      write('Best regards,', 10);
+      y += 1;
+      write('Clove Technologies Inc.,', 10, 'bold');
+      write('12600 Deerfield Pkwy #100', 10);
+      write('Alpharetta, GA 30004', 10);
+      write('C: (470) 518-5999', 10);
+      write('sj@clovetech.com', 10);
+      write('www.clovetech.com', 10);
+      y += 5;
 
-      // valuation card at bottom
-      doc.setFillColor(248, 250, 252);
-      doc.rect(15, 218, 180, 30, 'F');
-      doc.setDrawColor(226, 232, 240);
-      doc.rect(15, 218, 180, 30, 'S');
-
-      doc.setFillColor(200, 107, 152);
-      doc.rect(15, 218, 4, 30, 'F');
-
-      doc.setTextColor(15, 23, 42);
-      doc.setFont('helvetica', 'bold');
-      doc.text('ESTIMATED VALUATION TOTAL', 24, 230);
-      doc.setFont('helvetica', 'normal');
+      // ── Footnotes Handling Loop ──
+      doc.setFont('helvetica', 'italic');
       doc.setFontSize(8);
       doc.setTextColor(100, 116, 139);
-      doc.text('Including all active SLA discounts and calibration multipliers.', 24, 238);
 
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(16);
-      doc.setTextColor(200, 107, 152);
-      doc.text(totalStr, 190, 236, { align: 'right' });
+      const isBimFootnotes = [
+        'Clove Technologies reserves the right to revise the proposal if the density or complexity of the actual modeling differs from the initial information provided.',
+        'Any additional requirements not included in the proposal will be considered out of scope and, if required, will be priced separately.',
+        'Please review the sample deliverables available in the Resources section of our website to align expectations.',
+        'Clove Technologies will use standard revit families unless the Client provides a project specific library.',
+        'Title block and labeling information, if any, should be provided by the Client; otherwise, standard title blocks will be used.',
+        'General layering standards will be applied unless the Client provides specific layering guidelines.',
+      ];
+      const isCadFootnotes = [
+        'Clove Technologies reserves the right to revise the proposal if the density or complexity of the actual drafting work differs from the initial information provided.',
+        'Any additional requirements not included in the proposal will be considered out of scope and, if required, will be priced separately.',
+        'Please review the sample deliverables available in the Resources section of our website to align expectations.',
+        'Title block and labeling information, if any, should be provided by the Client; otherwise, standard title blocks will be used.',
+        'General layering standards will be applied unless the Client provides specific layering guidelines.',
+      ];
 
-      // Footer
-      doc.setTextColor(148, 163, 184);
-      doc.setFont('helvetica', 'italic');
-      doc.setFontSize(7.5);
-      doc.text('Verification Token: SPATIAL-BIM-EST-SECURE-990-2A', 15, 275);
-      doc.text('This document acts as an initial non-binding valuation report generated in real-time.', 15, 280);
+      const footnotes = isCad ? isCadFootnotes : isBimFootnotes;
+      for (const fn of footnotes) {
+        const lines = doc.splitTextToSize(`• ${fn}`, bodyW);
+        for (const l of lines) {
+          write(l, 8, 'italic');
+        }
+      }
 
-      doc.save(`Valuation_Report_${this.calculator.resolvedProjectName().replace(/\s+/g, '_')}.pdf`);
+      doc.save(`Proposal_${c.smartProjectName()}.pdf`);
       this.calculator.showNotification('PDF downloaded successfully!', 'success');
     } catch (e) {
       console.error(e);
-      this.calculator.showNotification('Failed to generate PDF document. Check developer logs.', 'warn');
+      this.calculator.showNotification('Failed to generate PDF document.', 'warn');
     }
   }
 
@@ -1229,7 +1372,7 @@ export class PriceEstimation implements OnInit {
     // console.log('Type:', c.projectType());
     console.log('Area:', c.smartScanSize(), c.smartIsMetric() ? 'Sq.m' : 'Sq.ft');
     console.log('Building Type:', c.selectedBuildingType());
-    if (c.selectedModelingWay() === 'cad_to_bim') {
+    if (c.selectedModelingWay() === 'scan_to_cad') {
       console.log('Requirements:', c.cadRequirements());
       console.log('Scale:', c.cadScale());
       console.log('AutoCAD Version:', c.smartAutocadVersion());
@@ -1240,6 +1383,7 @@ export class PriceEstimation implements OnInit {
       console.log('Revit Version:', c.smartRevitVersion());
     }
     console.log('Currency:', c.selectedCurrency());
+    console.log('Description:', c.description());
     console.log('Email:', c.smartEmail());
     console.log('--- Step 2: Upload & Project Info ---');
     console.log('Upload Link:', c.uploadLink());

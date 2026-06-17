@@ -119,11 +119,11 @@
 
   <div class="projects-grid">
     <div class="project-card" *ngFor="let p of filteredProjects(); trackBy: trackCard; let i = index"
-      (click)="openDetail(p)" [style.animation-delay]="(i * 0.15) + 's'">
+      [style.animation-delay]="(i * 0.15) + 's'">
       <div class="card-body">
-        <div class="card-header-row" >
+        <div class="card-header-row">
           <div class="card-header">
-            <span class="card-category">{{ p.category }}</span>
+            <h3 class="card-title">{{ p.projectName }}</h3>
           </div>
           <div class="card-header-bottom">
             <span class="card-workflow-status" [class.award]="p.workflowStatus === 'Yet to Award'"
@@ -135,7 +135,7 @@
             </span>
           </div>
         </div>
-        <h3 class="card-title">{{ p.projectName }}</h3>
+
         <p class="card-desc">{{ p.description }}</p>
         <div class="card-meta">
           <span class="meta-chip">
@@ -148,11 +148,11 @@
           </span>
           <span class="meta-chip">
             <span class="chip-icon">source</span>
-            {{ p.source }}
+            {{ p.scope }}
           </span>
         </div>
         <div class="card-tags">
-          <span class="tag-chip tag-lod">{{ p.lod }}</span>
+          <span class="tag-chip" [class.tag-lod]="p.scope !== 'Scan to CAD'" [class.tag-scale]="p.scope === 'Scan to CAD'">{{ p.scope === 'Scan to CAD' ? p.scale : p.lod }}</span>
           <span class="tag-chip tag-workflow">{{ p.workflowStatus }}</span>
           <span class="tag-chip tag-billing">{{ p.billing }}</span>
           <span class="tag-chip tag-payment" [class.paid]="p.payment === 'Paid'">{{ p.payment }}</span>
@@ -162,6 +162,9 @@
             <span class="cost-value">{{ p.currency }}{{ p.cost | number }}</span>
             <span class="cost-label">Total Cost</span>
           </div>
+
+          <button class="ticket-btn" (click)="$event.stopPropagation(); openTicket(p)">Ticket Raise</button>
+
           <button class="card-arrow" (click)="$event.stopPropagation(); openDetail(p)">
             <span class="arrow-icon">arrow_forward</span>
           </button>
@@ -189,44 +192,130 @@
     <div class="detail-banner">
       <div class="banner-overlay"></div>
       <div class="banner-content">
-        <div class="banner-chips">
-          <span class="detail-status" [style.background]="getStatusColor(p.status) + '18'"
-            [style.color]="getStatusColor(p.status)">
-            <span class="status-bullet"></span>
-            {{ getStatusLabel(p.status) }}
-          </span>
-          <span class="detail-category">{{ p.category }}</span>
+        <div class="banner-top-row">
+          <div class="banner-chips">
+            <span class="detail-status" [style.background]="getStatusColor(p.workflowStatus) + '18'"
+              [style.color]="getStatusColor(p.workflowStatus)">
+              <span class="status-bullet"></span>
+              {{ p.workflowStatus }}
+            </span>
+          </div>
+          <h1 class="detail-title">{{ p.projectName }}</h1>
         </div>
-        <h1 class="detail-title">{{ p.projectName }}</h1>
-        <div class="detail-meta-row">
-          <span class="detail-chip">
-            <span class="chip-label">Scope</span>
-            <span class="chip-value"><span class="chip-icon">business</span> {{ p.buildingType }}</span>
-          </span>
-          <span class="detail-chip">
-            <span class="chip-label">Area</span>
-            <span class="chip-value"><span class="chip-icon">straighten</span> {{ p.sft | number }} sft</span>
-          </span>
-          <span class="detail-chip">
-            <span class="chip-label">Source</span>
-            <span class="chip-value"><span class="chip-icon">source</span> {{ p.source }}</span>
-          </span>
-          <span class="detail-chip">
-            <span class="chip-label">LOD</span>
-            <span class="chip-value"><span class="chip-icon">layers</span> {{ p.lod }}</span>
-          </span>
-          <span class="detail-chip">
-            <span class="chip-label">Status</span>
-            <span class="chip-value"><span class="chip-icon">assignment</span> {{ p.workflowStatus }}</span>
-          </span>
-          <span class="detail-chip">
-            <span class="chip-label">Billing</span>
-            <span class="chip-value"><span class="chip-icon">receipt</span> {{ p.billing }}</span>
-          </span>
-          <span class="detail-chip">
-            <span class="chip-label">Payment</span>
-            <span class="chip-value"><span class="chip-icon">payments</span> {{ p.payment }}</span>
-          </span>
+
+        <!-- Info Cards Grid -->
+        <div class="detail-cards-grid">
+
+          <!-- Card: Project Info -->
+          <div class="info-card">
+            <div class="info-card-head">
+              <span class="info-card-head-icon">info</span>
+              <span class="info-card-head-label">Project Info</span>
+            </div>
+            <div class="info-card-body">
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="Project ID">Project ID</span>
+                <span class="info-card-row-value"><span class="chip-icon">tag</span> {{ p.projectNo }}</span>
+              </div>
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="Client">Client</span>
+                <span class="info-card-row-value"><span class="chip-icon">person</span> {{ p.client }}</span>
+              </div>
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="Building Type">Building Type</span>
+                <span class="info-card-row-value"><span class="chip-icon">business</span> {{ p.buildingType }}</span>
+              </div>
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="Area">Area</span>
+                <span class="info-card-row-value"><span class="chip-icon">straighten</span> {{ p.sft | number }} sft</span>
+              </div>
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="Scope">Scope</span>
+                <span class="info-card-row-value"><span class="chip-icon">source</span> {{ p.scope }}</span>
+              </div>
+              <div class="info-card-row" *ngIf="p.scope === 'Scan to BIM'">
+                <span class="info-card-row-label" title="LOD">LOD</span>
+                <span class="info-card-row-value"><span class="chip-icon">layers</span> {{ p.lod }}</span>
+              </div>
+              <div class="info-card-row" *ngIf="p.scope === 'Scan to CAD'">
+                <span class="info-card-row-label" title="Scale">Scale</span>
+                <span class="info-card-row-value"><span class="chip-icon">straighten</span> {{ p.scale }}</span>
+              </div>
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="Status">Status</span>
+                <span class="info-card-row-value"><span class="chip-icon">assignment</span> {{ p.workflowStatus }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Timeline -->
+          <div class="info-card">
+            <div class="info-card-head">
+              <span class="info-card-head-icon">schedule</span>
+              <span class="info-card-head-label">Timeline</span>
+            </div>
+            <div class="info-card-body">
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="Started">Started</span>
+                <span class="info-card-row-value"><span class="date-icon">calendar_today</span> {{ p.startDate | date:'MMM d, y' }}</span>
+              </div>
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="End Date">End Date</span>
+                <span class="info-card-row-value"><span class="date-icon">event</span> {{ p.endDate | date:'MMM d, y' }}</span>
+              </div>
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="Expected Delivery">Expected Delivery</span>
+                <span class="info-card-row-value"><span class="date-icon">local_shipping</span> {{ p.expectedClientDeliveryDate | date:'MMM d, y' }}</span>
+              </div>
+              <div class="info-card-row" *ngIf="p.proposalSent">
+                <span class="info-card-row-label" title="Proposal Sent">Proposal Sent</span>
+                <span class="info-card-row-value"><span class="date-icon">forward_to_inbox</span> {{ p.proposalSent | date:'MMM d, y' }}</span>
+              </div>
+              <div class="info-card-row" *ngIf="p.purchaseOrderIssued">
+                <span class="info-card-row-label" title="Purchase Order Issued">PO Issued</span>
+                <span class="info-card-row-value"><span class="date-icon">description</span> {{ p.purchaseOrderIssued | date:'MMM d, y' }}</span>
+              </div>
+              <div class="info-card-row" *ngIf="p.e57IssuedDate">
+                <span class="info-card-row-label" title="E57 Issued">E57 Issued</span>
+                <span class="info-card-row-value"><span class="date-icon">cloud_download</span> {{ p.e57IssuedDate | date:'MMM d, y' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card: Cost & Billing -->
+          <div class="info-card">
+            <div class="info-card-head">
+              <span class="info-card-head-icon">payments</span>
+              <span class="info-card-head-label" title="Cost & Billing">Cost &amp; Billing</span>
+            </div>
+            <div class="info-card-body">
+              <div class="info-card-row highlight">
+                <span class="info-card-row-label" title="Cost">Cost</span>
+                <span class="info-card-row-value cost-value"><span class="chip-icon">attach_money</span> {{ p.currency }}{{ p.cost | number }}</span>
+              </div>
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="Billing">Billing</span>
+                <span class="info-card-row-value" [style.color]="p.billing === 'Invoiced' ? '#4ade80' : '#f87171'"><span class="chip-icon">receipt</span> {{ p.billing }}</span>
+              </div>
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="Payment">Payment</span>
+                <span class="info-card-row-value" [style.color]="p.payment === 'Paid' ? '#4ade80' : '#f87171'"><span class="chip-icon">payments</span> {{ p.payment }}</span>
+              </div>
+              <div class="info-card-row" *ngIf="p.invoiceNumber">
+                <span class="info-card-row-label" title="Invoice Number">Invoice No</span>
+                <span class="info-card-row-value"><span class="chip-icon">receipt_long</span> {{ p.invoiceNumber }}</span>
+              </div>
+              <div class="info-card-row" *ngIf="p.invoiceDate">
+                <span class="info-card-row-label" title="Invoice Date">Invoice Date</span>
+                <span class="info-card-row-value"><span class="date-icon">event_available</span> {{ p.invoiceDate | date:'MMM d, y' }}</span>
+              </div>
+              <div class="info-card-row" *ngIf="p.invoiceDueDate">
+                <span class="info-card-row-label" title="Due Date">Due Date</span>
+                <span class="info-card-row-value"><span class="date-icon">gavel</span> {{ p.invoiceDueDate | date:'MMM d, y' }}</span>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -234,63 +323,90 @@
     <div class="detail-body">
       <!-- Overview Ring + Stats -->
       <div class="detail-grid">
-        <div class="overview-ring-card">
-          <h3 class="section-title">Overview</h3>
-          <div class="ring-container">
-            <svg class="ring-svg" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="52" fill="none" stroke="#1a1d2e" stroke-width="8" />
-              <circle cx="60" cy="60" r="52" fill="none" stroke="#50c48e" stroke-width="8" stroke-dasharray="326.7"
-                stroke-dashoffset="98" stroke-linecap="round" transform="rotate(-90 60 60)" />
-              <text x="60" y="52" text-anchor="middle" class="ring-pct" fill="#e8edf5">70%</text>
-              <text x="60" y="70" text-anchor="middle" class="ring-label" fill="#6b7280">Complete</text>
-            </svg>
-            <div class="ring-rows">
-              <div class="ring-row" *ngFor="let c of [
-                { label: 'BIM Ready', val: '92%', color: '#50c48e' },
-                { label: 'Schedules', val: '78%', color: '#668dc1' },
-                { label: 'Shop Drawings', val: '65%', color: '#b59954' },
-                { label: 'RFIs', val: '88%', color: '#a78bfa' } ]">
-                <span class="ring-row-label">{{ c.label }}</span>
-                <div class="ring-bar-bg">
-                  <div class="ring-bar-fill" [style.width]="c.val" [style.background]="c.color"></div>
+        <div class="tickets-card">
+          <h3 class="section-title">
+            <span class="section-title-icon">confirmation_number</span>
+            Tickets
+            <span class="tickets-count" *ngIf="projectTickets().length">({{ projectTickets().length }})</span>
+          </h3>
+          <div class="tickets-scroll">
+            <div class="tickets-list" *ngIf="projectTickets().length; else noTickets">
+              <div class="ticket-item" *ngFor="let t of projectTickets()">
+                <div class="ticket-item-line"></div>
+                <div class="ticket-item-body">
+                  <div class="ticket-item-header">
+                    <span class="ticket-item-id">#{{ t.id.toString().slice(-6) }}</span>
+                    <span class="ticket-item-date">{{ t.createdAt | date:'MMM d, y' }}</span>
+                    <span class="ticket-item-time">{{ t.createdAt | date:'h:mm a' }}</span>
+                    <span class="ticket-item-badge" *ngIf="t.url">attached</span>
+                  </div>
+                  <p class="ticket-item-comment" *ngIf="t.comments">{{ t.comments }}</p>
+                  <a *ngIf="t.url" [href]="t.url" target="_blank" class="ticket-item-link">
+                    <span class="ticket-link-icon">link</span>
+                    <span class="ticket-link-text">{{ t.url }}</span>
+                  </a>
                 </div>
-                <span class="ring-row-val" [style.color]="c.color">{{ c.val }}</span>
               </div>
             </div>
+            <ng-template #noTickets>
+              <div class="tickets-empty">
+                <span class="tickets-empty-icon">confirmation_number</span>
+                <span class="tickets-empty-text">No tickets raised yet</span>
+              </div>
+            </ng-template>
           </div>
         </div>
-
-        <div class="stats-grid">
-          <div class="stat-card" *ngFor="let s of statCards" [style.--stat-color]="s.color">
-            <span class="stat-card-icon">{{ s.icon }}</span>
-            <span class="stat-card-value">{{ s.value }}</span>
-            <span class="stat-card-label">{{ s.label }}</span>
+        <div class="detail-section">
+          <h3 class="section-title">Description & Requirements</h3>
+          <div class="desc-box" [class.expanded]="isDescExpanded()">
+            <p class="desc-text">{{ p.description }}</p>
+            <div class="req-section">
+              <span class="req-label">Requirements:</span>
+              <div class="req-tags">
+                <span class="req-tag" *ngFor="let r of p.requirements.split(', ')">{{ r }}</span>
+              </div>
+            </div>
+            <div class="project-links">
+              <span class="req-label">Project Links:</span>
+              <div class="links-list">
+                <a *ngIf="calculator.uploadLink()" [href]="calculator.uploadLink()" target="_blank" class="link-chip">
+                  <span class="link-chip-icon">cloud_upload</span>
+                  <span class="link-chip-body">
+                    <span class="link-chip-title">Upload Link (DWG / JPEGs / PDFs)</span>
+                    <span class="link-chip-text">{{ calculator.uploadLink() }}</span>
+                  </span>
+                  <span class="link-chip-ext">↗</span>
+                </a>
+                <a *ngIf="calculator.pointCloudLink()" [href]="calculator.pointCloudLink()" target="_blank" class="link-chip">
+                  <span class="link-chip-icon">point_scan</span>
+                  <span class="link-chip-body">
+                    <span class="link-chip-title">Point Cloud / PDF / Upload Link</span>
+                    <span class="link-chip-text">{{ calculator.pointCloudLink() }}</span>
+                  </span>
+                  <span class="link-chip-ext">↗</span>
+                </a>
+                <a *ngIf="calculator.descriptionLink()" [href]="calculator.descriptionLink()" target="_blank" class="link-chip">
+                  <span class="link-chip-icon">description</span>
+                  <span class="link-chip-body">
+                    <span class="link-chip-title">Description Link (Etf, Erf, if any)</span>
+                    <span class="link-chip-text">{{ calculator.descriptionLink() }}</span>
+                  </span>
+                  <span class="link-chip-ext">↗</span>
+                </a>
+                <span class="links-empty" *ngIf="!calculator.uploadLink() && !calculator.pointCloudLink() && !calculator.descriptionLink()">
+                  No links added yet
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Description -->
-      <div class="detail-section">
-        <h3 class="section-title">Description & Requirements</h3>
-        <div class="desc-box" [class.expanded]="isDescExpanded()">
-          <p class="desc-text">{{ p.description }}</p>
-          <div class="req-section">
-            <span class="req-label">Requirements:</span>
-            <div class="req-tags">
-              <span class="req-tag" *ngFor="let r of p.requirements.split(', ')">{{ r }}</span>
-            </div>
-          </div>
-          <div class="dates-row">
-            <div class="date-item"><span class="date-icon">calendar_today</span> Started <strong>{{ p.startDate |
-                date:'MMM d, y' }}</strong></div>
-            <div class="date-item"><span class="date-icon">event</span> Ends <strong>{{ p.endDate | date:'MMM d, y'
-                }}</strong></div>
-          </div>
-        </div>
-      </div>
+
 
       <!-- Timeline -->
-      <div class="detail-section">
+      <!-- <div class="detail-section">
         <h3 class="section-title">Project Timeline</h3>
         <div class="timeline">
           <div class="tl-item" *ngFor="let m of milestones">
@@ -307,8 +423,78 @@
               [class.current]="m.status === 'current'" [class.upcoming]="m.status === 'upcoming'">{{ m.status }}</span>
           </div>
         </div>
-      </div>
+      </div> -->
 
     </div>
+  </div>
+</div>
+
+<!-- TICKET MODAL -->
+<div class="modal-backdrop" *ngIf="ticketProject()" (click)="closeTicket()"></div>
+<div class="ticket-modal" *ngIf="ticketProject(); let p">
+  <button class="modal-close-btn" (click)="closeTicket()">
+    <span>close</span>
+  </button>
+
+  <div class="ticket-modal-header">
+    <div class="ticket-header-left">
+      <div class="ticket-modal-icon">
+        <span>confirmation_number</span>
+      </div>
+      <h2 class="ticket-modal-title">Raise a Ticket</h2>
+    </div>
+    <div class="ticket-header-right">
+      <div class="ticket-header-chip">
+        <span class="ticket-chip-icon">folder</span>
+        <span class="ticket-chip-label">Project</span>
+        <span class="ticket-chip-value" [title]="p.projectName">{{ p.projectName }}</span>
+      </div>
+      <div class="ticket-header-chip">
+        <span class="ticket-chip-icon">attach_money</span>
+        <span class="ticket-chip-label">Cost</span>
+        <span class="ticket-chip-value accent" [title]="p.currency + (p.cost | number)">{{ p.currency }}{{ p.cost | number }}</span>
+      </div>
+      <div class="ticket-header-chip">
+        <span class="ticket-chip-icon">straighten</span>
+        <span class="ticket-chip-label">SFT</span>
+        <span class="ticket-chip-value" [title]="(p.sft | number) + ' sft'">{{ p.sft | number }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ticket-modal-body">
+    <div class="ticket-form-group">
+      <label class="ticket-label" for="ticketFile">
+        <span class="ticket-label-icon">link</span>
+        Attachment Link
+      </label>
+      <div class="ticket-file-wrap">
+        <input type="url" id="ticketFile" class="ticket-file-input" placeholder="Paste a link..." [value]="ticketUrl()" (input)="onTicketUrlChange($event)" />
+        <label for="ticketFile" class="ticket-file-label">
+          <span class="ticket-file-icon">link</span>
+          <span class="ticket-file-text">{{ ticketUrl() || 'Paste a link...' }}</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="ticket-form-group">
+      <label class="ticket-label" for="ticketComments">
+        <span class="ticket-label-icon">comment</span>
+        Comments
+      </label>
+      <textarea
+        id="ticketComments"
+        class="ticket-textarea"
+        placeholder="Describe your issue or request..."
+        [value]="ticketComments()"
+        (input)="ticketComments.set($any($event.target).value)"
+        rows="4"
+      ></textarea>
+    </div>
+  </div>
+
+  <div class="ticket-modal-footer">
+    <button class="ticket-btn-cancel" (click)="closeTicket()">Cancel</button>
+    <button class="ticket-btn-submit" (click)="submitTicket()">Submit Ticket</button>
   </div>
 </div>

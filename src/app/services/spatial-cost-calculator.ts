@@ -272,14 +272,14 @@ export class SpatialCostCalculator {
     { "min": 125000, "max": 999999, "price": 0.0113 }
   ];
 
-  // User input selection: Scan to BIM, Prebuilt Scan to BIM, or CAD to BIM
+  // User input selection: Scan to BIM, Prebuilt Scan to BIM, or Scan to CAD
   // 'bim': Scan to BIM (formerly BIM Modeling)
   // 'prebuilt': Prebuilt Scan to BIM (formerly Prebuilt / Existing Model / Prebuilt BIM Modeling)
-  // 'cad_to_bim': CAD to BIM transition
-  selectedModelingWay = signal<'bim' | 'prebuilt' | 'cad_to_bim'>('bim');
+  // 'scan_to_cad': Scan to CAD
+  selectedModelingWay = signal<'bim' | 'prebuilt' | 'scan_to_cad'>('bim');
   modelingSelectionLocked = signal<boolean>(false);
 
-  // CAD to BIM fields
+  // Scan to CAD fields
   cadSheetCount = signal<number>(4);
   cadSourceFormat = signal<string>('.DWG');
   isCadFormatDropdownOpen = signal<boolean>(false);
@@ -399,8 +399,8 @@ export class SpatialCostCalculator {
   // Smart image-based estimator states
   isAnalyzing = signal<boolean>(false);
   extractedRationale = signal<string>('');
-  smartSpaceType = signal<string>('Office');
-  smartScanSize = signal<number>(1500); // realistic starting default
+  smartSpaceType = signal<string>('');
+  smartScanSize = signal<number>(4000); // realistic starting default
   smartIsMetric = signal<boolean>(false);
   smartInteriorArchitecture = signal<boolean>(true);
   smartInteriorFurniture = signal<boolean>(false);
@@ -411,7 +411,7 @@ export class SpatialCostCalculator {
   smartExteriorFurniture = signal<boolean>(false);
   smartExteriorMep = signal<boolean>(false);
   smartIsSiteRequired = signal<boolean>(false);
-  smartEmail = signal<string>('pjohn@mycompany.com');
+  smartEmail = signal<string>('');
   uploadedImagePreview = signal<string | null>(null);
   dragActive = signal<boolean>(false);
   smartLODLevel = signal<'LOD_200' | 'LOD_300' | 'LOD_400' | 'LOD_500'>('LOD_300');
@@ -420,9 +420,10 @@ export class SpatialCostCalculator {
   isLiveTwinViewerOpen = signal<boolean>(true);
 
   // Step 2 common fields
-  uploadLink = signal<string>('');
-  pointCloudLink = signal<string>('');
-  descriptionLink = signal<string>('');
+  uploadLink = signal<string>('https://drive.google.com/drive/folders/abc123');
+  pointCloudLink = signal<string>('https://pointcloud.example.com/project-xyz');
+  descriptionLink = signal<string>('https://docs.google.com/document/d/def456');
+  description = signal<string>('');
   remark = signal<string>('');
   // manualEstimation = signal<string>('');
   sendProposal = signal<boolean>(false);
@@ -464,19 +465,19 @@ export class SpatialCostCalculator {
   ];
 
   revitOptions = [
-    { value: 'Revit 2021', label: 'Revit 2021 (LTS Legacy)' },
-    { value: 'Revit 2022', label: 'Revit 2022 (Standard)' },
-    { value: 'Revit 2023', label: 'Revit 2023 (Standard)' },
-    { value: 'Revit 2024', label: 'Revit 2024 (Active Core)' },
-    { value: 'Revit 2025', label: 'Revit 2025 (Next-Gen Preview)' },
+    { value: 'Revit 2021', label: 'Revit 2021' },
+    { value: 'Revit 2022', label: 'Revit 2022' },
+    { value: 'Revit 2023', label: 'Revit 2023' },
+    { value: 'Revit 2024', label: 'Revit 2024' },
+    { value: 'Revit 2025', label: 'Revit 2025' },
   ];
 
   autocadOptions = [
-    { value: 'AutoCAD 2021', label: 'AutoCAD 2021 (LTS Legacy)' },
-    { value: 'AutoCAD 2022', label: 'AutoCAD 2022 (Standard)' },
-    { value: 'AutoCAD 2023', label: 'AutoCAD 2023 (Standard)' },
-    { value: 'AutoCAD 2024', label: 'AutoCAD 2024 (Active Core)' },
-    { value: 'AutoCAD 2025', label: 'AutoCAD 2025 (Next-Gen Preview)' },
+    { value: 'AutoCAD 2021', label: 'AutoCAD 2021' },
+    { value: 'AutoCAD 2022', label: 'AutoCAD 2022' },
+    { value: 'AutoCAD 2023', label: 'AutoCAD 2023' },
+    { value: 'AutoCAD 2024', label: 'AutoCAD 2024' },
+    { value: 'AutoCAD 2025', label: 'AutoCAD 2025' },
   ];
 
   toggleSpaceTypeDropdown() {
@@ -530,7 +531,7 @@ export class SpatialCostCalculator {
   // Active inputs
   selectedCurrency = signal<string>('USD');
   smartStep = signal<number>(1); // Step 1: Specifications, Step 2: Project Details, Step 3: Summary
-  smartProjectName = signal<string>('Vertex HQ');
+  smartProjectName = signal<string>('');
   smartProjectAddress = signal<string>('742 Custom Boulevard, Sector 4');
   smartRevitVersion = signal<string>('');
   smartAutocadVersion = signal<string>('');
@@ -672,19 +673,19 @@ export class SpatialCostCalculator {
     let exteriorFees = 0;
     let siteFees = 0;
 
-    // BASE ESTIMATE logic changes depending on Scan to BIM, Prebuilt Scan to BIM vs CAD to BIM!
+    // BASE ESTIMATE logic changes depending on Scan to BIM, Prebuilt Scan to BIM vs Scan to CAD!
     const isPrebuiltModel = this.selectedModelingWay() === 'prebuilt';
-    const isCadToBim = this.selectedModelingWay() === 'cad_to_bim';
+    const isScanToCad = this.selectedModelingWay() === 'scan_to_cad';
 
-    if (isCadToBim) {
-      // CAD to BIM specific pricing
+    if (isScanToCad) {
+      // Scan to CAD specific pricing
       let cadBase = 0;
       if (this.smartInteriorArchitecture()) cadBase += rateItem.Interior.A;
       if (this.smartInteriorFurniture()) cadBase += rateItem.Interior.F;
       if (this.smartInteriorMep()) cadBase += rateItem.Interior.MEPF;
 
       const cadSheetFee = this.cadSheetCount() * 45;
-      // 22% custom CAD-to-BIM digital drafting discount
+      // 22% custom Scan to CAD digital drafting discount
       total = (cadBase * 0.78) + cadSheetFee;
       interiorFees = total;
     } else if (this.smartIsComplexMepf()) {
