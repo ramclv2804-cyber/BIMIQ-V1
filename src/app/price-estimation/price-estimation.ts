@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
+import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-calculator';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -956,11 +956,52 @@ export class PriceEstimation implements OnInit {
   }
 
   confirmOrder() {
+    const c = this.calculator;
+    const est = c.calculatedSmartEstimate();
+    const isCad = c.selectedModelingWay() === 'scan_to_cad';
+    const scope = isCad ? 'Scan to CAD' : 'Scan to BIM';
+    const lod = isCad ? '' : c.smartLODLevel().replace('_', ' ');
+    const scale = isCad ? c.cadScale() : '';
+    const requirements = isCad ? c.cadRequirements().join(', ') : c.bimRequirements().join(', ');
+    const addOn = isCad ? '' : c.bimAddOns().join(', ');
+    const today = new Date().toISOString().split('T')[0];
+
+    const newProject: UserProject = {
+      projectNo: c.projectNumber(),
+      client: c.currentUser()?.name || '—',
+      projectName: c.smartProjectName(),
+      buildingType: c.selectedBuildingType(),
+      description: c.description(),
+      requirements,
+      scope,
+      lod,
+      scale,
+      addOn,
+      sft: c.smartScanSize(),
+      proposalSent: today,
+      purchaseOrderIssued: '',
+      e57IssuedDate: '',
+      startDate: today,
+      endDate: '',
+      expectedClientDeliveryDate: c.expectedDeliveryDate() || '',
+      cost: est.totalPrice,
+      currency: c.selectedCurrency(),
+      billing: 'Yet to Invoice',
+      billingStatus: 'Yet to Invoice',
+      invoiceNumber: '',
+      invoiceDate: '',
+      invoiceDueDate: '',
+      payment: 'Yet to Pay',
+      workflowStatus: 'Yet to Award',
+      comments: `Order placed via Price Estimation. ${c.uploadLink() ? 'Upload: ' + c.uploadLink() : ''}${c.pointCloudLink() ? ' | Point Cloud: ' + c.pointCloudLink() : ''}`
+    };
+
+    c.addUserProject(newProject);
     this.closePreviewModal();
     this.triggerQuoteRequest();
     this.goToStep(3);
-    this.calculator.placeOrder.set(true);
-    this.calculator.showNotification('Order placed successfully! Check Order Summary for details.', 'success');
+    c.placeOrder.set(true);
+    c.showNotification('Order placed successfully! Check Order Summary for details.', 'success');
   }
 
   isProjectDetailsValid(): boolean {

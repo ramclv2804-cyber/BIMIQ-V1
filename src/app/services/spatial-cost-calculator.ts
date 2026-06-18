@@ -12,6 +12,36 @@ export interface Project {
   date: string;
 }
 
+export interface UserProject {
+  projectNo: string;
+  client: string;
+  projectName: string;
+  buildingType: string;
+  description: string;
+  requirements: string;
+  scope: string;
+  lod: string;
+  scale: string;
+  addOn: string;
+  sft: number;
+  proposalSent: string;
+  purchaseOrderIssued: string;
+  e57IssuedDate: string;
+  startDate: string;
+  endDate: string;
+  expectedClientDeliveryDate: string;
+  cost: number;
+  currency: string;
+  billing: string;
+  billingStatus: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  invoiceDueDate: string;
+  payment: string;
+  workflowStatus: string;
+  comments: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -52,6 +82,7 @@ export class SpatialCostCalculator {
           });
           this.smartEmail.set(data.email);
           this.isLoggedIn.set(true);
+          this.loadUserProjects();
         }
       }
     } catch {
@@ -85,6 +116,7 @@ export class SpatialCostCalculator {
     this.isLoggedIn.set(true);
     this.isLoginModalOpen.set(false);
     this.setSessionCookie(trimmed);
+    this.loadUserProjects();
     this.showNotification(`Authorized session established under node: ${trimmed}`, 'success');
   }
 
@@ -94,6 +126,52 @@ export class SpatialCostCalculator {
     this.smartEmail.set('');
     this.clearSessionCookie();
     this.showNotification('Authorized session disconnected.', 'info');
+  }
+
+  // ── User Projects (per-user, persisted to cookie) ──
+  private projectsCookieKey = 'bimiq_projects';
+
+  userProjects = signal<UserProject[]>([]);
+
+  private getProjectsCookieKeyForUser(): string {
+    const user = this.currentUser();
+    if (!user) return this.projectsCookieKey;
+    const emailHash = user.email.split('@')[0];
+    return `${this.projectsCookieKey}_${emailHash}`;
+  }
+
+  private saveUserProjectsCookie() {
+    if (!this.isBrowser) return;
+    const key = this.getProjectsCookieKeyForUser();
+    const data = JSON.stringify(this.userProjects());
+    try {
+      document.cookie = `${key}=${encodeURIComponent(data)}; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+    } catch {
+      console.warn('Failed to save projects cookie — may exceed size limit');
+    }
+  }
+
+  private loadUserProjects() {
+    if (!this.isBrowser) return;
+    const key = this.getProjectsCookieKeyForUser();
+    try {
+      const match = document.cookie.match(new RegExp(`(?:^|; )${key}=([^;]*)`));
+      if (match) {
+        const data = JSON.parse(decodeURIComponent(match[1]));
+        if (Array.isArray(data)) {
+          this.userProjects.set(data);
+          return;
+        }
+      }
+    } catch {
+      // cookie corrupt or missing — start fresh
+    }
+    this.userProjects.set([]);
+  }
+
+  addUserProject(project: UserProject) {
+    this.userProjects.update(list => [...list, project]);
+    this.saveUserProjectsCookie();
   }
 
   // Currency rates from OpenExchangeRates

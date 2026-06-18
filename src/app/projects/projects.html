@@ -163,7 +163,7 @@
         </div>
         <div class="card-footer">
           <div class="card-cost">
-            <span class="cost-value">{{ p.currency }}{{ p.cost | number }}</span>
+            <span class="cost-value">{{ calculator.getCurrencySymbol(p.currency) }}{{ p.cost | number }}</span>
             <span class="cost-label">Total Cost</span>
           </div>
 
@@ -180,7 +180,12 @@
   <div class="empty-state" *ngIf="filteredProjects().length === 0">
     <span class="empty-icon">folder_off</span>
     <h3>No projects found</h3>
-    <p>Try adjusting your filters</p>
+    <ng-container *ngIf="projects().length === 0; else filterEmpty">
+      <p>Place an order from the Price Estimator to create your first project</p>
+    </ng-container>
+    <ng-template #filterEmpty>
+      <p>No projects match your current filters</p>
+    </ng-template>
   </div>
 </div>
 
@@ -299,7 +304,7 @@
             <div class="info-card-body">
               <div class="info-card-row highlight">
                 <span class="info-card-row-label" title="Cost">Cost</span>
-                <span class="info-card-row-value cost-value"> {{ p.currency }}{{ p.cost | number }}</span>
+                <span class="info-card-row-value cost-value"> {{ calculator.getCurrencySymbol(p.currency) }}{{ p.cost | number }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Billing">Billing</span>
@@ -460,7 +465,7 @@
       <div class="ticket-header-chip">
         <span class="ticket-chip-icon">attach_money</span>
         <span class="ticket-chip-label">Cost</span>
-        <span class="ticket-chip-value accent" [title]="p.currency + (p.cost | number)">{{ p.currency }}{{ p.cost | number }}</span>
+        <span class="ticket-chip-value accent" [title]="calculator.getCurrencySymbol(p.currency) + (p.cost | number)">{{ calculator.getCurrencySymbol(p.currency) }}{{ p.cost | number }}</span>
       </div>
       <div class="ticket-header-chip">
         <span class="ticket-chip-icon">straighten</span>
