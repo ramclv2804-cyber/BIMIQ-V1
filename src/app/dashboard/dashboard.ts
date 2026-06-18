@@ -23,10 +23,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         <div class="absolute inset-0 z-0 bg-[linear-gradient(rgba(255,255,255,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.025)_1px,transparent_1px)] bg-[size:30px_30px] opacity-80 pointer-events-none select-none"></div>
         
         <div class="max-w-3xl mx-auto space-y-6 relative z-10">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-primary-custom/30 bg-primary-custom/10 animate-pulse">
-            <span class="w-1.5 h-1.5 rounded-full bg-primary-custom"></span>
-            <span class="font-mono text-[9px] uppercase tracking-widest text-primary-custom font-bold">Platform Release 4.0</span>
-          </div>
+        
           
           <h1 class="font-serif text-4xl md:text-6xl leading-tight tracking-tight text-white font-bold select-none text-center drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
             Your building, online.
@@ -53,8 +50,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             <p class="font-mono text-[10px] uppercase tracking-widest text-[#C86B98] font-bold text-center select-none">TRUSTED BY STRATEGIC PARTNERS</p>
             
             <div class="relative w-full overflow-hidden py-2">
-              <div class="flex" [class.animate-marquee]="partners.length > 6">
-                <!-- First list of partners -->
+              <div class="flex w-max" [style.animation]="'marquee ' + marqueeDuration() + 's linear infinite'">
                 <div class="flex items-center gap-x-16 px-8 shrink-0">
                   @for (p of partners; track p.name) {
                     <button type="button" 
@@ -66,20 +62,17 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     </button>
                   }
                 </div>
-                <!-- Duplicate list for seamless infinite loop scroll when length > 6 -->
-                @if (partners.length > 6) {
-                  <div class="flex items-center gap-x-16 px-8 shrink-0">
-                    @for (p of partners; track p.name + '-dup') {
-                      <button type="button"
-                           (click)="calculator.showNotification('Strategic alignment verified with: ' + p.name, 'success')"
-                           [style.animation-delay]="(($index + partners.length) * 40) + 'ms'"
-                           class="bg-transparent border-none text-left p-0 flex items-center gap-3.5 hover:text-white transition-all duration-300 cursor-pointer group shrink-0 select-none focus:outline-none animate-fade-slide-up opacity-0">
-                        <span class="material-symbols-outlined text-2xl transition-transform group-hover:scale-110 duration-300" [style.color]="p.color">{{ p.icon }}</span>
-                        <span class="font-bold tracking-widest text-sm text-on-surface-variant-custom group-hover:text-[#E2E8F0] font-mono hover-underline-animate-pink pb-0.5">{{ p.name }}</span>
-                      </button>
-                    }
-                  </div>
-                }
+                <div class="flex items-center gap-x-16 px-8 shrink-0">
+                  @for (p of partners; track p.name) {
+                    <button type="button"
+                         (click)="calculator.showNotification('Strategic alignment verified with: ' + p.name, 'success')"
+                         [style.animation-delay]="(($index + partners.length) * 40) + 'ms'"
+                         class="bg-transparent border-none text-left p-0 flex items-center gap-3.5 hover:text-white transition-all duration-300 cursor-pointer group shrink-0 select-none focus:outline-none animate-fade-slide-up opacity-0">
+                      <span class="material-symbols-outlined text-2xl transition-transform group-hover:scale-110 duration-300" [style.color]="p.color">{{ p.icon }}</span>
+                      <span class="font-bold tracking-widest text-sm text-on-surface-variant-custom group-hover:text-[#E2E8F0] font-mono hover-underline-animate-pink pb-0.5">{{ p.name }}</span>
+                    </button>
+                  }
+                </div>
               </div>
             </div>
             
@@ -489,7 +482,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           <div class="lg:col-span-5 space-y-4">
             
             <!-- Card 1 -->
-            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-primary-custom/25 transition-all group hover:bg-[#151619]/40">
+            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-primary-custom/25 transition-all group hover:bg-[#151619]/40 animate-fade-slide-up opacity-0" style="animation-delay: 60ms;">
               <div class="flex items-center gap-3 mb-2 font-mono">
                 <span class="material-symbols-outlined text-primary-custom" style="font-variation-settings: 'FILL' 1;">architecture</span>
                 <h4 class="font-serif text-lg text-silver-leaf font-bold">Native CAD Precision</h4>
@@ -500,7 +493,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             </div>
 
             <!-- Card 2 -->
-            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#DF80AC]/25 transition-all group hover:bg-[#151619]/40">
+            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#DF80AC]/25 transition-all group hover:bg-[#151619]/40 animate-fade-slide-up opacity-0" style="animation-delay: 140ms;">
               <div class="flex items-center gap-3 mb-2 font-mono">
                 <span class="material-symbols-outlined text-[#DF80AC]" style="font-variation-settings: 'FILL' 1;">photo_camera_back</span>
                 <h4 class="font-serif text-lg text-silver-leaf font-bold">360° Continuity</h4>
@@ -511,7 +504,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             </div>
 
             <!-- Card 3 -->
-            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#e9c349]/25 transition-all group hover:bg-[#151619]/40">
+            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#e9c349]/25 transition-all group hover:bg-[#151619]/40 animate-fade-slide-up opacity-0" style="animation-delay: 220ms;">
               <div class="flex items-center gap-3 mb-2 font-mono">
                 <span class="material-symbols-outlined text-[#e9c349]">sync</span>
                 <h4 class="font-serif text-lg text-silver-leaf font-bold">BIM Coordination</h4>
@@ -630,12 +623,15 @@ export class Dashboard {
     { name: 'Autodesk 360', icon: 'architecture', color: '#e9c349' },
     { name: 'Bentley Systems', icon: 'deployed_code', color: '#2dd4bf' },
     { name: 'Trimble Vico', icon: 'construction', color: '#3b82f6' },
-    { name: 'Procore Connect', icon: 'handshake', color: '#f97316' },
-    { name: 'Hexagon GIS', icon: 'hexagon', color: '#a855f7' },
-    { name: 'Archicad', icon: 'home_pin', color: '#22c55e' },
-    { name: 'Tekla Skeleton', icon: 'foundation', color: '#06b6d4' },
-    { name: 'Vectorworks', icon: 'draw', color: '#ec4899' },
   ];
+
+  // Constant speed marquee: ~80px/s regardless of item count
+  marqueeDuration = computed(() => {
+    const itemWidth = 180;
+    const gap = 64;
+    const setWidth = this.partners.length * (itemWidth + gap);
+    return Math.max(setWidth / 80, 3);
+  });
 
   toggleCountryDropdown() {
     this.isCountryDropdownOpen.update(v => !v);
@@ -719,20 +715,28 @@ export class Dashboard {
       const L = LObj.default || LObj;
       this.leafletInstance = L;
 
-      const mapInstance = L.map('map_div', {
-        center: [25, 10],
-        zoom: 2,
-        minZoom: 1.5,
-        maxZoom: 14,
-        zoomControl: false,
-        attributionControl: false,
-        dragging: false,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        boxZoom: false,
-        keyboard: false,
-        touchZoom: false
-      });
+      const el = document.getElementById('map_div');
+      if (!el || (el as any)._leaflet_id) return;
+
+      let mapInstance: any;
+      try {
+        mapInstance = L.map('map_div', {
+          center: [25, 10],
+          zoom: 2,
+          minZoom: 1.5,
+          maxZoom: 14,
+          zoomControl: false,
+          attributionControl: false,
+          dragging: false,
+          scrollWheelZoom: false,
+          doubleClickZoom: false,
+          boxZoom: false,
+          keyboard: false,
+          touchZoom: false
+        });
+      } catch {
+        return;
+      }
       this.map = mapInstance;
 
       // L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {

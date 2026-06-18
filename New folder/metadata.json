@@ -1,6 +1,0 @@
-{
-  "name": "BIM-IQ",
-  "description": "Adaptive Building Information Modeling (BIM) intelligence platform and high-fidelity spatial cost estimator.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

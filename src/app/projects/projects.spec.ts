@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ScanToBim } from './scan-to-bim';
+import { Projects } from './projects';
 
-describe('ScanToBim', () => {
-  let component: ScanToBim;
-  let fixture: ComponentFixture<ScanToBim>;
+describe('Projects', () => {
+  let component: Projects;
+  let fixture: ComponentFixture<Projects>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ScanToBim]
+      imports: [Projects]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ScanToBim);
+    fixture = TestBed.createComponent(Projects);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
