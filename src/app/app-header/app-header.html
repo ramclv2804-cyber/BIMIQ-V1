@@ -88,6 +88,13 @@
   </button>
 
   <div class="hidden md:flex items-center gap-3">
+    <button
+      type="button"
+      (click)="goToEstimator()"
+      class="w-9 h-9 bg-primary-custom text-on-primary-custom rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 active:scale-90 z-40 group focus:outline-none cursor-pointer shrink-0">
+      <span class="material-symbols-outlined text-lg">add</span>
+      <span class="absolute top-full mt-2 bg-midnight-charcoal border border-silver-leaf/10 px-3 py-1.5 rounded-lg text-primary-custom font-mono text-[9px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">INITIATE PROJECT</span>
+    </button>
     @if (!isLoggedIn()) {
     <button type="button" (click)="signIn()"
       class="flex items-center gap-2 bg-[#DF80AC]/10 text-white border border-[#DF80AC]/30 font-mono text-[10px] uppercase tracking-widest px-4 py-2 rounded-full hover:bg-[#DF80AC]/20 hover:scale-[1.03] active:scale-95 transition-all focus:outline-none cursor-pointer font-bold">

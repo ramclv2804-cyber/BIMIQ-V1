@@ -148,98 +148,98 @@ export class SpatialCostCalculator {
     Interior: { A: number; F: number; MEPF: number };
     ComplexMEPF: number;
   }[] = [
-    {
-      "Min": 0,
-      "Max": 249,
-      "Exterior": { "A": 58.47, "F": 5.09, "MEPF": 31.48 },
-      "Interior": { "A": 64.96, "F": 33.98, "MEPF": 44.97 },
-      "ComplexMEPF": 305.74
-    },
-    {
-      "Min": 250,
-      "Max": 499,
-      "Exterior": { "A": 105.25, "F": 9.18, "MEPF": 56.67 },
-      "Interior": { "A": 116.94, "F": 61.17, "MEPF": 80.96 },
-      "ComplexMEPF": 550.33
-    },
-    {
-      "Min": 500,
-      "Max": 749,
-      "Exterior": { "A": 163.72, "F": 14.27, "MEPF": 88.16 },
-      "Interior": { "A": 181.91, "F": 95.15, "MEPF": 125.94 },
-      "ComplexMEPF": 856.08
-    },
-    {
-      "Min": 750,
-      "Max": 999,
-      "Exterior": { "A": 198.80, "F": 17.33, "MEPF": 107.05 },
-      "Interior": { "A": 220.89, "F": 115.54, "MEPF": 152.92 },
-      "ComplexMEPF": 1039.52
-    },
-    {
-      "Min": 1000,
-      "Max": 1999,
-      "Exterior": { "A": 233.883, "F": 20.39, "MEPF": 125.937 },
-      "Interior": { "A": 259.87, "F": 135.932, "MEPF": 179.91 },
-      "ComplexMEPF": 1222.965
-    },
-    {
-      "Min": 2000,
-      "Max": 2999,
-      "Exterior": { "A": 327.44, "F": 28.55, "MEPF": 176.31 },
-      "Interior": { "A": 363.82, "F": 190.30, "MEPF": 251.87 },
-      "ComplexMEPF": 1712.15
-    },
-    {
-      "Min": 3000,
-      "Max": 3999,
-      "Exterior": { "A": 420.99, "F": 36.70, "MEPF": 226.69 },
-      "Interior": { "A": 467.77, "F": 244.68, "MEPF": 323.84 },
-      "ComplexMEPF": 2201.34
-    },
-    {
-      "Min": 4000,
-      "Max": 4999,
-      "Exterior": { "A": 514.54, "F": 44.86, "MEPF": 277.06 },
-      "Interior": { "A": 571.71, "F": 299.05, "MEPF": 395.80 },
-      "ComplexMEPF": 2690.52
-    },
-    {
-      "Min": 5000,
-      "Max": 9999,
-      "Exterior": { "A": 701.65, "F": 61.17, "MEPF": 377.81 },
-      "Interior": { "A": 779.61, "F": 407.80, "MEPF": 539.73 },
-      "ComplexMEPF": 3668.90
-    },
-    {
-      "Min": 10000,
-      "Max": 24999,
-      "Exterior": { "A": 1169.42, "F": 101.95, "MEPF": 629.69 },
-      "Interior": { "A": 1299.35, "F": 679.66, "MEPF": 899.55 },
-      "ComplexMEPF": 6114.83
-    },
-    {
-      "Min": 25000,
-      "Max": 49999,
-      "Exterior": { "A": 1871.06, "F": 163.12, "MEPF": 1007.50 },
-      "Interior": { "A": 2078.96, "F": 1087.46, "MEPF": 1439.28 },
-      "ComplexMEPF": 9783.72
-    },
-    {
-      "Min": 50000,
-      "Max": 99999,
-      "Exterior": { "A": 2806.60, "F": 244.68, "MEPF": 1511.24 },
-      "Interior": { "A": 3118.44, "F": 1631.18, "MEPF": 2158.92 },
-      "ComplexMEPF": 14675.58
-    },
-    {
-      "Min": 100000,
-      "Max": 999999,
-      "Exterior": { "A": 4677.66, "F": 407.80, "MEPF": 2518.74 },
-      "Interior": { "A": 5197.40, "F": 2718.64, "MEPF": 3598.20 },
-      "ComplexMEPF": 24459.30
-    }
-  ];
+      {
+        "Min": 0,
+        "Max": 249,
+        "Exterior": { "A": 58.47, "F": 5.09, "MEPF": 31.48 },
+        "Interior": { "A": 64.96, "F": 33.98, "MEPF": 44.97 },
+        "ComplexMEPF": 305.74
+      },
+      {
+        "Min": 250,
+        "Max": 499,
+        "Exterior": { "A": 105.25, "F": 9.18, "MEPF": 56.67 },
+        "Interior": { "A": 116.94, "F": 61.17, "MEPF": 80.96 },
+        "ComplexMEPF": 550.33
+      },
+      {
+        "Min": 500,
+        "Max": 749,
+        "Exterior": { "A": 163.72, "F": 14.27, "MEPF": 88.16 },
+        "Interior": { "A": 181.91, "F": 95.15, "MEPF": 125.94 },
+        "ComplexMEPF": 856.08
+      },
+      {
+        "Min": 750,
+        "Max": 999,
+        "Exterior": { "A": 198.80, "F": 17.33, "MEPF": 107.05 },
+        "Interior": { "A": 220.89, "F": 115.54, "MEPF": 152.92 },
+        "ComplexMEPF": 1039.52
+      },
+      {
+        "Min": 1000,
+        "Max": 1999,
+        "Exterior": { "A": 233.883, "F": 20.39, "MEPF": 125.937 },
+        "Interior": { "A": 259.87, "F": 135.932, "MEPF": 179.91 },
+        "ComplexMEPF": 1222.965
+      },
+      {
+        "Min": 2000,
+        "Max": 2999,
+        "Exterior": { "A": 327.44, "F": 28.55, "MEPF": 176.31 },
+        "Interior": { "A": 363.82, "F": 190.30, "MEPF": 251.87 },
+        "ComplexMEPF": 1712.15
+      },
+      {
+        "Min": 3000,
+        "Max": 3999,
+        "Exterior": { "A": 420.99, "F": 36.70, "MEPF": 226.69 },
+        "Interior": { "A": 467.77, "F": 244.68, "MEPF": 323.84 },
+        "ComplexMEPF": 2201.34
+      },
+      {
+        "Min": 4000,
+        "Max": 4999,
+        "Exterior": { "A": 514.54, "F": 44.86, "MEPF": 277.06 },
+        "Interior": { "A": 571.71, "F": 299.05, "MEPF": 395.80 },
+        "ComplexMEPF": 2690.52
+      },
+      {
+        "Min": 5000,
+        "Max": 9999,
+        "Exterior": { "A": 701.65, "F": 61.17, "MEPF": 377.81 },
+        "Interior": { "A": 779.61, "F": 407.80, "MEPF": 539.73 },
+        "ComplexMEPF": 3668.90
+      },
+      {
+        "Min": 10000,
+        "Max": 24999,
+        "Exterior": { "A": 1169.42, "F": 101.95, "MEPF": 629.69 },
+        "Interior": { "A": 1299.35, "F": 679.66, "MEPF": 899.55 },
+        "ComplexMEPF": 6114.83
+      },
+      {
+        "Min": 25000,
+        "Max": 49999,
+        "Exterior": { "A": 1871.06, "F": 163.12, "MEPF": 1007.50 },
+        "Interior": { "A": 2078.96, "F": 1087.46, "MEPF": 1439.28 },
+        "ComplexMEPF": 9783.72
+      },
+      {
+        "Min": 50000,
+        "Max": 99999,
+        "Exterior": { "A": 2806.60, "F": 244.68, "MEPF": 1511.24 },
+        "Interior": { "A": 3118.44, "F": 1631.18, "MEPF": 2158.92 },
+        "ComplexMEPF": 14675.58
+      },
+      {
+        "Min": 100000,
+        "Max": 999999,
+        "Exterior": { "A": 4677.66, "F": 407.80, "MEPF": 2518.74 },
+        "Interior": { "A": 5197.40, "F": 2718.64, "MEPF": 3598.20 },
+        "ComplexMEPF": 24459.30
+      }
+    ];
 
   // Site modeling prices customizable by user
   siteModelingPrice = [
@@ -322,7 +322,7 @@ export class SpatialCostCalculator {
   bimRequirementsOptions = ['Architectural', 'Structural', 'Mechanical', 'Electrical', 'Plumbing', 'Fire Protection', 'Furniture'];
   isBimRequirementsOpen = signal<boolean>(false);
   bimAddOns = signal<string[]>([]);
-  bimAddOnsOptions = ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'MEP', 'Furniture', 'Sheets', 'Scan to BIM', 'Scan to CAD'];
+  bimAddOnsOptions = ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'MEP', 'Furniture', 'Sheets'];
   isBimAddOnsOpen = signal<boolean>(false);
 
   toggleMultiSelection(arr: string[], value: string): string[] {
@@ -352,7 +352,7 @@ export class SpatialCostCalculator {
   prebuiltDesignerFirm = signal<string>('Apex Architects Ltd');
   prebuiltFileFormat = signal<string>('.RVT');
   prebuiltLODLevel = signal<'LOD_200' | 'LOD_300' | 'LOD_400' | 'LOD_500'>('LOD_300');
-  
+
   isPrebuiltFormatDropdownOpen = signal<boolean>(false);
   isPrebuiltLodDropdownOpen = signal<boolean>(false);
 
@@ -660,14 +660,14 @@ export class SpatialCostCalculator {
   calculatedSmartEstimate = computed(() => {
     const size = this.smartScanSize();
     const isMetric = this.smartIsMetric();
-    
+
     // Normalize metric to imperial units (Sq.Ft)
     const sizeInSqFt = isMetric ? Math.round(size * 10.7639) : size;
 
     // Find custom size item range
-    const rateItem = this.priceInSqFt.find(item => sizeInSqFt >= item.Min && sizeInSqFt <= item.Max) 
-                     || this.priceInSqFt[this.priceInSqFt.length - 1];
-                     
+    const rateItem = this.priceInSqFt.find(item => sizeInSqFt >= item.Min && sizeInSqFt <= item.Max)
+      || this.priceInSqFt[this.priceInSqFt.length - 1];
+
     let total = 0;
     let interiorFees = 0;
     let exteriorFees = 0;
@@ -700,15 +700,15 @@ export class SpatialCostCalculator {
       if (this.smartIsExteriorRequired()) {
         if (this.smartExteriorArchitecture()) exteriorFees += rateItem.Exterior.A;
         if (this.smartExteriorFurniture()) exteriorFees += rateItem.Exterior.F;
-         if (this.smartExteriorMep()) exteriorFees += rateItem.Exterior.MEPF;
+        if (this.smartExteriorMep()) exteriorFees += rateItem.Exterior.MEPF;
       }
 
       // Calculate Site modeling scopes based on the exact user-specified siteModelingSft input!
       if (this.smartIsSiteRequired()) {
         const siteSft = this.siteModelingSft();
         const siteRate = this.siteModelingPrice.find(s => siteSft >= s.min && siteSft <= s.max)
-                         || this.siteModelingPrice[this.siteModelingPrice.length - 1];
-        
+          || this.siteModelingPrice[this.siteModelingPrice.length - 1];
+
         // Per-square-foot calculation if price value is low (under 1.0, e.g. 0.0113)
         if (siteRate.price < 1.0) {
           siteFees = siteRate.price * siteSft;
@@ -732,7 +732,7 @@ export class SpatialCostCalculator {
     } else if (lod === 'LOD_500') {
       lodMultiplier = 1.50;
     }
-    
+
     total *= lodMultiplier;
     interiorFees *= lodMultiplier;
     exteriorFees *= lodMultiplier;
@@ -789,7 +789,7 @@ export class SpatialCostCalculator {
     let archPct = 0;
     let structPct = 0;
     let mepPct = 0;
-    
+
     if (this.smartIsComplexMepf()) {
       mepPct = 65;
       structPct = 20;
@@ -799,25 +799,25 @@ export class SpatialCostCalculator {
       if (this.smartInteriorArchitecture()) archWeight += 2.0;
       if (this.smartExteriorArchitecture()) archWeight += 1.5;
       if (this.smartInteriorFurniture()) archWeight += 1.0;
-      
+
       let structWeight = 1.5;
       if (this.smartIsSiteRequired()) structWeight += 1.0;
-      
+
       let mepWeight = 0.5;
       if (this.smartInteriorMep()) mepWeight += 2.0;
       if (this.smartExteriorMep()) mepWeight += 1.0;
-      
+
       const totalWeight = archWeight + structWeight + mepWeight || 1.0;
       archPct = Math.round((archWeight / totalWeight) * 100);
       mepPct = Math.round((mepWeight / totalWeight) * 100);
       structPct = Math.round((structWeight / totalWeight) * 100);
-      
+
       const sum = archPct + structPct + mepPct;
       if (sum !== 100) {
         structPct += (100 - sum);
       }
     }
-    
+
     return {
       archPct,
       structPct,
@@ -860,18 +860,18 @@ export class SpatialCostCalculator {
     const val = this.estimPropertyValue();
     const baseRatio = this.estimProjectType() === 'bim' ? 0.015 : 0.011;
     let serviceFees = val * baseRatio + 2450;
-    
+
     if (this.estimServiceTier() === 'premium') {
       serviceFees *= 1.45;
     }
-    
+
     if (this.estimEnvironmentalAudit()) {
       serviceFees += 1500;
     }
     if (this.estimStructuralForensics()) {
       serviceFees += 2800;
     }
-    
+
     const taxRate = {
       ca: 0.082,
       ny: 0.095,
@@ -903,406 +903,406 @@ export class SpatialCostCalculator {
       sub_services: { category: string; value: number }[];
     }[];
   }[] = [
-    {
-      "country": "United States",
-      "locations": [
-        { "name": "Empire State Building, NYC", "lat": 40.748817, "lon": -73.985428 },
-        { "name": "One World Trade Center, NYC", "lat": 40.712742, "lon": -74.013382 },
-        { "name": "Willis Tower, Chicago", "lat": 41.878876, "lon": -87.635915 },
-        { "name": "Chrysler Building, NYC", "lat": 40.751652, "lon": -73.975311 },
-        { "name": "Bank of America Plaza, Atlanta", "lat": 33.755927, "lon": -84.387995 }
-      ],
-      "bounding_box": [-125.0, 24.396308, -66.93457, 49.384358],
-      "services_data": [
-        {
-          id: 1,
-          name: 'Structural',
-          total_prj: 932,
-          sub_services: [
-            { category: 'Columns', value: 112 },
-            { category: 'Beams', value: 157 },
-            { category: 'Floors', value: 265 },
-            { category: 'Walls', value: 138 },
-            { category: 'Reinforcement', value: 725 },
-            { category: 'Trusses & Bracing', value: 249 }
-          ]
-        },
-        {
-          id: 2,
-          name: 'Architectural',
-          total_prj: 710,
-          sub_services: [
-            { category: 'x', value: 134 },
-            { category: 'y', value: 698 },
-            { category: 'z', value: 242 },
-            { category: '0', value: 158 },
-            { category: '3', value: 237 }
-          ]
-        },
-        {
-          id: 3,
-          name: 'MEP',
-          total_prj: 401,
-          sub_services: [
-            { category: '0', value: 140 },
-            { category: '1', value: 133 },
-            { category: '3', value: 214 },
-            { category: 'z', value: 288 }
-          ]
-        }
-      ]
-    },
-    {
-      "country": "China",
-      "locations": [
-        { "name": "Shanghai Tower, Shanghai", "lat": 31.2355, "lon": 121.5010 },
-        { "name": "Shanghai World Financial Center", "lat": 31.2397, "lon": 121.4998 },
-        { "name": "Jin Mao Tower, Shanghai", "lat": 31.2356, "lon": 121.5036 },
-        { "name": "Ping An Finance Centre, Shenzhen", "lat": 22.5333, "lon": 114.0540 },
-        { "name": "Petronas Towers, Kuala Lumpur", "lat": 3.15785, "lon": 101.71165 }
-      ],
-      "bounding_box": [73.499734, 18.197701, 134.77281, 53.56086],
-      "services_data": [
-        {
-          id: 1,
-          name: 'Structural',
-          total_prj: 810,
-          sub_services: [
-            { category: 'a', value: 98 },
-            { category: 'b', value: 165 },
-            { category: 'c', value: 305 },
-            { category: 'x', value: 119 },
-            { category: 'y', value: 675 },
-            { category: 'z', value: 215 }
-          ]
-        },
-        {
-          id: 2,
-          name: 'Architectural',
-          total_prj: 659,
-          sub_services: [
-            { category: 'x', value: 110 },
-            { category: 'y', value: 725 },
-            { category: 'z', value: 260 },
-            { category: '0', value: 142 },
-            { category: '3', value: 228 }
-          ]
-        },
-        {
-          id: 3,
-          name: 'MEP',
-          total_prj: 373,
-          sub_services: [
-            { category: '0', value: 128 },
-            { category: '1', value: 150 },
-            { category: '3', value: 202 },
-            { category: 'z', value: 260 }
-          ]
-        }
-      ]
-    },
-    {
-      "country": "United Arab Emirates",
-      "locations": [
-        { "name": "Burj Khalifa, Dubai", "lat": 25.197525, "lon": 55.274288 },
-        { "name": "Emirates Towers, Dubai", "lat": 25.2136, "lon": 55.2734 },
-        { "name": "DIFC, Dubai", "lat": 25.2183, "lon": 55.2797 },
-        { "name": "Marina 101, Dubai", "lat": 25.0819, "lon": 55.1406 },
-        { "name": "Almas Tower, Dubai", "lat": 25.0814, "lon": 55.1461 }
-      ],
-      "bounding_box": [51.57952, 22.63151, 56.39685, 26.07651],
-      "services_data": [
-        {
-          id: 1,
-          name: 'Structural',
-          total_prj: 876,
-          sub_services: [
-            { category: 'a', value: 115 },
-            { category: 'b', value: 142 },
-            { category: 'c', value: 290 },
-            { category: 'x', value: 132 },
-            { category: 'y', value: 702 },
-            { category: 'z', value: 238 }
-          ]
-        },
-        {
-          id: 2,
-          name: 'Architectural',
-          total_prj: 731,
-          sub_services: [
-            { category: 'x', value: 127 },
-            { category: 'y', value: 705 },
-            { category: 'z', value: 225 },
-            { category: '0', value: 150 },
-            { category: '3', value: 245 }
-          ]
-        },
-        {
-          id: 3,
-          name: 'MEP',
-          total_prj: 389,
-          sub_services: [
-            { category: '0', value: 135 },
-            { category: '1', value: 145 },
-            { category: '3', value: 210 },
-            { category: 'z', value: 275 }
-          ]
-        }
-      ]
-    },
-    {
-      "country": "United Kingdom",
-      "locations": [
-        { "name": "The Shard, London", "lat": 51.504501, "lon": -0.086500 },
-        { "name": "Canary Wharf, London", "lat": 51.505974, "lon": -0.027176 },
-        { "name": "The Gherkin (30 St Mary Axe)", "lat": 51.514500, "lon": -0.080000 },
-        { "name": "Leadenhall Building, London", "lat": 51.514400, "lon": -0.083500 },
-        { "name": "1 Undershaft (future), London", "lat": 51.515600, "lon": -0.083000 }
-      ],
-      "bounding_box": [-8.649357, 49.906193, 1.748, 60.860699],
-      "services_data": [
-        {
-          id: 1, name: 'Structural', total_prj: 912,
-          sub_services: [
-            { category: 'a', value: 110 }, { category: 'b', value: 155 },
-            { category: 'c', value: 270 }, { category: 'x', value: 130 },
-            { category: 'y', value: 735 }, { category: 'z', value: 245 }
-          ]
-        },
-        {
-          id: 2, name: 'Architectural', total_prj: 670,
-          sub_services: [
-            { category: 'x', value: 115 }, { category: 'y', value: 700 },
-            { category: 'z', value: 260 }, { category: '0', value: 145 },
-            { category: '3', value: 230 }
-          ]
-        },
-        {
-          id: 3, name: 'MEP', total_prj: 380,
-          sub_services: [
-            { category: '0', value: 132 }, { category: '1', value: 140 },
-            { category: '3', value: 215 }, { category: 'z', value: 260 }
-          ]
-        }
-      ]
-    },
-    {
-      "country": "Brazil",
-      "locations": [
-        { "name": "Centro Empresarial Nações Unidas, São Paulo", "lat": -23.6139, "lon": -46.6997 },
-        { "name": "Plaza Centenário, São Paulo", "lat": -23.6035, "lon": -46.6929 },
-        { "name": "E‑Tower, São Paulo", "lat": -23.5956, "lon": -46.6833 },
-        { "name": "Eldorado Business Tower, São Paulo", "lat": -23.5981, "lon": -46.6994 },
-        { "name": "Brookfield Towers, São Paulo", "lat": -23.6080, "lon": -46.6980 }
-      ],
-      "bounding_box": [-73.982817, -33.768377, -34.729993, 5.271786],
-      "services_data": [
-        {
-          id: 1, name: 'Structural', total_prj: 850,
-          sub_services: [
-            { category: 'a', value: 105 }, { category: 'b', value: 150 },
-            { category: 'c', value: 260 }, { category: 'x', value: 125 },
-            { category: 'y', value: 720 }, { category: 'z', value: 240 }
-          ]
-        },
-        {
-          id: 2, name: 'Architectural', total_prj: 690,
-          sub_services: [
-            { category: 'x', value: 120 }, { category: 'y', value: 710 },
-            { category: 'z', value: 250 }, { category: '0', value: 150 },
-            { category: '3', value: 235 }
-          ]
-        },
-        {
-          id: 3, name: 'MEP', total_prj: 360,
-          sub_services: [
-            { category: '0', value: 128 }, { category: '1', value: 135 },
-            { category: '3', value: 205 }, { category: 'z', value: 255 }
-          ]
-        }
-      ]
-    },
-    {
-      "country": "Japan",
-      "locations": [
-        { "name": "Roppongi Grand Tower, Tokyo", "lat": 35.6639, "lon": 139.7309 },
-        { "name": "Tokyo Midtown Tower", "lat": 35.6604, "lon": 139.7292 },
-        { "name": "Toraya Building, Tokyo", "lat": 35.6738, "lon": 139.7634 },
-        { "name": "Shinjuku Sumitomo Building", "lat": 35.6939, "lon": 139.7036 },
-        { "name": "Shin‑Marunouchi Building", "lat": 35.6804, "lon": 139.7648 }
-      ],
-      "bounding_box": [122.93853, 24.396308, 153.986672, 45.551483],
-      "services_data": [
-        {
-          id: 1, name: 'Structural', total_prj: 980,
-          sub_services: [
-            { category: 'a', value: 120 }, { category: 'b', value: 165 },
-            { category: 'c', value: 290 }, { category: 'x', value: 140 },
-            { category: 'y', value: 760 }, { category: 'z', value: 260 }
-          ]
-        },
-        {
-          id: 2, name: 'Architectural', total_prj: 720,
-          sub_services: [
-            { category: 'x', value: 130 }, { category: 'y', value: 730 },
-            { category: 'z', value: 270 }, { category: '0', value: 155 },
-            { category: '3', value: 245 }
-          ]
-        },
-        {
-          id: 3, name: 'MEP', total_prj: 405,
-          sub_services: [
-            { category: '0', value: 135 }, { category: '1', value: 150 },
-            { category: '3', value: 220 }, { category: 'z', value: 275 }
-          ]
-        }
-      ]
-    },
-    {
-      "country": "Australia",
-      "locations": [
-        { "name": "Sydney Tower, Sydney", "lat": -33.870453, "lon": 151.208755 },
-        { "name": "Century Tower, Sydney", "lat": -33.8720, "lon": 151.2045 },
-        { "name": "Crown Sydney", "lat": -33.8590, "lon": 151.2130 },
-        { "name": "Barangaroo Tower One", "lat": -33.8605, "lon": 151.2000 },
-        { "name": "MLC Centre, Sydney", "lat": -33.8675, "lon": 151.2070 }
-      ],
-      "bounding_box": [112.92111, -43.740482, 153.638673, -10.684055],
-      "services_data": [
-        {
-          id: 1, name: 'Structural', total_prj: 770,
-          sub_services: [
-            { category: 'a', value: 95 }, { category: 'b', value: 140 },
-            { category: 'c', value: 250 }, { category: 'x', value: 120 },
-            { category: 'y', value: 700 }, { category: 'z', value: 230 }
-          ]
-        },
-        {
-          id: 2, name: 'Architectural', total_prj: 640,
-          sub_services: [
-            { category: 'x', value: 110 }, { category: 'y', value: 690 },
-            { category: 'z', value: 240 }, { category: '0', value: 140 },
-            { category: '3', value: 225 }
-          ]
-        },
-        {
-          id: 3, name: 'MEP', total_prj: 330,
-          sub_services: [
-            { category: '0', value: 125 }, { category: '1', value: 130 },
-            { category: '3', value: 200 }, { category: 'z', value: 250 }
-          ]
-        }
-      ]
-    },
-    {
-      "country": "India",
-      "locations": [
-        { "name": "Phiroze Jeejeebhoy Towers, Mumbai", "lat": 18.929863, "lon": 72.833427 },
-        { "name": "The Imperial (Tardeo), Mumbai", "lat": 18.9709, "lon": 72.8129 },
-        { "name": "Aaradhya Avaan, Tardeo", "lat": 18.965840, "lon": 72.814237 },
-        { "name": "Gail Jubilee Tower, New Delhi", "lat": 28.589912, "lon": 77.311707 },
-        { "name": "Mumbai (city centre)", "lat": 19.076090, "lon": 72.877426 }
-      ],
-      "bounding_box": [68.111378, 6.554607, 97.395561, 35.674545],
-      "services_data": [
-        {
-          id: 1, name: 'Structural', total_prj: 980,
-          sub_services: [
-            { category: 'a', value: 120 }, { category: 'b', value: 165 },
-            { category: 'c', value: 290 }, { category: 'x', value: 140 },
-            { category: 'y', value: 760 }, { category: 'z', value: 260 }
-          ]
-        },
-        {
-          id: 2, name: 'Architectural', total_prj: 720,
-          sub_services: [
-            { category: 'x', value: 130 }, { category: 'y', value: 730 },
-            { category: 'z', value: 270 }, { category: '0', value: 155 },
-            { category: '3', value: 245 }
-          ]
-        },
-        {
-          id: 3, name: 'MEP', total_prj: 405,
-          sub_services: [
-            { category: '0', value: 135 }, { category: '1', value: 150 },
-            { category: '3', value: 220 }, { category: 'z', value: 275 }
-          ]
-        }
-      ]
-    },
-    {
-      "country": "Germany",
-      "locations": [
-        { "name": "Commerzbank Tower, Frankfurt", "lat": 50.11056, "lon": 8.6825 },
-        { "name": "Messeturm, Frankfurt", "lat": 50.11222, "lon": 8.65278 },
-        { "name": "Main Tower, Frankfurt", "lat": 50.1100, "lon": 8.6780 },
-        { "name": "IBC Tower, Frankfurt", "lat": 50.1128, "lon": 8.6490 },
-        { "name": "Tower 185, Frankfurt", "lat": 50.1095, "lon": 8.6800 }
-      ],
-      "bounding_box": [5.866342, 47.270111, 15.041896, 55.058347],
-      "services_data": [
-        {
-          id: 1, name: 'Structural', total_prj: 850,
-          sub_services: [
-            { category: 'a', value: 105 }, { category: 'b', value: 150 },
-            { category: 'c', value: 260 }, { category: 'x', value: 125 },
-            { category: 'y', value: 720 }, { category: 'z', value: 240 }
-          ]
-        },
-        {
-          id: 2, name: 'Architectural', total_prj: 690,
-          sub_services: [
-            { category: 'x', value: 120 }, { category: 'y', value: 710 },
-            { category: 'z', value: 250 }, { category: '0', value: 150 },
-            { category: '3', value: 235 }
-          ]
-        },
-        {
-          id: 3, name: 'MEP', total_prj: 360,
-          sub_services: [
-            { category: '0', value: 128 }, { category: '1', value: 135 },
-            { category: '3', value: 205 }, { category: 'z', value: 255 }
-          ]
-        }
-      ]
-    },
-    {
-      "country": "Canada",
-      "locations": [
-        { "name": "Pinnacle One Yonge (SkyTower), Toronto", "lat": 43.64333, "lon": -79.37500 },
-        { "name": "Prestige at Pinnacle One Yonge, Toronto", "lat": 43.64361, "lon": -79.37417 },
-        { "name": "Scotia Plaza, Toronto", "lat": 43.6503, "lon": -79.3808 },
-        { "name": "First Canadian Place, Toronto", "lat": 43.6525, "lon": -79.3808 },
-        { "name": "TD Canada Trust Tower, Toronto", "lat": 43.6486, "lon": -79.3763 }
-      ],
-      "bounding_box": [-141.0, 41.676555, -52.648099, 70.0],
-      "services_data": [
-        {
-          id: 1, name: 'Structural', total_prj: 912,
-          sub_services: [
-            { category: 'a', value: 110 }, { category: 'b', value: 155 },
-            { category: 'c', value: 270 }, { category: 'x', value: 130 },
-            { category: 'y', value: 735 }, { category: 'z', value: 245 }
-          ]
-        },
-        {
-          id: 2, name: 'Architectural', total_prj: 670,
-          sub_services: [
-            { category: 'x', value: 115 }, { category: 'y', value: 700 },
-            { category: 'z', value: 260 }, { category: '0', value: 145 },
-            { category: '3', value: 230 }
-          ]
-        },
-        {
-          id: 3, name: 'MEP', total_prj: 380,
-          sub_services: [
-            { category: '0', value: 132 }, { category: '1', value: 140 },
-            { category: '3', value: 215 }, { category: 'z', value: 260 }
-          ]
-        }
-      ]
-    }
-  ];
+      {
+        "country": "United States",
+        "locations": [
+          { "name": "Empire State Building, NYC", "lat": 40.748817, "lon": -73.985428 },
+          { "name": "One World Trade Center, NYC", "lat": 40.712742, "lon": -74.013382 },
+          { "name": "Willis Tower, Chicago", "lat": 41.878876, "lon": -87.635915 },
+          { "name": "Chrysler Building, NYC", "lat": 40.751652, "lon": -73.975311 },
+          { "name": "Bank of America Plaza, Atlanta", "lat": 33.755927, "lon": -84.387995 }
+        ],
+        "bounding_box": [-125.0, 24.396308, -66.93457, 49.384358],
+        "services_data": [
+          {
+            id: 1,
+            name: 'Structural',
+            total_prj: 932,
+            sub_services: [
+              { category: 'Columns', value: 112 },
+              { category: 'Beams', value: 157 },
+              { category: 'Floors', value: 265 },
+              { category: 'Walls', value: 138 },
+              { category: 'Reinforcement', value: 725 },
+              { category: 'Trusses & Bracing', value: 249 }
+            ]
+          },
+          {
+            id: 2,
+            name: 'Architectural',
+            total_prj: 710,
+            sub_services: [
+              { category: 'x', value: 134 },
+              { category: 'y', value: 698 },
+              { category: 'z', value: 242 },
+              { category: '0', value: 158 },
+              { category: '3', value: 237 }
+            ]
+          },
+          {
+            id: 3,
+            name: 'MEP',
+            total_prj: 401,
+            sub_services: [
+              { category: '0', value: 140 },
+              { category: '1', value: 133 },
+              { category: '3', value: 214 },
+              { category: 'z', value: 288 }
+            ]
+          }
+        ]
+      },
+      {
+        "country": "China",
+        "locations": [
+          { "name": "Shanghai Tower, Shanghai", "lat": 31.2355, "lon": 121.5010 },
+          { "name": "Shanghai World Financial Center", "lat": 31.2397, "lon": 121.4998 },
+          { "name": "Jin Mao Tower, Shanghai", "lat": 31.2356, "lon": 121.5036 },
+          { "name": "Ping An Finance Centre, Shenzhen", "lat": 22.5333, "lon": 114.0540 },
+          { "name": "Petronas Towers, Kuala Lumpur", "lat": 3.15785, "lon": 101.71165 }
+        ],
+        "bounding_box": [73.499734, 18.197701, 134.77281, 53.56086],
+        "services_data": [
+          {
+            id: 1,
+            name: 'Structural',
+            total_prj: 810,
+            sub_services: [
+              { category: 'a', value: 98 },
+              { category: 'b', value: 165 },
+              { category: 'c', value: 305 },
+              { category: 'x', value: 119 },
+              { category: 'y', value: 675 },
+              { category: 'z', value: 215 }
+            ]
+          },
+          {
+            id: 2,
+            name: 'Architectural',
+            total_prj: 659,
+            sub_services: [
+              { category: 'x', value: 110 },
+              { category: 'y', value: 725 },
+              { category: 'z', value: 260 },
+              { category: '0', value: 142 },
+              { category: '3', value: 228 }
+            ]
+          },
+          {
+            id: 3,
+            name: 'MEP',
+            total_prj: 373,
+            sub_services: [
+              { category: '0', value: 128 },
+              { category: '1', value: 150 },
+              { category: '3', value: 202 },
+              { category: 'z', value: 260 }
+            ]
+          }
+        ]
+      },
+      {
+        "country": "United Arab Emirates",
+        "locations": [
+          { "name": "Burj Khalifa, Dubai", "lat": 25.197525, "lon": 55.274288 },
+          { "name": "Emirates Towers, Dubai", "lat": 25.2136, "lon": 55.2734 },
+          { "name": "DIFC, Dubai", "lat": 25.2183, "lon": 55.2797 },
+          { "name": "Marina 101, Dubai", "lat": 25.0819, "lon": 55.1406 },
+          { "name": "Almas Tower, Dubai", "lat": 25.0814, "lon": 55.1461 }
+        ],
+        "bounding_box": [51.57952, 22.63151, 56.39685, 26.07651],
+        "services_data": [
+          {
+            id: 1,
+            name: 'Structural',
+            total_prj: 876,
+            sub_services: [
+              { category: 'a', value: 115 },
+              { category: 'b', value: 142 },
+              { category: 'c', value: 290 },
+              { category: 'x', value: 132 },
+              { category: 'y', value: 702 },
+              { category: 'z', value: 238 }
+            ]
+          },
+          {
+            id: 2,
+            name: 'Architectural',
+            total_prj: 731,
+            sub_services: [
+              { category: 'x', value: 127 },
+              { category: 'y', value: 705 },
+              { category: 'z', value: 225 },
+              { category: '0', value: 150 },
+              { category: '3', value: 245 }
+            ]
+          },
+          {
+            id: 3,
+            name: 'MEP',
+            total_prj: 389,
+            sub_services: [
+              { category: '0', value: 135 },
+              { category: '1', value: 145 },
+              { category: '3', value: 210 },
+              { category: 'z', value: 275 }
+            ]
+          }
+        ]
+      },
+      {
+        "country": "United Kingdom",
+        "locations": [
+          { "name": "The Shard, London", "lat": 51.504501, "lon": -0.086500 },
+          { "name": "Canary Wharf, London", "lat": 51.505974, "lon": -0.027176 },
+          { "name": "The Gherkin (30 St Mary Axe)", "lat": 51.514500, "lon": -0.080000 },
+          { "name": "Leadenhall Building, London", "lat": 51.514400, "lon": -0.083500 },
+          { "name": "1 Undershaft (future), London", "lat": 51.515600, "lon": -0.083000 }
+        ],
+        "bounding_box": [-8.649357, 49.906193, 1.748, 60.860699],
+        "services_data": [
+          {
+            id: 1, name: 'Structural', total_prj: 912,
+            sub_services: [
+              { category: 'a', value: 110 }, { category: 'b', value: 155 },
+              { category: 'c', value: 270 }, { category: 'x', value: 130 },
+              { category: 'y', value: 735 }, { category: 'z', value: 245 }
+            ]
+          },
+          {
+            id: 2, name: 'Architectural', total_prj: 670,
+            sub_services: [
+              { category: 'x', value: 115 }, { category: 'y', value: 700 },
+              { category: 'z', value: 260 }, { category: '0', value: 145 },
+              { category: '3', value: 230 }
+            ]
+          },
+          {
+            id: 3, name: 'MEP', total_prj: 380,
+            sub_services: [
+              { category: '0', value: 132 }, { category: '1', value: 140 },
+              { category: '3', value: 215 }, { category: 'z', value: 260 }
+            ]
+          }
+        ]
+      },
+      {
+        "country": "Brazil",
+        "locations": [
+          { "name": "Centro Empresarial Nações Unidas, São Paulo", "lat": -23.6139, "lon": -46.6997 },
+          { "name": "Plaza Centenário, São Paulo", "lat": -23.6035, "lon": -46.6929 },
+          { "name": "E‑Tower, São Paulo", "lat": -23.5956, "lon": -46.6833 },
+          { "name": "Eldorado Business Tower, São Paulo", "lat": -23.5981, "lon": -46.6994 },
+          { "name": "Brookfield Towers, São Paulo", "lat": -23.6080, "lon": -46.6980 }
+        ],
+        "bounding_box": [-73.982817, -33.768377, -34.729993, 5.271786],
+        "services_data": [
+          {
+            id: 1, name: 'Structural', total_prj: 850,
+            sub_services: [
+              { category: 'a', value: 105 }, { category: 'b', value: 150 },
+              { category: 'c', value: 260 }, { category: 'x', value: 125 },
+              { category: 'y', value: 720 }, { category: 'z', value: 240 }
+            ]
+          },
+          {
+            id: 2, name: 'Architectural', total_prj: 690,
+            sub_services: [
+              { category: 'x', value: 120 }, { category: 'y', value: 710 },
+              { category: 'z', value: 250 }, { category: '0', value: 150 },
+              { category: '3', value: 235 }
+            ]
+          },
+          {
+            id: 3, name: 'MEP', total_prj: 360,
+            sub_services: [
+              { category: '0', value: 128 }, { category: '1', value: 135 },
+              { category: '3', value: 205 }, { category: 'z', value: 255 }
+            ]
+          }
+        ]
+      },
+      {
+        "country": "Japan",
+        "locations": [
+          { "name": "Roppongi Grand Tower, Tokyo", "lat": 35.6639, "lon": 139.7309 },
+          { "name": "Tokyo Midtown Tower", "lat": 35.6604, "lon": 139.7292 },
+          { "name": "Toraya Building, Tokyo", "lat": 35.6738, "lon": 139.7634 },
+          { "name": "Shinjuku Sumitomo Building", "lat": 35.6939, "lon": 139.7036 },
+          { "name": "Shin‑Marunouchi Building", "lat": 35.6804, "lon": 139.7648 }
+        ],
+        "bounding_box": [122.93853, 24.396308, 153.986672, 45.551483],
+        "services_data": [
+          {
+            id: 1, name: 'Structural', total_prj: 980,
+            sub_services: [
+              { category: 'a', value: 120 }, { category: 'b', value: 165 },
+              { category: 'c', value: 290 }, { category: 'x', value: 140 },
+              { category: 'y', value: 760 }, { category: 'z', value: 260 }
+            ]
+          },
+          {
+            id: 2, name: 'Architectural', total_prj: 720,
+            sub_services: [
+              { category: 'x', value: 130 }, { category: 'y', value: 730 },
+              { category: 'z', value: 270 }, { category: '0', value: 155 },
+              { category: '3', value: 245 }
+            ]
+          },
+          {
+            id: 3, name: 'MEP', total_prj: 405,
+            sub_services: [
+              { category: '0', value: 135 }, { category: '1', value: 150 },
+              { category: '3', value: 220 }, { category: 'z', value: 275 }
+            ]
+          }
+        ]
+      },
+      {
+        "country": "Australia",
+        "locations": [
+          { "name": "Sydney Tower, Sydney", "lat": -33.870453, "lon": 151.208755 },
+          { "name": "Century Tower, Sydney", "lat": -33.8720, "lon": 151.2045 },
+          { "name": "Crown Sydney", "lat": -33.8590, "lon": 151.2130 },
+          { "name": "Barangaroo Tower One", "lat": -33.8605, "lon": 151.2000 },
+          { "name": "MLC Centre, Sydney", "lat": -33.8675, "lon": 151.2070 }
+        ],
+        "bounding_box": [112.92111, -43.740482, 153.638673, -10.684055],
+        "services_data": [
+          {
+            id: 1, name: 'Structural', total_prj: 770,
+            sub_services: [
+              { category: 'a', value: 95 }, { category: 'b', value: 140 },
+              { category: 'c', value: 250 }, { category: 'x', value: 120 },
+              { category: 'y', value: 700 }, { category: 'z', value: 230 }
+            ]
+          },
+          {
+            id: 2, name: 'Architectural', total_prj: 640,
+            sub_services: [
+              { category: 'x', value: 110 }, { category: 'y', value: 690 },
+              { category: 'z', value: 240 }, { category: '0', value: 140 },
+              { category: '3', value: 225 }
+            ]
+          },
+          {
+            id: 3, name: 'MEP', total_prj: 330,
+            sub_services: [
+              { category: '0', value: 125 }, { category: '1', value: 130 },
+              { category: '3', value: 200 }, { category: 'z', value: 250 }
+            ]
+          }
+        ]
+      },
+      {
+        "country": "India",
+        "locations": [
+          { "name": "Phiroze Jeejeebhoy Towers, Mumbai", "lat": 18.929863, "lon": 72.833427 },
+          { "name": "The Imperial (Tardeo), Mumbai", "lat": 18.9709, "lon": 72.8129 },
+          { "name": "Aaradhya Avaan, Tardeo", "lat": 18.965840, "lon": 72.814237 },
+          { "name": "Gail Jubilee Tower, New Delhi", "lat": 28.589912, "lon": 77.311707 },
+          { "name": "Mumbai (city centre)", "lat": 19.076090, "lon": 72.877426 }
+        ],
+        "bounding_box": [68.111378, 6.554607, 97.395561, 35.674545],
+        "services_data": [
+          {
+            id: 1, name: 'Structural', total_prj: 980,
+            sub_services: [
+              { category: 'a', value: 120 }, { category: 'b', value: 165 },
+              { category: 'c', value: 290 }, { category: 'x', value: 140 },
+              { category: 'y', value: 760 }, { category: 'z', value: 260 }
+            ]
+          },
+          {
+            id: 2, name: 'Architectural', total_prj: 720,
+            sub_services: [
+              { category: 'x', value: 130 }, { category: 'y', value: 730 },
+              { category: 'z', value: 270 }, { category: '0', value: 155 },
+              { category: '3', value: 245 }
+            ]
+          },
+          {
+            id: 3, name: 'MEP', total_prj: 405,
+            sub_services: [
+              { category: '0', value: 135 }, { category: '1', value: 150 },
+              { category: '3', value: 220 }, { category: 'z', value: 275 }
+            ]
+          }
+        ]
+      },
+      {
+        "country": "Germany",
+        "locations": [
+          { "name": "Commerzbank Tower, Frankfurt", "lat": 50.11056, "lon": 8.6825 },
+          { "name": "Messeturm, Frankfurt", "lat": 50.11222, "lon": 8.65278 },
+          { "name": "Main Tower, Frankfurt", "lat": 50.1100, "lon": 8.6780 },
+          { "name": "IBC Tower, Frankfurt", "lat": 50.1128, "lon": 8.6490 },
+          { "name": "Tower 185, Frankfurt", "lat": 50.1095, "lon": 8.6800 }
+        ],
+        "bounding_box": [5.866342, 47.270111, 15.041896, 55.058347],
+        "services_data": [
+          {
+            id: 1, name: 'Structural', total_prj: 850,
+            sub_services: [
+              { category: 'a', value: 105 }, { category: 'b', value: 150 },
+              { category: 'c', value: 260 }, { category: 'x', value: 125 },
+              { category: 'y', value: 720 }, { category: 'z', value: 240 }
+            ]
+          },
+          {
+            id: 2, name: 'Architectural', total_prj: 690,
+            sub_services: [
+              { category: 'x', value: 120 }, { category: 'y', value: 710 },
+              { category: 'z', value: 250 }, { category: '0', value: 150 },
+              { category: '3', value: 235 }
+            ]
+          },
+          {
+            id: 3, name: 'MEP', total_prj: 360,
+            sub_services: [
+              { category: '0', value: 128 }, { category: '1', value: 135 },
+              { category: '3', value: 205 }, { category: 'z', value: 255 }
+            ]
+          }
+        ]
+      },
+      {
+        "country": "Canada",
+        "locations": [
+          { "name": "Pinnacle One Yonge (SkyTower), Toronto", "lat": 43.64333, "lon": -79.37500 },
+          { "name": "Prestige at Pinnacle One Yonge, Toronto", "lat": 43.64361, "lon": -79.37417 },
+          { "name": "Scotia Plaza, Toronto", "lat": 43.6503, "lon": -79.3808 },
+          { "name": "First Canadian Place, Toronto", "lat": 43.6525, "lon": -79.3808 },
+          { "name": "TD Canada Trust Tower, Toronto", "lat": 43.6486, "lon": -79.3763 }
+        ],
+        "bounding_box": [-141.0, 41.676555, -52.648099, 70.0],
+        "services_data": [
+          {
+            id: 1, name: 'Structural', total_prj: 912,
+            sub_services: [
+              { category: 'a', value: 110 }, { category: 'b', value: 155 },
+              { category: 'c', value: 270 }, { category: 'x', value: 130 },
+              { category: 'y', value: 735 }, { category: 'z', value: 245 }
+            ]
+          },
+          {
+            id: 2, name: 'Architectural', total_prj: 670,
+            sub_services: [
+              { category: 'x', value: 115 }, { category: 'y', value: 700 },
+              { category: 'z', value: 260 }, { category: '0', value: 145 },
+              { category: '3', value: 230 }
+            ]
+          },
+          {
+            id: 3, name: 'MEP', total_prj: 380,
+            sub_services: [
+              { category: '0', value: 132 }, { category: '1', value: 140 },
+              { category: '3', value: 215 }, { category: 'z', value: 260 }
+            ]
+          }
+        ]
+      }
+    ];
 
   mapTransform = computed(() => {
     const countryStyles: Record<string, { scale: number; translateX: number; translateY: number }> = {
@@ -1324,7 +1324,7 @@ export class SpatialCostCalculator {
 
   countryStats = computed(() => {
     const selCountry = this.activeCountry();
-    
+
     // Fallback/standard stats structure
     if (selCountry === 'Global') {
       let totalStructural = 0;
@@ -1586,7 +1586,7 @@ export class SpatialCostCalculator {
 
     const nextIdNum = this.allProjects().length + 1;
     const code = `PROJECT_${nextIdNum.toString().padStart(3, '0')}`;
-    
+
     const imgMap = {
       MEP: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-j0Ctd5d5ygIh7Krpzt9Dj5KbgSNe0FqXRPf8nWinLyLbYZIX4MgpGk9x-HIsuMnu8Oh-4tM2tz-JobYfwTE8OJijGZhL3pzGr2TY7vOG1dAq5h3WLS4Vv4UVhMcdU3CB0uy2FGuW5CzI9C1GhSxe9o2sgcxuI5ZFiyzNOTCWN2EcIfcNLWvwKvzYkTpcq3AJIVh3Zv8qahheJcplIOy9D6aRwPAu7HwBoKP1vKOxALtB4q1CrtJMA9JI4oaV7of5rG442tNE4GQ',
       STRUCTURAL: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCAh4--94ZHe6PqKP1WucVH70x3NdHpd-vGd9pgfZOcQ8glgCgIOO7yAmRd_oPPBF2OtoPEvLvwO3Lljc5IvUAnR2KMaQNdFL72paOoHXTkY4axN1PJisekd2cOU2kditsJVYH8IliBlT2rsBsWJP5jKYt28Z4Z_c9IMBCj3hz8ftxB1vMKuzfz8tTnXNOpsc-v0-ifu9zjtQK4K1EH6LOtThscYamjNb7WodoDtCYq4a8byszUTHCewwCqpbACC7gI5pgw1fKU_Xg',

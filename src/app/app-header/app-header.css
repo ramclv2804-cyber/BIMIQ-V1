@@ -9,6 +9,11 @@
   animation: fadeIn 0.2s ease;
 }
 
+.hover-underline-animate.after\:scale-x-100::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

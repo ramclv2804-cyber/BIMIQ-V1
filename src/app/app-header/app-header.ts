@@ -76,6 +76,11 @@ export class AppHeader {
     this.router.navigate(['/login']);
   }
 
+  goToEstimator() {
+    this.calculator.setTab('config');
+    this.router.navigate(['/']);
+  }
+
   logout() {
     this.calculator.logoutUser();
     this.router.navigate(['/']);

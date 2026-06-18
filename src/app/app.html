@@ -77,7 +77,7 @@
     <div class="max-w-[1280px] mx-auto px-6 md:px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 text-xs text-on-surface-variant-custom text-left">
 
       <div class="space-y-4">
-        <div class="flex items-center gap-3">
+        <button type="button" (click)="setTab('dashboard')" class="flex items-center gap-3 bg-transparent border-none cursor-pointer text-left focus:outline-none">
           <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6">
             <defs>
               <linearGradient id="logo-blue-f" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -104,14 +104,10 @@
           <span class="text-silver-leaf text-sm tracking-widest font-black uppercase transition-colors hover:text-[#DF80AC] duration-300">
             BIM-<span class="text-secondary-custom font-normal">IQ</span>
           </span>
-        </div>
+        </button>
         <p class="leading-relaxed text-[11px] text-slate-400 font-sans">
           Convert raw physical LiDAR scans into fully compliant Autodesk Revit sheets and CAD floor plans. Managed via automated geometric pipeline validation models.
         </p>
-        <div class="inline-flex items-center gap-2 bg-[#DF80AC]/10 border border-[#DF80AC]/25 rounded-full px-3.5 py-1 text-[9.5px] font-bold text-[#DF80AC] shadow-[0_0_15px_rgba(223,128,172,0.1)]">
-          <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping"></span>
-          <span>PIPELINE COORDINATOR ACTIVE</span>
-        </div>
         <div class="pt-2">
           <button
             id="btn-footer-add-project"
@@ -168,24 +164,10 @@
 
     <div class="max-w-[1280px] mx-auto px-6 md:px-20 mt-12 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-500 font-mono">
       <span>&copy; 2026 BIM-IQ / INTEGRATED PIPELINE NETWORK. ALL RIGHTS RESERVED.</span>
-      <span class="uppercase tracking-widest text-[#DF80AC] font-bold select-none flex items-center gap-1.5">
-        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block animate-ping"></span>
-        <span>AES-256 local encrypted node connected</span>
-      </span>
     </div>
   </footer>
 }
 
-  <!-- Floating Initiate Project FAB (all pages except login) -->
-  @if (currentUrl() !== '/login') {
-    <button
-      type="button"
-      (click)="goToEstimator()"
-      class="fixed bottom-6 right-6 md:bottom-6 md:right-6 w-12 h-12 bg-primary-custom text-on-primary-custom rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-90 z-40 group focus:outline-none cursor-pointer">
-      <span class="material-symbols-outlined">add</span>
-      <span class="absolute right-full mr-4 bg-midnight-charcoal border border-silver-leaf/10 px-3 py-1.5 rounded-lg text-primary-custom font-mono text-[9px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">INITIATE PROJECT</span>
-    </button>
-  }
 
   <!-- USER SIGN IN DIALOG MODAL -->
   @if (calculator.isLoginModalOpen()) {

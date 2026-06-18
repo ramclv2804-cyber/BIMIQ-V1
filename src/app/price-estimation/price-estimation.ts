@@ -472,23 +472,19 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
                   <!-- Send Proposal | Place Order buttons side by side -->
                   <div class="grid grid-cols-2 gap-3 pt-1">
-                    <button type="button" (click)="calculator.sendProposal.set(!calculator.sendProposal())"
-                      [class.bg-primary-custom]="calculator.sendProposal()"
-                      [class.text-white]="calculator.sendProposal()"
-                      [class.bg-[#19191D]]="!calculator.sendProposal()"
-                      [class.text-silver-leaf]="!calculator.sendProposal()"
+                    <button type="button" (click)="triggerEstimateDownload()"
+                      [class.bg-[#e9c349]]="calculator.sendProposal()"
+                      [class.text-[#0A0A0C]]="calculator.sendProposal()"
+                      [class.bg-[#e9c349]/10]="!calculator.sendProposal()"
+                      [class.text-[#e9c349]]="!calculator.sendProposal()"
                       class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-white/10 font-mono text-[10px] uppercase font-bold tracking-widest transition-all cursor-pointer select-none hover:opacity-90">
                       <span class="material-symbols-outlined text-sm">{{ calculator.sendProposal() ? 'check_circle' : 'description' }}</span>
                       Generate Proposal
                     </button>
-                    <button type="button" (click)="calculator.placeOrder.set(!calculator.placeOrder())"
-                      [class.bg-primary-custom]="calculator.placeOrder()"
-                      [class.text-white]="calculator.placeOrder()"
-                      [class.bg-[#19191D]]="!calculator.placeOrder()"
-                      [class.text-silver-leaf]="!calculator.placeOrder()"
-                      class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-white/10 font-mono text-[10px] uppercase font-bold tracking-widest transition-all cursor-pointer select-none hover:opacity-90">
-                      <span class="material-symbols-outlined text-sm">{{ calculator.placeOrder() ? 'check_circle' : 'shopping_cart' }}</span>
-                      Place Order
+                    <button type="button" (click)="openPreviewModal()"
+                      class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-white/10 font-mono text-[10px] uppercase font-bold tracking-widest transition-all cursor-pointer select-none hover:opacity-90 bg-[#e9c349] text-[#0A0A0C]">
+                      <span class="material-symbols-outlined text-sm">visibility</span>
+                      Preview
                     </button>
                   </div>
                 </div>
@@ -500,11 +496,12 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <span class="material-symbols-outlined text-sm">arrow_back</span>
                     BACK
                   </button>
-                  <button type="button" [disabled]="!isLocationInfoValid()" (click)="goToStep(3)"
+                 
+                    <button type="button" (click)="goToStep(3); triggerQuoteRequest()"
                     class="flex-1 bg-primary-custom text-on-primary-custom py-2.5 rounded-xl font-mono text-[10px] uppercase font-bold tracking-widest active:scale-95 hover:opacity-90 transition-all flex items-center justify-center gap-2 focus:outline-none shadow-lg shadow-primary-custom/10 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer border-none">
-                    NEXT
-                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                  </button>
+                      <span class="material-symbols-outlined text-sm">{{ calculator.placeOrder() ? 'check_circle' : 'shopping_cart' }}</span>
+                       Confirm Order
+                    </button>
                 </div>
               </div>
             }
@@ -522,6 +519,12 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
                   <!-- Header -->
                   <div class="px-6 pt-6 pb-4 border-b border-white/5">
+                  @if (calculator.placeOrder()) {
+                      <div class="p-3 mb-5 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center gap-2.5 animate-fade-in">
+                        <span class="material-symbols-outlined text-emerald-400 text-sm">check_circle</span>
+                        <span class="font-mono text-[10px] text-emerald-400 font-bold uppercase tracking-wider">Your order has been placed successfully!</span>
+                      </div>
+                    }
                     <div class="flex items-start justify-between">
                       <div>
                         <div class="flex items-center gap-2 mb-3">
@@ -541,7 +544,9 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                   </div>
 
                   <!-- Details -->
-                  <div class="px-6 py-5 space-y-4">
+                  <div class="px-6 pb-5 space-y-4">
+                    
+
                     <div class="flex items-center justify-between py-2 border-b border-white/5">
                       <span class="font-mono text-[11px] text-on-surface-variant-custom uppercase tracking-wider">Service Scope</span>
                       <span class="font-mono text-xs text-silver-leaf">{{ calculator.selectedModelingWay() === 'bim' ? 'Scan to BIM' : 'Scan to CAD' }}</span>
@@ -561,20 +566,9 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     </div>
                   </div>
 
-                  <!-- Dates -->
-                  <div class="border-t border-white/5 px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <div class="font-mono text-[9px] text-on-surface-variant-custom uppercase tracking-wider mb-1.5">Point Cloud Issue Date</div>
-                      <input [value]="calculator.pointCloudIssueDate()" (input)="calculator.pointCloudIssueDate.set($any($event.target).value)" class="w-full bg-[#13131A] border border-white/5 rounded-lg px-3 py-2 font-mono text-xs text-silver-leaf focus:outline-none focus:border-primary-custom transition-all cursor-pointer" type="date"/>
-                    </div>
-                    <div>
-                      <div class="font-mono text-[9px] text-on-surface-variant-custom uppercase tracking-wider mb-1.5">Expected Delivery Date</div>
-                      <input [value]="calculator.expectedDeliveryDate()" (input)="calculator.expectedDeliveryDate.set($any($event.target).value)" class="w-full bg-[#13131A] border border-white/5 rounded-lg px-3 py-2 font-mono text-xs text-silver-leaf focus:outline-none focus:border-primary-custom transition-all cursor-pointer" type="date"/>
-                    </div>
-                  </div>
-
+              
                   <!-- Actions -->
-                  <div class="px-6 py-4 border-t border-white/5 flex items-center justify-between gap-3">
+                  <div class="px-6 py-4 border-t border-white/5 flex items-center justify-end gap-3">
                     <button type="button" (click)="goToStep(2)"
                       class="flex items-center justify-center gap-2 border border-silver-leaf/20 bg-transparent text-silver-leaf px-4 py-2.5 rounded-xl font-mono text-[9px] uppercase tracking-widest hover:bg-white/5 active:scale-95 transition-all cursor-pointer">
                       <span class="material-symbols-outlined text-sm">arrow_back</span>
@@ -582,7 +576,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     </button>
                     <div class="flex items-center gap-2">
                       <button type="button" (click)="triggerQuoteRequest()"
-                        class="flex items-center justify-center gap-2 border border-primary-custom/40 bg-primary-custom/5 text-primary-custom px-4 py-2.5 rounded-xl font-mono text-[9px] uppercase tracking-widest font-bold hover:bg-primary-custom/10 active:scale-95 transition-all cursor-pointer">
+                        class="flex hidden items-center justify-center gap-2 border border-primary-custom/40 bg-primary-custom/5 text-primary-custom px-4 py-2.5 rounded-xl font-mono text-[9px] uppercase tracking-widest font-bold hover:bg-primary-custom/10 active:scale-95 transition-all cursor-pointer">
                         Request Quote
                       </button>
                       <button type="button" (click)="triggerEstimateDownload()"
@@ -673,7 +667,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                     <span (click)="goToStep(step)"
                       [ngClass]="formStep() === step ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom cursor-pointer hover:text-white'"
                       class="text-[8px] uppercase tracking-wider font-mono transition-all duration-300 whitespace-nowrap">
-                      {{ step === 1 ? 'Project Specs' : step === 2 ? 'Location Info' : 'Valuation' }}
+                      {{ step === 1 ? 'Project Specs' : step === 2 ? 'Links' : 'Valuation' }}
                     </span>
                   </div>
                 }
@@ -681,7 +675,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             </div>
 
             <!-- Sticky Price Card -->
-            <div class="pt-4 border-t border-white/5 shrink-0 z-20">
+            <div class="border-t border-white/5 shrink-0 z-20">
               <section class="p-6 rounded-2xl relative overflow-hidden font-mono animate-fade-in text-left">
               
 
@@ -729,10 +723,10 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                 <div class="mt-4 pt-1 flex flex-col gap-1.5 text-[11px] text-slate-300 leading-none">
                   <div class="flex items-center gap-1.5 font-mono">
                     <span class="material-symbols-outlined text-xs text-[#DF80AC]">calendar_month</span>
-                    <span class="text-xs text-silver-leaf font-bold">{{ calculator.calculatedSmartEstimate().dayRangeText }}</span>
+                    <span class="text-xs text-silver-leaf font-bold">{{ calculator.calculatedSmartEstimate().businessDaysText }}</span>
                   </div>
-                  <div class="text-[10px] text-on-surface-variant-custom italic select-none pl-5.5 font-sans justify-start flex mt-0.5">
-                    ({{ calculator.calculatedSmartEstimate().businessDaysText }})
+                  <div class="text-[10px] hidden text-on-surface-variant-custom italic select-none pl-5.5 font-sans justify-start flex mt-0.5">
+                    ({{ calculator.calculatedSmartEstimate().dayRangeText }})
                   </div>
                 </div>
 
@@ -748,33 +742,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                 }
               </div>
 
-              <div class="space-y-3 px-0.5 border-t border-white/5 pt-4 text-[11px] text-slate-300 leading-snug font-mono">
-                @if (calculator.smartIsComplexMepf()) {
-                  <div class="flex justify-between font-mono">
-                    <span class="text-on-surface-variant-custom font-bold">Complex MEPF Modeling Base</span>
-                    <span class="text-silver-leaf font-semibold">{{ calculator.calculatedSmartEstimate().currencySymbol }}{{ calculator.calculatedSmartEstimate().totalPrice | number: '1.2-2' }}</span>
-                  </div>
-                } @else {
-                  <div class="flex justify-between font-mono">
-                    <span class="text-on-surface-variant-custom select-none font-bold">Interior Core Base Unit Cost</span>
-                    <span class="text-slate-200 font-semibold">{{ calculator.calculatedSmartEstimate().currencySymbol }}{{ (calculator.calculatedSmartEstimate().interiorFees > 0 ? calculator.calculatedSmartEstimate().interiorFees : 150) | number: '1.2-2' }}</span>
-                  </div>
-                  @if (calculator.calculatedSmartEstimate().exteriorFees > 0) {
-                    <div class="flex justify-between animate-fade-in font-mono">
-                      <span class="text-on-surface-variant-custom">Exterior Modeling Scope</span>
-                      <span class="text-slate-200">+{{ calculator.calculatedSmartEstimate().currencySymbol }}{{ calculator.calculatedSmartEstimate().exteriorFees | number: '1.2-2' }}</span>
-                    </div>
-                  }
-                  @if (calculator.calculatedSmartEstimate().siteFees > 0) {
-                    <div class="flex justify-between animate-fade-in font-mono">
-                      <span class="text-on-surface-variant-custom select-none">
-                        Site modeling Area ({{ calculator.siteModelingSft() }} Sq.ft)
-                      </span>
-                      <span class="text-slate-200">+{{ calculator.calculatedSmartEstimate().currencySymbol }}{{ calculator.calculatedSmartEstimate().siteFees | number: '1.2-2' }}</span>
-                    </div>
-                  }
-                }
-              </div>
+              
             </section>
      </div>
           </div>
@@ -782,6 +750,162 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         </div>
       </div>
     </div>
+
+      <!-- Preview Order Modal -->
+      @if (isPreviewModalOpen()) {
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-md z-[200] flex justify-center items-center p-4 animate-fade-in text-left">
+          <div class="glass-panel w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-2xl border border-white/10 shadow-2xl p-6 relative flex flex-col gap-4 bg-[#121216]">
+            <div class="flex justify-between items-center pb-2 border-b border-white/5">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary-custom">shopping_cart</span>
+                <span class="font-mono text-xs uppercase tracking-widest text-primary-custom font-bold">Order Preview</span>
+              </div>
+              <button type="button" (click)="closePreviewModal()" class="text-slate-400 hover:text-white focus:outline-none bg-transparent border-none cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+
+            <div class="space-y-4 font-mono text-xs">
+              <!-- Project Info -->
+              <div class="space-y-2">
+                <div class="text-[9px] text-primary-custom uppercase tracking-widest font-bold">Project Information</div>
+                <div class="bg-[#19191D] rounded-lg p-3 space-y-2 border border-white/5">
+                  <div class="flex justify-between">
+                    <span class="text-slate-400 text-[10px] uppercase tracking-wider">Project Name</span>
+                    <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.smartProjectName() || '—' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400 text-[10px] uppercase tracking-wider">Service</span>
+                    <span class="text-silver-leaf text-[11px] font-semibold">{{ calculator.selectedModelingWay() === 'scan_to_cad' ? 'Scan to CAD' : 'Scan to BIM' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400 text-[10px] uppercase tracking-wider">Area</span>
+                    <span class="text-silver-leaf text-[11px] font-semibold">{{ calculator.smartScanSize() }} {{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400 text-[10px] uppercase tracking-wider">Building Type</span>
+                    <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.selectedBuildingType() || '—' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Requirements -->
+              <div class="space-y-2">
+                <div class="text-[9px] text-primary-custom uppercase tracking-widest font-bold">Scope Details</div>
+                <div class="bg-[#19191D] rounded-lg p-3 space-y-2 border border-white/5">
+                  @if (calculator.selectedModelingWay() === 'scan_to_cad') {
+                    <div class="flex justify-between">
+                      <span class="text-slate-400 text-[10px] uppercase tracking-wider">Requirements</span>
+                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.cadRequirements().join(', ') || '—' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400 text-[10px] uppercase tracking-wider">Scale</span>
+                      <span class="text-silver-leaf text-[11px] font-semibold">{{ calculator.cadScale() || '—' }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400 text-[10px] uppercase tracking-wider">AutoCAD Version</span>
+                      <span class="text-silver-leaf text-[11px] font-semibold">{{ calculator.smartAutocadVersion() || '—' }}</span>
+                    </div>
+                  } @else {
+                    <div class="flex justify-between">
+                      <span class="text-slate-400 text-[10px] uppercase tracking-wider">Requirements</span>
+                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.bimRequirements().join(', ') || '—' }}</span>
+                    </div>
+                    @if (calculator.bimAddOns().length) {
+                      <div class="flex justify-between">
+                        <span class="text-slate-400 text-[10px] uppercase tracking-wider">Add On's</span>
+                        <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.bimAddOns().join(', ') }}</span>
+                      </div>
+                    }
+                    <div class="flex justify-between">
+                      <span class="text-slate-400 text-[10px] uppercase tracking-wider">LOD Level</span>
+                      <span class="text-silver-leaf text-[11px] font-semibold">{{ getSelectedLODLabel() }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400 text-[10px] uppercase tracking-wider">Revit Version</span>
+                      <span class="text-silver-leaf text-[11px] font-semibold">{{ calculator.smartRevitVersion() || '—' }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Additional Info -->
+              <div class="space-y-2">
+                <div class="text-[9px] text-primary-custom uppercase tracking-widest font-bold">Additional Information</div>
+                <div class="bg-[#19191D] rounded-lg p-3 space-y-2 border border-white/5">
+                  <div class="flex justify-between">
+                    <span class="text-slate-400 text-[10px] uppercase tracking-wider">Email</span>
+                    <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%] break-all">{{ calculator.smartEmail() || '—' }}</span>
+                  </div>
+                  @if (calculator.description()) {
+                    <div class="flex justify-between">
+                      <span class="text-slate-400 text-[10px] uppercase tracking-wider">Description</span>
+                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%] break-all">{{ calculator.description() }}</span>
+                    </div>
+                  }
+                  @if (calculator.descriptionLink()) {
+                    <div class="flex justify-between">
+                      <span class="text-slate-400 text-[10px] uppercase tracking-wider">Description Link</span>
+                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%] break-all truncate">{{ calculator.descriptionLink() }}</span>
+                    </div>
+                  }
+                  @if (calculator.uploadLink()) {
+                    <div class="flex justify-between">
+                      <span class="text-slate-400 text-[10px] uppercase tracking-wider">Upload Link</span>
+                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%] break-all truncate">{{ calculator.uploadLink() }}</span>
+                    </div>
+                  }
+                  @if (calculator.pointCloudLink()) {
+                    <div class="flex justify-between">
+                      <span class="text-slate-400 text-[10px] uppercase tracking-wider">Point Cloud Link</span>
+                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%] break-all truncate">{{ calculator.pointCloudLink() }}</span>
+                    </div>
+                  }
+                  @if (calculator.remark()) {
+                    <div class="flex justify-between">
+                      <span class="text-slate-400 text-[10px] uppercase tracking-wider">Remark</span>
+                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.remark() }}</span>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Pricing -->
+              <div class="space-y-2">
+                <div class="text-[9px] text-primary-custom uppercase tracking-widest font-bold">Pricing</div>
+                <div class="bg-[#19191D] rounded-lg p-3 border border-white/5">
+                  <div class="flex justify-between items-center">
+                    <span class="text-slate-400 text-[10px] uppercase tracking-wider">Total Estimate</span>
+                    <div class="text-right">
+                      <span class="text-primary-custom text-sm font-bold">{{ calculator.calculatedSmartEstimate().currencySymbol }}{{ calculator.calculatedSmartEstimate().totalPrice | number: '1.2-2' }}</span>
+                      <span class="text-slate-500 text-[9px] ml-1">{{ calculator.selectedCurrency() }}</span>
+                    </div>
+                  </div>
+                  <div class="flex justify-between mt-2 pt-2 border-t border-white/5">
+                    <span class="text-slate-400 text-[10px] uppercase tracking-wider">Timeline</span>
+                    <span class="text-silver-leaf text-[11px] font-semibold">{{  calculator.calculatedSmartEstimate().businessDaysText }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-3 pt-2 border-t border-white/5 mt-2">
+              <button type="button" (click)="closePreviewModal()"
+                class="flex-1 py-2.5 border border-white/10 bg-transparent text-slate-300 rounded-lg hover:bg-white/5 font-mono text-xs font-bold uppercase transition-all cursor-pointer">
+                Cancel
+              </button>
+              <button type="button" (click)="confirmOrder()"
+                class="flex-1 py-2.5 bg-primary-custom text-on-primary-custom rounded-lg hover:opacity-90 active:scale-95 font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-lg shadow-primary-custom/10">
+                <span class="flex items-center justify-center gap-2">
+                  <span class="material-symbols-outlined text-sm">shopping_cart</span>
+                  Confirm Order
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
   `,
 })
 export class PriceEstimation implements OnInit {
@@ -790,6 +914,7 @@ export class PriceEstimation implements OnInit {
   isCardCurrencyOpen = signal<boolean>(false);
   formStep = signal<number>(1);
   buildingModelIndex = signal<number>(0);
+  isPreviewModalOpen = signal<boolean>(false);
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event) {
@@ -823,6 +948,22 @@ export class PriceEstimation implements OnInit {
         if (step > 1) this.calculator.modelingSelectionLocked.set(true);
       }
     }
+  }
+
+  openPreviewModal() {
+    this.isPreviewModalOpen.set(true);
+  }
+
+  closePreviewModal() {
+    this.isPreviewModalOpen.set(false);
+  }
+
+  confirmOrder() {
+    this.closePreviewModal();
+    this.triggerQuoteRequest();
+    this.goToStep(3);
+    this.calculator.placeOrder.set(true);
+    this.calculator.showNotification('Order placed successfully! Check Order Summary for details.', 'success');
   }
 
   isProjectDetailsValid(): boolean {
@@ -1201,13 +1342,22 @@ export class PriceEstimation implements OnInit {
       writeLines(doc.splitTextToSize(overview, bodyW), 10);
       y += 3;
 
+      // Add Ons (defined early so scope and exclusions can reference them)
+      const addOns = c.bimAddOns() || [];
+
       // ── 2. Scope of Work ──
       write('2. Scope of Work', 11, 'bold');
       if (isCad) {
         const reqs = c.cadRequirements() || [];
         if (reqs.includes('Floor Plan')) write('• Architectural Floor Plan (Excluding furniture)');
         if (reqs.includes('Furniture')) write('• Architectural Floor Plan (Including furniture)');
+        if (reqs.includes('RCP')) write('• Reflected Ceiling Plan (RCP)');
+        if (reqs.includes('Internal Elevations')) write('• Internal Elevations');
+        if (reqs.includes('External Elevations')) write('• External Elevations');
+        if (reqs.includes('Sections')) write('• Sections');
+        if (reqs.includes('Site Plan')) write('• Site Plan');
         if (reqs.includes('MEP')) write('• MEP Layout');
+        if (reqs.includes('Sheets')) write('• Sheets / Drawing Set');
       } else {
         const reqs = c.bimRequirements() || [];
         const hasArch = reqs.includes('Architectural');
@@ -1219,11 +1369,24 @@ export class PriceEstimation implements OnInit {
         if (reqs.includes('Electrical')) write('• Electrical model');
         if (reqs.includes('Plumbing')) write('• Plumbing model');
         if (reqs.includes('Fire Protection')) write('• Fire Protection model');
+
+        for (const ao of addOns) {
+          if (ao === 'Floor Plan') write('• Floor Plan drawing');
+          else if (ao === 'RCP') write('• Reflected Ceiling Plan (RCP)');
+          else if (ao === 'Internal Elevations') write('• Internal Elevations');
+          else if (ao === 'External Elevations') write('• External Elevations');
+          else if (ao === 'Sections') write('• Sections');
+          else if (ao === 'Site Plan') write('• Site Plan');
+          else if (ao === 'MEP') write('• MEP Layout');
+          else if (ao === 'Sheets') write('• Sheets / Drawing Set');
+          else if (ao === 'Scan to BIM') write('• Scan to BIM');
+          else if (ao === 'Scan to CAD') write('• Scan to CAD');
+          else write(`• ${ao}`);
+        }
       }
       y += 2;
 
-      // Add Ons
-      const addOns = c.bimAddOns() || [];
+      // Add Ons summary
       write("Add On's Selected:", 10, 'bold');
       if (addOns.length) {
         for (const ao of addOns) write(`• ${ao}`);
@@ -1273,7 +1436,7 @@ export class PriceEstimation implements OnInit {
       if (isCad) {
         const reqs = c.cadRequirements() || [];
         if (!reqs.includes('MEP')) write('• MEP drawings (If MEP is not selected in the scope of work)');
-        for (const opt of ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'Furniture']) {
+        for (const opt of ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'Furniture', 'Sheets']) {
           if (!reqs.includes(opt) && !addOns.includes(opt)) write(`• ${opt}`);
         }
       } else {
@@ -1282,7 +1445,7 @@ export class PriceEstimation implements OnInit {
         for (const s of allScope) {
           if (!reqs.includes(s)) write(`• ${s} model`);
         }
-        for (const ao of ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'MEP', 'Furniture', 'Sheets']) {
+        for (const ao of ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'MEP', 'Sheets']) {
           if (!addOns.includes(ao)) write(`• ${ao}`);
         }
       }
@@ -1364,6 +1527,7 @@ export class PriceEstimation implements OnInit {
 
   triggerQuoteRequest() {
     const c = this.calculator;
+    c.placeOrder.set(true);
     const mode = c.selectedModelingWay() === 'bim' ? 'Scan to BIM' : 'Scan to CAD';
     console.log('=== QUOTE REQUEST ===');
     console.log('Mode:', mode);

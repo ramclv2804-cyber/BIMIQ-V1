@@ -21,7 +21,7 @@
           </div>
         </div>
         <div class="stat-group">
-          <span class="stat-group-label">LOD</span>
+          <span class="stat-group-label">LOD / Scale</span>
           <div class="stat-group-items">
             <div class="stat-item"><span class="stat-value" style="color:#a78bfa">{{ lod200Count() }}</span><span
                 class="stat-label">200</span></div>
@@ -29,6 +29,12 @@
                 class="stat-label">300</span></div>
             <div class="stat-item"><span class="stat-value" style="color:#f472b6">{{ lod400Count() }}</span><span
                 class="stat-label">400</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#fbbf24">{{ scaleQuarterCount() }}</span><span
+                class="stat-label">1/4</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#fb923c">{{ scaleEighthCount() }}</span><span
+                class="stat-label">1/8</span></div>
+            <div class="stat-item"><span class="stat-value" style="color:#f472b6">{{ scaleHalfCount() }}</span><span
+                class="stat-label">1/2</span></div>
           </div>
         </div>
         <div class="stat-group">
@@ -41,7 +47,7 @@
             <div class="stat-item"><span class="stat-value" style="color:#b59954">{{ underRevisionCount() }}</span><span
                 class="stat-label">Revision</span></div>
             <div class="stat-item"><span class="stat-value" style="color:#50c48e">{{ completeCount() }}</span><span
-                class="stat-label">Complete</span></div>
+                class="stat-label">Completed</span></div>
           </div>
         </div>
         <div class="stat-group">
@@ -80,12 +86,10 @@
       </select>
     </div>
     <div class="filter-card">
-      <label class="filter-label">LOD</label>
+      <label class="filter-label">LOD / Scale</label>
       <select class="filter-select" [value]="filterLod()" (change)="filterLod.set($any($event.target).value)">
         <option value="all">All</option>
-        <option value="LOD 200">LOD 200</option>
-        <option value="LOD 300">LOD 300</option>
-        <option value="LOD 400">LOD 400</option>
+        <option *ngFor="let opt of lodScaleOptions" [value]="opt.value">{{ opt.label }}</option>
       </select>
     </div>
     <div class="filter-card">
@@ -96,7 +100,7 @@
         <option value="Yet to Award">Yet to Award</option>
         <option value="In Progress">In Progress</option>
         <option value="Under Revision">Under Revision</option>
-        <option value="Complete">Complete</option>
+        <option value="Completed">Completed</option>
       </select>
     </div>
     <div class="filter-card">
@@ -129,7 +133,7 @@
             <span class="card-workflow-status" [class.award]="p.workflowStatus === 'Yet to Award'"
               [class.progress]="p.workflowStatus === 'In Progress'"
               [class.revision]="p.workflowStatus === 'Under Revision'"
-              [class.complete]="p.workflowStatus === 'Complete'">
+              [class.complete]="p.workflowStatus === 'Completed'">
               <span class="status-bullet"></span>
               {{ p.workflowStatus }}
             </span>
@@ -245,6 +249,10 @@
                 <span class="info-card-row-label" title="Status">Status</span>
                 <span class="info-card-row-value"><span class="chip-icon">assignment</span> {{ p.workflowStatus }}</span>
               </div>
+              <div class="info-card-row">
+                <span class="info-card-row-label" title="addon">addon's</span>
+                <span class="info-card-row-value"><span class="chip-icon">assignment</span> {{ p.addOn }}</span>
+              </div>
             </div>
           </div>
 
@@ -291,7 +299,7 @@
             <div class="info-card-body">
               <div class="info-card-row highlight">
                 <span class="info-card-row-label" title="Cost">Cost</span>
-                <span class="info-card-row-value cost-value"><span class="chip-icon">attach_money</span> {{ p.currency }}{{ p.cost | number }}</span>
+                <span class="info-card-row-value cost-value"> {{ p.currency }}{{ p.cost | number }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Billing">Billing</span>

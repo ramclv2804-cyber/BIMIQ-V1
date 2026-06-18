@@ -218,7 +218,7 @@
 
 .info-card-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   padding: 6px 0;
   gap: 8px;
@@ -248,12 +248,18 @@
 
 .info-card-row-value {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 4px;
   font-size: 13px;
   font-weight: 600;
   color: #e8edf5;
   text-align: right;
+  flex: 1;
+  max-width: 75%;
+  justify-content: flex-end;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
 }
 
 .info-card-row-value.cost-value {
@@ -267,6 +273,8 @@
   font-size: 14px;
   color: #7aadf0;
   opacity: 0.75;
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .info-card-row-value.cost-value .chip-icon {
@@ -863,7 +871,7 @@
 }
 
 .ticket-btn {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  background: linear-gradient(135deg, #533d85, #402b65);
   color: #fff;
   border: none;
   padding: 6px 18px;

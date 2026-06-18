@@ -3,26 +3,8 @@ import { CommonModule } from '@angular/common';
 import { AppHeader } from '../app-header/app-header';
 import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
-type ProjectStatus = | 'all' | 'yet-to-award' | 'in-progress' | 'under-revision' | 'complete';
+type ProjectStatus = | 'all' | 'yet-to-award' | 'in-progress' | 'under-revision' | 'completed';
 
-// interface UserProject {
-//   projectName: string;
-//   buildingType: string;
-//   description: string;
-//   requirements: string;
-//   cost: number;
-//   currency: string;
-//   sft: number;
-//   status: ProjectStatus;
-//   scope: string;
-//   lod: string;
-//   workflowStatus: string;
-//   billing: string;
-//   payment: string;
-//   endDate: string;
-//   startDate: string;
-//   category: string;
-// }
 
 export interface UserProject {
   // Project Information
@@ -79,21 +61,17 @@ export class Projects {
     { key: 'yet-to-award', label: 'Yet to Award', color: '#f59e0b' },
     { key: 'in-progress', label: 'In Progress', color: '#3b82f6' },
     { key: 'under-revision', label: 'Under Revision', color: '#a855f7' },
-    { key: 'complete', label: 'Complete', color: '#22c55e' },
+    { key: 'completed', label: 'Completed', color: '#22c55e' },
   ];
 
-  // projects: UserProject[] = [
-  //   { projectName: 'Crystal Atrium', buildingType: 'Commercial', description: 'Bespoke faceted steel workspace with parametric light ventilation integration.', requirements: 'Architectural, Structural, ', cost: 12450, currency: '$', sft: 8500,  scope: 'Scan to BIM', lod: 'LOD 300', workflowStatus: 'In Progress', billing: 'Invoiced', payment: 'Yet to Pay', endDate: '2026-09-15', startDate: '2026-03-01', category: 'ARCHITECTURAL' },
-  //   { projectName: 'Skyline Tower', buildingType: 'Residential', description: 'High-rise residential tower with mixed-use podium and underground parking.', requirements: 'Structural, Mechanical, Electrical, Plumbing', cost: 24300, currency: '$', sft: 18000,  scope: 'Scan to BIM', lod: 'LOD 400', workflowStatus: 'Under Revision', billing: 'Yet to Invoice', payment: 'Yet to Pay', endDate: '2026-11-30', startDate: '2026-04-10', category: 'STRUCTURAL' },
-  //   { projectName: 'Harbor Bridge', buildingType: 'Infrastructure', description: 'Cable-stayed bridge connecting waterfront districts.', requirements: 'Structural, Site Plan, Geotechnical', cost: 18750, currency: '$', sft: 22500,  scope: 'Scan to CAD', lod: 'LOD 200', workflowStatus: 'Yet to Award', billing: 'Yet to Invoice', payment: 'Yet to Pay', endDate: '2026-08-20', startDate: '2026-02-15', category: 'STRUCTURAL' },
-  //   { projectName: 'Green Office Park', buildingType: 'Commercial', description: 'Sustainable office campus with net-zero energy design.', requirements: 'Architectural, MEP, Floor Plan, RCP', cost: 6800, currency: '$', sft: 4100,  scope: 'Scan to BIM', lod: 'LOD 300', workflowStatus: 'Complete', billing: 'Invoiced', payment: 'Paid', endDate: '2026-05-01', startDate: '2025-11-10', category: 'ARCHITECTURAL' },
-  //   { projectName: 'Riverfront Complex', buildingType: 'Multifamily', description: 'Mixed-use residential complex with retail spaces.', requirements: 'Structural, Architectural, Plumbing, Electrical', cost: 31200, currency: '$', sft: 35000, status: 'on-hold', scope: 'Scan to CAD', lod: 'LOD 200', workflowStatus: 'Yet to Award', billing: 'Yet to Invoice', payment: 'Yet to Pay', endDate: '2027-03-15', startDate: '2026-01-20', category: 'MEP' },
-  //   { projectName: 'Solaris Tower', buildingType: 'Commercial', description: Floor Plan'Solar-powered commercial tower with smart building systems.', requirements: 'Architectural, MEP, Electrical, Site Plan', cost: 28400, currency: '$', sft: 22000,  scope: 'Scan to BIM', lod: 'LOD 400', workflowStatus: 'In Progress', billing: 'Invoiced', payment: 'Paid', endDate: '2026-12-01', startDate: '2026-03-15', category: 'MEP' },
-  //   { projectName: 'Central Transit Hub', buildingType: 'Infrastructure', description: 'Multi-modal transit hub connecting rail and bus networks.', requirements: 'Structural, MEP, Site Plan, Fire Protection', cost: 42000, currency: '$', sft: 45000,  scope: 'Scan to BIM', lod: 'LOD 300', workflowStatus: 'In Progress', billing: 'Yet to Invoice', payment: 'Yet to Pay', endDate: '2027-06-30', startDate: '2026-05-01', category: 'STRUCTURAL' },
-  //   { projectName: 'Pineview Medical', buildingType: 'Healthcare', description: 'Regional medical center with surgical suites.', requirements: 'Architectural, MEP, Mechanical, Electrical', cost: 33200, currency: '$', sft: 28000,  scope: 'Scan to CAD', lod: 'LOD 300', workflowStatus: 'Under Revision', billing: 'Invoiced', payment: 'Paid', endDate: '2026-10-15', startDate: '2026-02-01', category: 'MEP' },
-  //   { projectName: 'Azure Hotel', buildingType: 'Hospitality', description: 'Boutique waterfront hotel with rooftop lounge.', requirements: 'Architectural, MEP, Furniture, Interior Elevations', cost: 22100, currency: '$', sft: 19000,  scope: 'Scan to BIM', lod: 'LOD 400', workflowStatus: 'Complete', billing: 'Invoiced', payment: 'Paid', endDate: '2026-04-20', startDate: '2025-08-10', category: 'ARCHITECTURAL' },
-  //   { projectName: 'Eagle Ridge', buildingType: 'Multifamily', description: 'Luxury hillside condominium complex with panoramic views.', requirements: 'Structural, Architectural, Plumbing, Electrical', cost: 27600, currency: '$', sft: 24000,  scope: 'Scan to BIM', lod: 'LOD 300', workflowStatus: 'In Progress', billing: 'Yet to Invoice', payment: 'Yet to Pay', endDate: '2027-01-15', startDate: '2026-04-01', category: 'STRUCTURAL' },
-  // ];
+  lodScaleOptions = [
+    { value: 'LOD 200', label: 'LOD 200' },
+    { value: 'LOD 300', label: 'LOD 300' },
+    { value: 'LOD 400', label: 'LOD 400' },
+    { value: '1/4" - 1\'0"', label: 'Scale 1/4' },
+    { value: '1/8" - 1\'0"', label: 'Scale 1/8' },
+    { value: '1/2" - 1\'0"', label: 'Scale 1/2' },
+  ];
 
 
   projects: UserProject[] = [
@@ -214,7 +192,7 @@ export class Projects {
       endDate: '2026-05-01',
       expectedClientDeliveryDate: '2026-05-01',
 
-      workflowStatus: 'complete',
+      workflowStatus: 'completed',
       billing: 'Invoiced',
       billingStatus: 'Invoiced',
       invoiceNumber: 'INV-2026-004',
@@ -302,7 +280,7 @@ export class Projects {
       lod: 'LOD 300',
       scale: '',
 
-      addOn: 'Sections, Site Plan, Scan to BIM',
+      addOn: 'Sections, Site Plan, Fire Protection',
       proposalSent: '2026-04-01',
       purchaseOrderIssued: '2026-04-15',
       e57IssuedDate: '2026-04-20',
@@ -334,7 +312,7 @@ export class Projects {
       scope: 'Scan to CAD',
       lod: '',
       scale: '1/2" - 1\'0"',
-      addOn: 'MEP, Furniture',
+      addOn: 'MEP, Furniture, Internal Elevations, External Elevations, Sections, Site Plan, Fire Protection, Sheets',
       proposalSent: '2026-01-20',
       purchaseOrderIssued: '2026-01-28',
       e57IssuedDate: '2026-02-01',
@@ -375,7 +353,7 @@ export class Projects {
       endDate: '2026-04-20',
       expectedClientDeliveryDate: '2026-04-20',
 
-      workflowStatus: 'complete',
+      workflowStatus: 'completed',
       billing: 'Invoiced',
       billingStatus: 'Invoiced',
       invoiceNumber: 'INV-2026-009',
@@ -428,14 +406,17 @@ export class Projects {
   lod200Count = computed(() => this.projects.filter(p => p.lod === 'LOD 200').length);
   lod300Count = computed(() => this.projects.filter(p => p.lod === 'LOD 300').length);
   lod400Count = computed(() => this.projects.filter(p => p.lod === 'LOD 400').length);
-  yetToAwardCount = computed(() => this.projects.filter(p => p.workflowStatus === 'Yet to Award').length);
-  inProgressCount = computed(() => this.projects.filter(p => p.workflowStatus === 'In Progress').length);
-  underRevisionCount = computed(() => this.projects.filter(p => p.workflowStatus === 'Under Revision').length);
-  completeCount = computed(() => this.projects.filter(p => p.workflowStatus === 'Complete').length);
-  yetToInvoiceCount = computed(() => this.projects.filter(p => p.billing === 'Yet to Invoice').length);
-  invoicedCount = computed(() => this.projects.filter(p => p.billing === 'Invoiced').length);
-  yetToPayCount = computed(() => this.projects.filter(p => p.payment === 'Yet to Pay').length);
-  paidCount = computed(() => this.projects.filter(p => p.payment === 'Paid').length);
+  scaleQuarterCount = computed(() => this.projects.filter(p => p.scale === '1/4" - 1\'0"').length);
+  scaleEighthCount = computed(() => this.projects.filter(p => p.scale === '1/8" - 1\'0"').length);
+  scaleHalfCount = computed(() => this.projects.filter(p => p.scale === '1/2" - 1\'0"').length);
+  yetToAwardCount = computed(() => this.projects.filter(p => p.workflowStatus?.toLowerCase() === 'yet to award').length);
+  inProgressCount = computed(() => this.projects.filter(p => p.workflowStatus?.toLowerCase() === 'in progress').length);
+  underRevisionCount = computed(() => this.projects.filter(p => p.workflowStatus?.toLowerCase() === 'under revision').length);
+  completeCount = computed(() => this.projects.filter(p => p.workflowStatus?.toLowerCase() === 'completed').length);
+  yetToInvoiceCount = computed(() => this.projects.filter(p => p.billing?.toLowerCase() === 'yet to invoice').length);
+  invoicedCount = computed(() => this.projects.filter(p => p.billing?.toLowerCase() === 'invoiced').length);
+  yetToPayCount = computed(() => this.projects.filter(p => p.payment?.toLowerCase() === 'yet to pay').length);
+  paidCount = computed(() => this.projects.filter(p => p.payment?.toLowerCase() === 'paid').length);
 
   filterScope = signal<string>('all');
   filterLod = signal<string>('all');
@@ -452,8 +433,8 @@ export class Projects {
     const payment = this.filterPayment();
     return this.projects.filter(p => {
       if (scope !== 'all' && p.scope !== scope) return false;
-      if (lod !== 'all' && p.lod !== lod) return false;
-      if (pStatus !== 'all' && p.workflowStatus !== pStatus) return false;
+      if (lod !== 'all' && p.lod !== lod && p.scale !== lod) return false;
+      if (pStatus !== 'all' && p.workflowStatus.toLowerCase() !== pStatus.toLowerCase()) return false;
       if (billing !== 'all' && p.billing !== billing) return false;
       if (payment !== 'all' && p.payment !== payment) return false;
       return true;
@@ -514,7 +495,7 @@ export class Projects {
           'BIM model LOD 350 review completed with minor corrections.',
           'Clash detection report — ductwork conflicts with structural grid.',
           'Updated section cuts requested for permit submission.',
-          'Final model export in progress for client handover.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.ClientClient requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval.Client requested updated facade drawings for approval. requested updated facade drawings for approval.',
+          'Final model export in progress for client handover.',
         ][i],
         createdAt: new Date(Date.UTC(2026, 5, 1 + i, 8 + (i % 10), (i * 13) % 60)).toISOString(),
       })),
