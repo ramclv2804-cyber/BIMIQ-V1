@@ -311,7 +311,7 @@ export class SpatialCostCalculator {
 
   // CAD mode fields
   cadRequirements = signal<string[]>([]);
-  cadRequirementsOptions = ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'MEP', 'Furniture'];
+  cadRequirementsOptions = ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections','MEP', 'Furniture'];
   isCadRequirementsOpen = signal<boolean>(false);
   cadScale = signal<string>('');
   cadScaleOptions = ['1/8" - 1\'0"', '1/4" - 1\'0"', '1/2" - 1\'0"'];
@@ -322,7 +322,7 @@ export class SpatialCostCalculator {
   bimRequirementsOptions = ['Architectural', 'Structural', 'Mechanical', 'Electrical', 'Plumbing', 'Fire Protection', 'Furniture'];
   isBimRequirementsOpen = signal<boolean>(false);
   bimAddOns = signal<string[]>([]);
-  bimAddOnsOptions = ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections', 'Site Plan', 'MEP', 'Furniture', 'Sheets'];
+  bimAddOnsOptions = ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections',  'Furniture', 'MEP-Sheets'];
   isBimAddOnsOpen = signal<boolean>(false);
 
   toggleMultiSelection(arr: string[], value: string): string[] {

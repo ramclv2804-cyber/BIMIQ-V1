@@ -891,10 +891,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
             <!-- Actions -->
             <div class="flex gap-3 pt-2 border-t border-white/5 mt-2">
-              <button type="button" (click)="closePreviewModal()"
-                class="flex-1 py-2.5 border border-white/10 bg-transparent text-slate-300 rounded-lg hover:bg-white/5 font-mono text-xs font-bold uppercase transition-all cursor-pointer">
-                Cancel
-              </button>
+              
               <button type="button" (click)="confirmOrder()"
                 class="flex-1 py-2.5 bg-primary-custom text-on-primary-custom rounded-lg hover:opacity-90 active:scale-95 font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-lg shadow-primary-custom/10">
                 <span class="flex items-center justify-center gap-2">
