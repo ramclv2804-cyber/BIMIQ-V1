@@ -139,7 +139,7 @@
   background: rgba(255, 255, 255, 0.03);
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.7rem;
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: 1.75rem;
@@ -159,22 +159,23 @@
 }
 
 .brand-label {
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   color: #e9c349;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   display: block;
   margin-bottom: 0.15rem;
 }
 
 .brand-title {
-  font-family: 'Georgia', serif;
-  font-size: 1.65rem;
+  font-family: "Manrope";
+  font-size: 1.5rem;
   color: #DAE1FF;
   margin: 0;
   line-height: 1;
+  font-weight: 600;
 }
 
 .brand-title span {
@@ -204,9 +205,9 @@
   border-radius: 9999px;
   background: transparent;
   color: rgba(255, 255, 255, 0.4);
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.7rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
@@ -232,7 +233,7 @@
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 0.75rem;
   color: #f87171;
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.7rem;
   margin-bottom: 1.25rem;
   animation: fadeIn 0.25s ease;
@@ -263,12 +264,12 @@
 }
 
 .field label {
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.4);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .field input {
@@ -278,7 +279,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 0.75rem;
   color: #DAE1FF;
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.8rem;
   outline: none;
   transition: all 0.2s;
@@ -347,7 +348,7 @@
   color: #0A0C10;
   border: none;
   border-radius: 0.75rem;
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -393,7 +394,7 @@
 
 .switch-text {
   text-align: center;
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.65rem;
   color: rgba(255, 255, 255, 0.35);
   margin: 0;
@@ -405,7 +406,7 @@
   color: #DAE1FF;
   font-family: inherit;
   font-size: inherit;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
   padding: 0;
   transition: color 0.2s;
@@ -426,6 +427,6 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 9999px;
   color: rgba(255, 255, 255, 0.25);
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.6rem;
 }

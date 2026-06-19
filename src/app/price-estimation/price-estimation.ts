@@ -9,12 +9,6 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
   imports: [CommonModule],
   template: `
     <div class="animate-fade-in text-left">
-      <!-- Step URL Indicator -->
-      <div class="flex items-center gap-2 mb-4 px-1 select-none">
-        <span class="material-symbols-outlined text-[10px] text-on-surface-variant-custom">link</span>
-        <span class="text-[9px] text-on-surface-variant-custom font-mono tracking-wide">app/price-estimation/step-{{ formStep() }}</span>
-      </div>
-
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start animate-fade-slide-up opacity-0 text-left">
         <!-- Left Column: Form Fields -->
         <div class="lg:col-span-5 text-left font-mono">
@@ -107,7 +101,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                           <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
                             @for (option of calculator.cadRequirementsOptions; track option) {
                               <button type="button" (click)="calculator.cadRequirements.set(calculator.toggleMultiSelection(calculator.cadRequirements(), option))"
-                                class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
+                                class="w-full px-4 py-2 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
                                 <span [ngClass]="calculator.cadRequirements().includes(option) ? 'text-primary-custom font-semibold' : 'text-on-surface-variant-custom'">{{ option }}</span>
                                 @if (calculator.cadRequirements().includes(option)) {
                                   <span class="material-symbols-outlined text-xs text-primary-custom">check_box</span>
@@ -260,7 +254,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                           <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
                             @for (option of calculator.bimRequirementsOptions; track option) {
                               <button type="button" (click)="calculator.bimRequirements.set(calculator.toggleMultiSelection(calculator.bimRequirements(), option))"
-                                class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
+                                class="w-full px-4 py-2 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
                                 <span [ngClass]="calculator.bimRequirements().includes(option) ? 'text-primary-custom font-semibold' : 'text-on-surface-variant-custom'">{{ option }}</span>
                                 @if (calculator.bimRequirements().includes(option)) {
                                   <span class="material-symbols-outlined text-xs text-primary-custom">check_box</span>
@@ -294,7 +288,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                           <div (click)="$event.stopPropagation()" class="relative left-0 right-0 z-50 mt-1.5 max-h-40 overflow-y-auto bg-[#0F0F12] border border-outline-variant-custom/80 rounded-xl shadow-[0_12px_30px_rgba(0,0,0,0.8)] py-1 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 scrollbar-thin scrollbar-thumb-white/10">
                             @for (option of calculator.bimAddOnsOptions; track option) {
                               <button type="button" (click)="calculator.bimAddOns.set(calculator.toggleMultiSelection(calculator.bimAddOns(), option))"
-                                class="w-full px-4 py-3 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
+                                class="w-full px-4 py-2 text-left transition-colors duration-150 flex items-center justify-between cursor-pointer border-none bg-transparent hover:bg-white/5">
                                 <span [ngClass]="calculator.bimAddOns().includes(option) ? 'text-primary-custom font-semibold' : 'text-on-surface-variant-custom'">{{ option }}</span>
                                 @if (calculator.bimAddOns().includes(option)) {
                                   <span class="material-symbols-outlined text-xs text-primary-custom">check_box</span>
@@ -497,7 +491,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                     BACK
                   </button>
                  
-                    <button type="button" (click)="goToStep(3); triggerQuoteRequest()"
+                    <button type="button" (click)="goToStep(3); triggerQuoteRequest();confirmOrder() "
                     class="flex-1 bg-primary-custom text-on-primary-custom py-2.5 rounded-xl font-mono text-[10px] uppercase font-bold tracking-widest active:scale-95 hover:opacity-90 transition-all flex items-center justify-center gap-2 focus:outline-none shadow-lg shadow-primary-custom/10 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer border-none">
                       <span class="material-symbols-outlined text-sm">{{ calculator.placeOrder() ? 'check_circle' : 'shopping_cart' }}</span>
                        Confirm Order
@@ -602,7 +596,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
           <div class="glass-panel p-4 rounded-xl bg-gradient-to-r from-primary-custom/10 to-[#DF80AC]/10 border border-[#DF80AC]/20 select-none">
             <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
               <div class="text-left font-sans flex-1">
-                <h4 class="text-xs text-white font-bold">AxisXD Platform Integration</h4>
+                <h5 class="text-xs text-white">AxisXD Platform Integration</h5>
                 <p class="text-[9px] text-slate-400 mt-0.5 font-mono">Export coordinate assets directly to realityxd.axisxd.com.</p>
               </div>
               <a href="https://realityxd.axisxd.com/realityxd/?pid=9sd45g7fd2dfgdf6p3qr" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-[#DF80AC] text-black font-mono text-[10px] uppercase tracking-widest px-4 py-2.5 rounded-lg hover:opacity-95 active:scale-95 transition-all outline-none font-bold shrink-0 shadow-md">
@@ -619,7 +613,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                 <span class="material-symbols-outlined text-sm text-[#DF80AC] animate-pulse">videocam</span>
                 <span class="text-[10px] text-slate-300 uppercase tracking-widest font-bold">Reality Live Feed Visualizer</span>
               </div>
-              <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase font-bold text-[8px] font-mono">
+              <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase text-[8px] font-mono">
                 {{ calculator.selectedModelingWay() === 'bim' ? 'BIM Modeling Track' : 'CAD-to-BIM Track' }}
               </span>
             </div>
@@ -627,8 +621,8 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
             <div class="space-y-4">
               <div class="space-y-1.5">
                 <div class="flex justify-between items-center font-mono text-[9px]">
-                  <span class="text-slate-400 uppercase tracking-wider font-bold">2. Detailing Grade Standard Preview</span>
-                  <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase font-bold text-[8.5px]">
+                  <span class="text-slate-400 uppercase tracking-wider ">Detailing Grade Standard Preview</span>
+                  <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase text-[8.5px]">
                     {{ getSelectedLODLabel() }}
                   </span>
                 </div>
@@ -637,7 +631,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                        [alt]="getSelectedLODLabel() + ' preview'"
                        class="w-full h-full object-cover opacity-80 group-hover:scale-[1.03] transition-transform duration-700"
                        referrerpolicy="no-referrer" />
-                  <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 font-mono text-[8.5px] text-[#DF80AC] font-bold">
+                  <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 font-mono text-[11px] text-[#DF80AC] font-bold">
                     {{ getLODOverlayText() }}
                   </div>
                 </div>
@@ -683,7 +677,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                 <div class="flex justify-between items-start gap-4">
                   <div>
                     <div class="text-[10px] text-[#DF80AC] uppercase tracking-widest font-bold">Calculated Smart Estimate</div>
-                    <div class="font-sans text-3xl md:text-3.5xl font-semibold text-silver-leaf mt-2 flex items-baseline gap-1 select-all leading-none">
+                    <div class="font-sans text-2xl md:text-3.5xl font-semibold text-silver-leaf mt-2 flex items-baseline gap-1 select-all leading-none">
                       <span class="text-xl text-[#DF80AC]/50 font-mono">{{ calculator.calculatedSmartEstimate().currencySymbol }}</span>
                       <span>{{ calculator.calculatedSmartEstimate().totalPrice | number: '1.2-2' }}</span>
                       <span class="text-xs text-on-surface-variant-custom/60 ml-2 uppercase font-mono">{{ calculator.selectedCurrency() }}</span>
@@ -772,19 +766,19 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                 <div class="bg-[#19191D] rounded-lg p-3 space-y-2 border border-white/5">
                   <div class="flex justify-between">
                     <span class="text-slate-400 text-[10px] uppercase tracking-wider">Project Name</span>
-                    <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.smartProjectName() || '—' }}</span>
+                    <span class="text-silver-leaf text-[11px] text-right max-w-[60%]">{{ calculator.smartProjectName() || '—' }}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-slate-400 text-[10px] uppercase tracking-wider">Service</span>
-                    <span class="text-silver-leaf text-[11px] font-semibold">{{ calculator.selectedModelingWay() === 'scan_to_cad' ? 'Scan to CAD' : 'Scan to BIM' }}</span>
+                    <span class="text-silver-leaf text-[11px] ">{{ calculator.selectedModelingWay() === 'scan_to_cad' ? 'Scan to CAD' : 'Scan to BIM' }}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-slate-400 text-[10px] uppercase tracking-wider">Area</span>
-                    <span class="text-silver-leaf text-[11px] font-semibold">{{ calculator.smartScanSize() }} {{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}</span>
+                    <span class="text-silver-leaf text-[11px] ">{{ calculator.smartScanSize() }} {{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-slate-400 text-[10px] uppercase tracking-wider">Building Type</span>
-                    <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.selectedBuildingType() || '—' }}</span>
+                    <span class="text-silver-leaf text-[11px]  text-right max-w-[60%]">{{ calculator.selectedBuildingType() || '—' }}</span>
                   </div>
                 </div>
               </div>
@@ -796,34 +790,34 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                   @if (calculator.selectedModelingWay() === 'scan_to_cad') {
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">Requirements</span>
-                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.cadRequirements().join(', ') || '—' }}</span>
+                      <span class="text-silver-leaf text-[11px]  text-right max-w-[60%]">{{ calculator.cadRequirements().join(', ') || '—' }}</span>
                     </div>
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">Scale</span>
-                      <span class="text-silver-leaf text-[11px] font-semibold">{{ calculator.cadScale() || '—' }}</span>
+                      <span class="text-silver-leaf text-[11px] ">{{ calculator.cadScale() || '—' }}</span>
                     </div>
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">AutoCAD Version</span>
-                      <span class="text-silver-leaf text-[11px] font-semibold">{{ calculator.smartAutocadVersion() || '—' }}</span>
+                      <span class="text-silver-leaf text-[11px] ">{{ calculator.smartAutocadVersion() || '—' }}</span>
                     </div>
                   } @else {
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">Requirements</span>
-                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.bimRequirements().join(', ') || '—' }}</span>
+                      <span class="text-silver-leaf text-[11px]  text-right max-w-[60%]">{{ calculator.bimRequirements().join(', ') || '—' }}</span>
                     </div>
                     @if (calculator.bimAddOns().length) {
                       <div class="flex justify-between">
                         <span class="text-slate-400 text-[10px] uppercase tracking-wider">Add On's</span>
-                        <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.bimAddOns().join(', ') }}</span>
+                        <span class="text-silver-leaf text-[11px]  text-right max-w-[60%]">{{ calculator.bimAddOns().join(', ') }}</span>
                       </div>
                     }
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">LOD Level</span>
-                      <span class="text-silver-leaf text-[11px] font-semibold">{{ getSelectedLODLabel() }}</span>
+                      <span class="text-silver-leaf text-[11px] ">{{ getSelectedLODLabel() }}</span>
                     </div>
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">Revit Version</span>
-                      <span class="text-silver-leaf text-[11px] font-semibold">{{ calculator.smartRevitVersion() || '—' }}</span>
+                      <span class="text-silver-leaf text-[11px] ">{{ calculator.smartRevitVersion() || '—' }}</span>
                     </div>
                   }
                 </div>
@@ -835,36 +829,36 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                 <div class="bg-[#19191D] rounded-lg p-3 space-y-2 border border-white/5">
                   <div class="flex justify-between">
                     <span class="text-slate-400 text-[10px] uppercase tracking-wider">Email</span>
-                    <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%] break-all">{{ calculator.smartEmail() || '—' }}</span>
+                    <span class="text-silver-leaf text-[11px]  text-right max-w-[60%] break-all">{{ calculator.smartEmail() || '—' }}</span>
                   </div>
                   @if (calculator.description()) {
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">Description</span>
-                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%] break-all">{{ calculator.description() }}</span>
+                      <span class="text-silver-leaf text-[11px]  text-right max-w-[60%] break-all">{{ calculator.description() }}</span>
                     </div>
                   }
                   @if (calculator.descriptionLink()) {
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">Description Link</span>
-                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%] break-all truncate">{{ calculator.descriptionLink() }}</span>
+                      <span class="text-silver-leaf text-[11px]  text-right max-w-[60%] break-all truncate">{{ calculator.descriptionLink() }}</span>
                     </div>
                   }
                   @if (calculator.uploadLink()) {
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">Upload Link</span>
-                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%] break-all truncate">{{ calculator.uploadLink() }}</span>
+                      <span class="text-silver-leaf text-[11px]  text-right max-w-[60%] break-all truncate">{{ calculator.uploadLink() }}</span>
                     </div>
                   }
                   @if (calculator.pointCloudLink()) {
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">Point Cloud Link</span>
-                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%] break-all truncate">{{ calculator.pointCloudLink() }}</span>
+                      <span class="text-silver-leaf text-[11px]  text-right max-w-[60%] break-all truncate">{{ calculator.pointCloudLink() }}</span>
                     </div>
                   }
                   @if (calculator.remark()) {
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">Remark</span>
-                      <span class="text-silver-leaf text-[11px] font-semibold text-right max-w-[60%]">{{ calculator.remark() }}</span>
+                      <span class="text-silver-leaf text-[11px]  text-right max-w-[60%]">{{ calculator.remark() }}</span>
                     </div>
                   }
                 </div>
@@ -1079,7 +1073,7 @@ export class PriceEstimation implements OnInit {
     if (lod === 'LOD_200') {
       return 'BOUND: LOD 200 BASIC MINIMALIST CONCEPT SCHEME';
     } else if (lod === 'LOD_300') {
-      return 'BOUND: LOD 300 MEDIUM DRAFTING STANDARD RENDER';
+      return 'BOUND: LOD 300 FABRICATION AND DUCTWORK ASSEMBLY';
     } else if (lod === 'LOD_400') {
       return 'BOUND: LOD 400 FABRICATION AND DUCTWORK ASSEMBLY';
     } else {

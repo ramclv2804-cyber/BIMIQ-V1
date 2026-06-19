@@ -82,7 +82,7 @@ export class AppHeader {
   }
 
   logout() {
-    this.calculator.logoutUser();
+    this.calculator.logoutUser(true);
     this.router.navigate(['/']);
   }
 }

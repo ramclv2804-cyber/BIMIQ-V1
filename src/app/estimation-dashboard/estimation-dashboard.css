@@ -58,26 +58,26 @@
 }
 
 .dash-section-label {
-    font-family: 'Courier New', monospace;
+    font-family: "IBMPlexMono-Medium", monospace;
     font-size: .55rem;
     letter-spacing: .2em;
     color: #DF80AC;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     display: block;
     margin-bottom: .15rem
 }
 
 .dash-section-title {
-    font-family: Georgia, serif;
-    font-size: 1.05rem;
+    font-family: "Manrope";
+    font-size: 1rem;
     color: #DAE1FF;
     margin: 0;
-    font-weight: 400
+    font-weight: 600
 }
 
 .dash-table-count {
-    font-family: 'Courier New', monospace;
+    font-family: "IBMPlexMono-Medium", monospace;
     font-size: .6rem;
     color: rgba(255, 255, 255, .3)
 }
@@ -134,7 +134,7 @@
 
 .status-card-label {
     flex: 1;
-    font-family: 'Courier New', monospace;
+    font-family: "IBMPlexMono-Medium", monospace;
     font-size: .8rem;
     color: rgba(255, 255, 255, .55);
     font-weight: 600;
@@ -145,7 +145,7 @@
 }
 
 .status-card-value {
-    font-family: Georgia, serif;
+    font-family: "Manrope";
     font-size: 1rem;
     color: #fff;
     line-height: 1;
@@ -277,7 +277,7 @@
 }
 
 .order-name {
-    font-family: Georgia, serif;
+    font-family: "Manrope";
     font-size: 1.1rem;
     color: #f0f2ff;
     font-weight: 600;
@@ -287,7 +287,7 @@
 }
 
 .order-email {
-    font-family: 'Courier New', monospace;
+    font-family: "IBMPlexMono-Medium", monospace;
     font-size: .8rem;
     color: rgba(255, 255, 255, .5)
 }
@@ -301,15 +301,15 @@
 }
 
 .order-price {
-    font-family: 'Courier New', monospace;
-    font-size: 1.05rem;
+    font-family: "IBMPlexMono-Medium", monospace;
+    font-size: 0.95rem;
     color: #DF80AC;
-    font-weight: 800;
+    font-weight: 700;
     white-space: nowrap
 }
 
 .order-sft {
-    font-family: 'Courier New', monospace;
+    font-family: "IBMPlexMono-Medium", monospace;
     font-size: .7rem;
     color: rgba(255, 255, 255, .5);
     font-weight: 600;
@@ -333,9 +333,9 @@
 .order-source-tag {
     padding: .12rem .55rem;
     border-radius: 9999px;
-    font-family: 'Courier New', monospace;
+    font-family: "IBMPlexMono-Medium", monospace;
     font-size: .7rem;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .06em;
     background: rgba(23, 218, 208, 0.2);
@@ -347,9 +347,9 @@
 .order-type-tag {
     padding: .12rem .55rem;
     border-radius: 9999px;
-    font-family: 'Courier New', monospace;
+    font-family: "IBMPlexMono-Medium", monospace;
     font-size: .7rem;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .06em;
     background: rgba(218, 225, 255, .08);
@@ -361,7 +361,7 @@
 
 
 .order-req {
-    font-family: 'Courier New', monospace;
+    font-family: "IBMPlexMono-Medium", monospace;
     font-size: .7rem;
     color: rgba(255, 255, 255, .5);
     line-height: 1.5;
@@ -370,9 +370,9 @@
 
 .order-addons {
     border-radius: 9999px;
-    font-family: 'Courier New', monospace;
+    font-family: "IBMPlexMono-Medium", monospace;
     font-size: .7rem;
-    font-weight: 700;
+    font-weight: 600;
     color: #a5b4fc;
     white-space: nowrap;
     align-self: flex-start
@@ -384,7 +384,7 @@
 }
 
 .order-date {
-    font-family: 'Courier New', monospace;
+    font-family: "IBMPlexMono-Medium", monospace;
     font-size: .65rem;
     color: rgba(255, 255, 255, .5)
 }

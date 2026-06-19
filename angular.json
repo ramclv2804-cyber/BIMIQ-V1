@@ -35,7 +35,11 @@
             "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
-            }
+            },
+            "externalDependencies": [
+              "better-sqlite3",
+              "bindings"
+            ]
           },
           "configurations": {
             "production": {

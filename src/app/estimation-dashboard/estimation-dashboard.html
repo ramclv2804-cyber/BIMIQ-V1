@@ -166,7 +166,7 @@
         </div>
         <div class="flex gap-3 pt-2">
           <button type="button" (click)="calculator.isLoginModalOpen.set(false)" class="flex-1 py-2.5 border border-white/10 bg-transparent text-slate-300 rounded-lg hover:bg-white/5 font-mono text-xs font-bold uppercase transition-all cursor-pointer">CANCEL</button>
-          <button type="button" [disabled]="!calculator.loginEmailInput().trim() || !calculator.loginEmailInput().includes('@')" (click)="calculator.loginUser(calculator.loginEmailInput())" class="flex-1 py-2.5 bg-[#DF80AC] text-black rounded-lg hover:opacity-90 active:scale-95 disabled:opacity-45 disabled:scale-100 disabled:cursor-not-allowed font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-md">AUTHENTICATE</button>
+          <button type="button" [disabled]="!calculator.loginEmailInput().trim() || !calculator.loginEmailInput().includes('@')" (click)="onLoginViaModal()" class="flex-1 py-2.5 bg-[#DF80AC] text-black rounded-lg hover:opacity-90 active:scale-95 disabled:opacity-45 disabled:scale-100 disabled:cursor-not-allowed font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-md">AUTHENTICATE</button>
         </div>
       </div>
     </div>

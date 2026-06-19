@@ -140,7 +140,6 @@
   align-items: center;
   gap: 5px;
   font-size: 12px;
-  font-weight: 600;
   padding: 4px 14px;
   border-radius: 20px;
   letter-spacing: 0.3px;
@@ -159,7 +158,6 @@
 
 .detail-title {
   font-size: 26px;
-  font-weight: 700;
   color: #e8edf5;
   margin: 0;
   line-height: 1.2;
@@ -203,7 +201,6 @@
 
 .info-card-head-label {
   font-size: 11px;
-  font-weight: 700;
   color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -239,7 +236,6 @@
 
 .info-card-row-label {
   font-size: 10px;
-  font-weight: 700;
   color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.7px;
@@ -250,8 +246,7 @@
   display: flex;
   align-items: flex-start;
   gap: 4px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 11px;
   color: #e8edf5;
   text-align: right;
   flex: 1;
@@ -263,8 +258,7 @@
 }
 
 .info-card-row-value.cost-value {
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 15px;
   color: #fbbf24;
 }
 
@@ -297,7 +291,6 @@
 
 .section-title {
   font-size: 15px;
-  font-weight: 600;
   color: #e8edf5;
   margin: 0 0 16px;
 }
@@ -397,22 +390,22 @@
 
 .ticket-item-id {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 600;
   color: #60a5fa;
-  font-family: monospace;
+  font-family: "IBMPlexMono", monospace;
   letter-spacing: 0.3px;
 }
 
 .ticket-item-date {
   font-size: 10px;
   color: #9fa1a7;
-  font-family: monospace;
+  font-family: "IBMPlexMono", monospace;
 }
 
 .ticket-item-time {
   font-size: 10px;
   color: #9fa1a7;
-  font-family: monospace;
+  font-family: "IBMPlexMono", monospace;
 }
 
 .ticket-item-badge {
@@ -576,7 +569,6 @@
 
 .req-label {
   font-size: 12px;
-  font-weight: 600;
   color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -650,7 +642,6 @@
 
 .link-chip-title {
   font-size: 9px;
-  font-weight: 600;
   color: #6b7280;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -876,8 +867,7 @@
   border: none;
   padding: 6px 18px;
   border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11px;
   cursor: pointer;
   transition: all 0.25s ease;
   display: inline-flex;
@@ -974,7 +964,6 @@
 
 .ticket-modal-title {
   font-size: 18px;
-  font-weight: 700;
   color: #e8edf5;
   margin: 0;
   white-space: nowrap;
@@ -1016,7 +1005,6 @@
 
 .ticket-chip-value {
   font-size: 13px;
-  font-weight: 600;
   color: #e8edf5;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1060,7 +1048,6 @@
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  font-weight: 600;
   color: #9ca3af;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -1169,7 +1156,6 @@
   background: transparent;
   color: #9ca3af;
   font-size: 14px;
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
@@ -1188,7 +1174,6 @@
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
   color: #fff;
   font-size: 14px;
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.25s ease;
   font-family: inherit;

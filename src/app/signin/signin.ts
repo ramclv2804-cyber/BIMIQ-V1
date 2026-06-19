@@ -50,21 +50,6 @@ export class Signin {
   hasError(field: string): boolean {
     return !!this.fieldErrors[field];
   }
-  users = [
-    {
-      'username': 'clove',
-      'password': '123',
-      'email': 'clove@example.com',
-      'role': 'admin',
-    },
-    {
-      'username': 'user',
-      'password': '123',
-      'email': 'user@example.com',
-      'role': 'user',
-    },
-  ];
-
   toggleMode() {
     this.isLoginMode = !this.isLoginMode;
     this.errorMessage = '';
@@ -82,23 +67,22 @@ export class Signin {
       return;
     }
     this.isLoading = true;
-    setTimeout(() => {
-      const user = this.users.find(u => u.username === this.loginEmail && u.password === this.loginPassword);
-      if (user) {
-        this.calculator.loginUser(user.email);
-        if (user.username === 'clove') {
+    this.calculator.apiLogin(this.loginEmail.trim(), this.loginPassword.trim())
+      .then(user => {
+        this.calculator.loginUser(user.email, user.id, user.token);
+        // Navigate based on role
+        if (user.role === 'admin') {
           this.router.navigate(['/estimations']);
         } else {
           this.router.navigate(['/projects']);
         }
-
-      } else {
-        this.errorMessage = 'Invalid email or password.';
+      })
+      .catch(err => {
+        this.errorMessage = err.message || 'Invalid email or password.';
         this.setFieldErrors(['loginEmail', 'loginPassword']);
         this.isLoading = false;
         this.cdr.detectChanges();
-      }
-    }, 500);
+      });
   }
 
   isSignupEmailValid(email: string): boolean {
@@ -129,10 +113,16 @@ export class Signin {
       return;
     }
     this.isLoading = true;
-    setTimeout(() => {
-      this.calculator.loginUser(this.signupEmail.trim());
-      this.router.navigate(['/projects']);
-    }, 800);
+    this.calculator.apiSignup(this.signupUsername.trim(), this.signupPassword.trim(), this.signupEmail.trim())
+      .then(user => {
+        this.calculator.loginUser(user.email, user.id, user.token);
+        this.router.navigate(['/projects']);
+      })
+      .catch(err => {
+        this.errorMessage = err.message || 'Failed to create account.';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      });
   }
 
   goBack() {

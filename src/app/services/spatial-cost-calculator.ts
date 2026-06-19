@@ -57,13 +57,105 @@ export class SpatialCostCalculator {
   loginEmailInput = signal<string>('engineer@axisxd.com');
   loginPasswordInput = signal<string>('••••••••');
 
+  /** Database user ID from SQLite, used for associating projects */
+  dbUserId = signal<number | null>(null);
+
+  /** JWT authentication token */
+  jwtToken = signal<string | null>(null);
+
   constructor() {
     this.restoreSession();
   }
 
   private cookieKey = 'bimiq_session';
+  private tokenCookieKey = 'bimiq_token';
 
   private isBrowser = typeof document !== 'undefined';
+
+  private apiBase = '/api';
+
+  // ── API helpers ──
+
+  private async apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
+    const url = `${this.apiBase}${path}`;
+
+    // Build headers with JWT token if available
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    const token = this.jwtToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(url, {
+      headers: { ...headers, ...(options.headers as Record<string, string> || {}) },
+      ...options,
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || `Request failed: ${res.status}`);
+    }
+    return data as T;
+  }
+
+  /** Sign up a new user via the server API. Returns the created user with JWT token. */
+  async apiSignup(username: string, password: string, email: string): Promise<{ id: number; username: string; email: string; role: string; token: string }> {
+    return this.apiRequest('/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify({ username, password, email }),
+    });
+  }
+
+  /** Log in via the server API. Returns the authenticated user with JWT token. */
+  async apiLogin(username: string, password: string): Promise<{ id: number; username: string; email: string; role: string; token: string }> {
+    return this.apiRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+    });
+  }
+
+  /** Verify the current JWT token is still valid. */
+  async apiVerifyToken(): Promise<{ userId: number; username: string; email: string; role: string } | null> {
+    try {
+      return await this.apiRequest('/auth/verify', {
+        method: 'POST',
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  /** Create a new project via the server API. */
+  async apiCreateProject(projectData: Record<string, unknown>): Promise<unknown> {
+    return this.apiRequest('/projects', {
+      method: 'POST',
+      body: JSON.stringify(projectData),
+    });
+  }
+
+  /** Fetch projects for a user from the server API. */
+  async apiGetUserProjects(userId: number): Promise<{ projects: UserProject[]; count: number }> {
+    return this.apiRequest(`/projects?user_id=${userId}`);
+  }
+
+  /** Fetch all registered users from the server API. */
+  async apiGetAllUsers(): Promise<{ users: { id: number; username: string; email: string; role: string; created_at: string }[]; count: number }> {
+    return this.apiRequest('/users');
+  }
+
+  /** Validate the database via the server API. */
+  async apiValidateDatabase(): Promise<unknown> {
+    return this.apiRequest('/db/validate');
+  }
+
+  /** Log out via the server API — revokes the current JWT token. */
+  async apiLogout(): Promise<void> {
+    if (!this.jwtToken()) return;
+    try {
+      await this.apiRequest('/auth/logout', { method: 'POST' });
+    } catch {
+      // Even if the server call fails, we still clear local session
+    }
+  }
 
   private restoreSession() {
     if (!this.isBrowser) return;
@@ -82,7 +174,22 @@ export class SpatialCostCalculator {
           });
           this.smartEmail.set(data.email);
           this.isLoggedIn.set(true);
-          this.loadUserProjects();
+
+          // Restore JWT token from cookie
+          if (data.jwtToken) {
+            this.jwtToken.set(data.jwtToken);
+          } else {
+            // Try the dedicated token cookie as fallback
+            const tokenMatch = document.cookie.match(new RegExp(`(?:^|; )${this.tokenCookieKey}=([^;]*)`));
+            if (tokenMatch) {
+              this.jwtToken.set(decodeURIComponent(tokenMatch[1]));
+            }
+          }
+
+          if (data.dbUserId) {
+            this.dbUserId.set(data.dbUserId);
+            this.loadUserProjects();
+          }
         }
       }
     } catch {
@@ -90,18 +197,23 @@ export class SpatialCostCalculator {
     }
   }
 
-  private setSessionCookie(email: string) {
+  private setSessionCookie(email: string, dbUserId?: number, jwtToken?: string) {
     if (!this.isBrowser) return;
-    const data = JSON.stringify({ email });
+    const data = JSON.stringify({ email, dbUserId, jwtToken });
     document.cookie = `${this.cookieKey}=${encodeURIComponent(data)}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+    // Also store token in dedicated cookie for easier access
+    if (jwtToken) {
+      document.cookie = `${this.tokenCookieKey}=${encodeURIComponent(jwtToken)}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+    }
   }
 
   clearSessionCookie() {
     if (!this.isBrowser) return;
     document.cookie = `${this.cookieKey}=; path=/; max-age=0; SameSite=Lax`;
+    document.cookie = `${this.tokenCookieKey}=; path=/; max-age=0; SameSite=Lax`;
   }
 
-  loginUser(email: string) {
+  loginUser(email: string, dbUserId?: number, jwtToken?: string) {
     const trimmed = email.trim() || 'engineer@axisxd.com';
     const nameStr = trimmed.split('@')[0];
     const uppercaseName = nameStr.charAt(0).toUpperCase() + nameStr.slice(1);
@@ -115,15 +227,24 @@ export class SpatialCostCalculator {
     this.smartEmail.set(trimmed);
     this.isLoggedIn.set(true);
     this.isLoginModalOpen.set(false);
-    this.setSessionCookie(trimmed);
-    this.loadUserProjects();
+    if (dbUserId) this.dbUserId.set(dbUserId);
+    if (jwtToken) this.jwtToken.set(jwtToken);
+    this.setSessionCookie(trimmed, dbUserId, jwtToken);
+    if (dbUserId) this.loadUserProjects();
     this.showNotification(`Authorized session established under node: ${trimmed}`, 'success');
   }
 
-  logoutUser() {
+  logoutUser(serverLogout = false) {
+    // Optionally revoke the token server-side first
+    if (serverLogout) {
+      this.apiLogout();
+    }
     this.isLoggedIn.set(false);
     this.currentUser.set(null);
+    this.dbUserId.set(null);
+    this.jwtToken.set(null);
     this.smartEmail.set('');
+    this.userProjects.set([]);
     this.clearSessionCookie();
     this.showNotification('Authorized session disconnected.', 'info');
   }
@@ -151,8 +272,53 @@ export class SpatialCostCalculator {
     }
   }
 
-  private loadUserProjects() {
+  private async loadUserProjects() {
     if (!this.isBrowser) return;
+
+    const userId = this.dbUserId();
+    if (userId) {
+      try {
+        const result = await this.apiGetUserProjects(userId);
+        if (result.projects && result.projects.length > 0) {
+          // Map DB columns back to UserProject interface
+          const mapped = result.projects.map((p: any) => ({
+            projectNo: (p.project_no as string) || '',
+            client: (p.client as string) || '',
+            projectName: (p.project_name as string) || '',
+            buildingType: (p.building_type as string) || '',
+            description: (p.description as string) || '',
+            requirements: (p.requirements as string) || '',
+            scope: (p.scope as string) || '',
+            lod: (p.lod as string) || '',
+            scale: (p.scale as string) || '',
+            addOn: (p.add_on as string) || '',
+            sft: (p.sft as number) || 0,
+            proposalSent: (p.proposal_sent as string) || '',
+            purchaseOrderIssued: (p.purchase_order_issued as string) || '',
+            e57IssuedDate: (p.e57_issued_date as string) || '',
+            startDate: (p.start_date as string) || '',
+            endDate: (p.end_date as string) || '',
+            expectedClientDeliveryDate: (p.expected_delivery_date as string) || '',
+            cost: (p.cost as number) || 0,
+            currency: (p.currency as string) || 'USD',
+            billing: (p.billing as string) || '',
+            billingStatus: (p.billing_status as string) || '',
+            invoiceNumber: (p.invoice_number as string) || '',
+            invoiceDate: (p.invoice_date as string) || '',
+            invoiceDueDate: (p.invoice_due_date as string) || '',
+            payment: (p.payment as string) || '',
+            workflowStatus: (p.workflow_status as string) || 'Yet to Award',
+            comments: (p.comments as string) || '',
+          })) as UserProject[];
+          this.userProjects.set(mapped);
+          return;
+        }
+      } catch {
+        // Fall through to cookie fallback
+      }
+    }
+
+    // Fallback: load from cookies
     const key = this.getProjectsCookieKeyForUser();
     try {
       const match = document.cookie.match(new RegExp(`(?:^|; )${key}=([^;]*)`));
@@ -172,6 +338,41 @@ export class SpatialCostCalculator {
   addUserProject(project: UserProject) {
     this.userProjects.update(list => [...list, project]);
     this.saveUserProjectsCookie();
+
+    // Also persist to SQLite database via server API
+    const userId = this.dbUserId();
+    if (userId) {
+      this.apiCreateProject({
+        user_id: userId,
+        project_no: project.projectNo,
+        client: project.client,
+        project_name: project.projectName,
+        building_type: project.buildingType,
+        description: project.description,
+        requirements: project.requirements,
+        scope: project.scope,
+        lod: project.lod,
+        scale: project.scale,
+        add_on: project.addOn,
+        sft: project.sft,
+        proposal_sent: project.proposalSent,
+        purchase_order_issued: project.purchaseOrderIssued,
+        e57_issued_date: project.e57IssuedDate,
+        start_date: project.startDate,
+        end_date: project.endDate,
+        expected_delivery_date: project.expectedClientDeliveryDate,
+        cost: project.cost,
+        currency: project.currency,
+        billing: project.billing,
+        billing_status: project.billingStatus,
+        invoice_number: project.invoiceNumber,
+        invoice_date: project.invoiceDate,
+        invoice_due_date: project.invoiceDueDate,
+        payment: project.payment,
+        workflow_status: project.workflowStatus,
+        comments: project.comments,
+      }).catch(err => console.warn('[DB] Failed to save project to database:', err));
+    }
   }
 
   // Currency rates from OpenExchangeRates

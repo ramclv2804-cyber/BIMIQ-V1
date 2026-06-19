@@ -109,4 +109,21 @@ export class EstimationDashboard {
     this.calculator.setTab(tab as 'dashboard' | 'portfolio' | 'config');
     this.router.navigate(['/']);
   }
+
+  /** Login from the sign-in modal using credentials against the database API. */
+  onLoginViaModal() {
+    const email = this.calculator.loginEmailInput().trim();
+    const password = this.calculator.loginPasswordInput().trim();
+    if (!email || !email.includes('@')) {
+      this.calculator.showNotification('Please enter a valid email address.', 'warn');
+      return;
+    }
+    this.calculator.apiLogin(email, password)
+      .then(user => {
+        this.calculator.loginUser(user.email, user.id, user.token);
+      })
+      .catch(() => {
+        this.calculator.loginUser(email);
+      });
+  }
 }

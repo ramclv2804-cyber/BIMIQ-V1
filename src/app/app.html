@@ -6,6 +6,8 @@
   <app-projects />
 } @else if (currentUrl() === '/resources') {
   <app-resources />
+} @else if (currentUrl() === '/db-validate') {
+  <app-db-validator />
 } @else {
   <!-- Background Glows -->
   <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10">
@@ -50,10 +52,6 @@
 
         <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/5 pb-4">
           <div>
-            <div class="inline-flex items-center gap-2 mb-2 select-none">
-              <span class="w-2 h-2 rounded-full col-primary pulse-pin bg-primary-custom"></span>
-              <span class="font-mono text-[10px] text-primary-custom uppercase tracking-widest font-mono">Financial Framework v4.0</span>
-            </div>
             <h1 class="font-serif text-3xl md:text-5xl text-silver-leaf font-serif">Cost Estimation Configuration</h1>
             <p class="text-[11px] text-on-surface-variant-custom mt-2 max-w-lg leading-relaxed font-sans">
               Accurately configure pipeline systems and architectural specifications to generate high-fidelity commercial estimations instantly.
@@ -157,6 +155,11 @@
           <button type="button" (click)="calculator.showNotification('Privacy Framework fully compliant.', 'success')" class="text-left text-slate-400 hover:text-white hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer py-0.5 font-mono">
             Privacy Protocol Framework
           </button>
+          <button type="button" (click)="goToDbValidator()"
+            class="text-left text-emerald-400 hover:text-emerald-300 hover:translate-x-1 transition duration-200 py-0.5 font-mono flex items-center gap-2 bg-transparent border-none cursor-pointer w-full">
+            <span class="material-symbols-outlined text-[14px]">database</span>
+            Database Control Panel
+          </button>
         </div>
       </div>
 
@@ -183,7 +186,7 @@
           </button>
         </div>
 
-        <form (ngSubmit)="calculator.loginUser(calculator.loginEmailInput())" class="space-y-4 font-mono text-xs">
+        <form (ngSubmit)="onLoginViaModal()" class="space-y-4 font-mono text-xs">
           <p class="text-[10px] text-slate-400 normal-case leading-relaxed font-sans mt-1">
             Welcome to BIM-IQ. Authenticate to synchronize your digital twin estimates directly to realityxd.axisxd.com.
           </p>

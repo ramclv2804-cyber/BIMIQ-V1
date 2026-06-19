@@ -12,6 +12,7 @@ import { EstimationDashboard } from './estimation-dashboard/estimation-dashboard
 import { Projects } from './projects/projects';
 import { AppHeader } from './app-header/app-header';
 import { Resources } from './resources/resources';
+import { DbValidator } from './db-validator/db-validator';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,8 +27,8 @@ import { Resources } from './resources/resources';
     Signin,
     EstimationDashboard,
     Projects,
-    Resources
-    
+    Resources,
+    DbValidator
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -54,5 +55,29 @@ export class App {
   goToEstimator() {
     this.calculator.setTab('config');
     this.router.navigate(['/']);
+  }
+
+  goToDbValidator() {
+    this.router.navigate(['/db-validate']);
+  }
+
+  /** Login from the sign-in modal using credentials against the database API. */
+  onLoginViaModal() {
+    const email = this.calculator.loginEmailInput().trim();
+    const password = this.calculator.loginPasswordInput().trim();
+    if (!email || !email.includes('@')) {
+      this.calculator.showNotification('Please enter a valid email address.', 'warn');
+      return;
+    }
+    // Try API login with email as username
+    this.calculator.apiLogin(email, password)
+      .then(user => {
+        this.calculator.loginUser(user.email, user.id, user.token);
+      })
+      .catch(() => {
+        // Fallback: allow email-only login for backward compatibility
+        this.calculator.loginUser(email);
+        this.calculator.showNotification('Database auth unavailable — signed in with local session.', 'info');
+      });
   }
 }

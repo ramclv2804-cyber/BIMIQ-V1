@@ -105,10 +105,10 @@
       <button type="button" (click)="toggleUserMenu()"
         class="flex items-center gap-2 border border-[#DF80AC]/30 bg-[#DF80AC]/15 px-3 py-1.5 rounded-full text-slate-200 text-xs font-mono transition-all duration-300 hover:bg-[#DF80AC]/25 focus:outline-none cursor-pointer">
         <span
-          class="w-6 h-6 rounded-full bg-[#DF80AC] text-black flex items-center justify-center font-bold text-[10px]">
+          class="w-6 h-6 rounded-full bg-[#DF80AC] text-black flex items-center justify-center  text-[10px]">
           {{ user()?.initials }}
         </span>
-        <span class="hidden md:inline font-bold text-xs uppercase tracking-wider text-[#DF80AC]">{{ user()?.name
+        <span class="hidden md:inline text-xs uppercase tracking-wider text-[#DF80AC]">{{ user()?.name
           }}</span>
         <span class="material-symbols-outlined text-sm transition-transform duration-300"
           [class.rotate-180]="isUserMenuOpen()">expand_more</span>
@@ -117,10 +117,10 @@
       <div
         class="absolute right-0 mt-2 w-56 bg-[#121216] border border-white/10 rounded-xl shadow-2xl py-2 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 z-[60] text-left">
         <div class="px-4 py-2.5 text-left">
-          <p class="text-white font-bold leading-tight">{{ user()?.name }}</p>
+          <p class="text-white  leading-tight">{{ user()?.name }}</p>
           <p class="text-[12px] text-slate-400 mt-0.5 truncate">{{ user()?.email }}</p>
           <p
-            class="text-[8.5px] text-[#DF80AC] uppercase font-bold mt-1.5 tracking-wider bg-[#DF80AC]/10 border border-[#DF80AC]/25 px-1.5 py-0.5 rounded inline-block">
+            class="text-[8.5px] text-[#DF80AC] uppercase  mt-1.5 tracking-wider bg-[#DF80AC]/10 border border-[#DF80AC]/25 px-1.5 py-0.5 rounded inline-block">
             {{ user()?.role }}</p>
         </div>
         <div class="py-1">
@@ -157,7 +157,7 @@
       <nav class="flex flex-col gap-0.5 px-3">
         <button type="button" (click)="navigateAndClose('/', 'dashboard')"
           class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-          [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'dashboard' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+          [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'dashboard' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
           <span class="flex items-center gap-3">
             <span class="material-symbols-outlined text-sm">dashboard</span>
             Dashboard
@@ -165,7 +165,7 @@
         </button>
         <button type="button" (click)="navigateAndClose('/', 'portfolio')"
           class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-          [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'portfolio' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+          [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'portfolio' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
           <span class="flex items-center gap-3">
             <span class="material-symbols-outlined text-sm">layers</span>
             Portfolio
@@ -173,7 +173,7 @@
         </button>
         <button type="button" (click)="navigateAndClose('/', 'config')"
           class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-          [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'config' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+          [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'config' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
           <span class="flex items-center gap-3">
             <span class="material-symbols-outlined text-sm">tune</span>
             Price Estimate
@@ -183,7 +183,7 @@
           @if (user()?.name === 'clove') {
             <button type="button" (click)="navigateAndClose('/estimations')"
               class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-              [ngClass]="currentUrl() === '/estimations' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+              [ngClass]="currentUrl() === '/estimations' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
               <span class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-sm">analytics</span>
                 Estimations
@@ -192,7 +192,7 @@
           } @else {
             <button type="button" (click)="navigateAndClose('/projects')"
               class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-              [ngClass]="currentUrl() === '/projects' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+              [ngClass]="currentUrl() === '/projects' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
               <span class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-sm">folder</span>
                 Projects 
@@ -202,7 +202,7 @@
         }
         <button type="button" (click)="navigateAndClose('/resources')"
           class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-          [ngClass]="currentUrl() === '/resources' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+          [ngClass]="currentUrl() === '/resources' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
           <span class="flex items-center gap-3">
             <span class="material-symbols-outlined text-sm">database</span>
             Resources
@@ -218,7 +218,7 @@
           </button>
         } @else {
           <div class="px-4 py-3 text-left">
-            <p class="text-white font-bold text-xs font-mono">{{ user()?.name }}</p>
+            <p class="text-white  text-xs font-mono">{{ user()?.name }}</p>
             <p class="text-[10px] text-slate-400 font-mono truncate">{{ user()?.email }}</p>
           </div>
           <button type="button" (click)="logout()"
