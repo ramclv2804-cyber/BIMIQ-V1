@@ -304,21 +304,21 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             <div class="grid grid-cols-3 gap-2 font-mono text-[10px]">
               <button type="button" 
                       (click)="calculator.activeArchitecturalTier.set('SMALL'); calculator.showNotification('Architectural Tier calibrated to Small', 'success')"
-                      [ngClass]="calculator.activeArchitecturalTier() === 'SMALL' ? 'bg-[#E2E8F0] text-midnight-charcoal font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
+                      [ngClass]="calculator.activeArchitecturalTier() === 'SMALL' ? 'bg-[#cd79a3] text-midnight-charcoal font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
                       class="py-3.5 rounded-xl text-center active:scale-95 transition-all outline-none cursor-pointer">
                 <span class="block ">SMALL</span>
                 <span class="block text-[9px] opacity-80 mt-0.5">$5.0K</span>
               </button>
               <button type="button" 
                       (click)="calculator.activeArchitecturalTier.set('MEDIUM'); calculator.showNotification('Architectural Tier calibrated to Medium', 'success')"
-                      [ngClass]="calculator.activeArchitecturalTier() === 'MEDIUM' ? 'bg-[#E2E8F0] text-midnight-charcoal font-bold border-none' : 'bg-transparent border border-white/15 text-[#c5c6d0] hover:border-white/25'"
+                      [ngClass]="calculator.activeArchitecturalTier() === 'MEDIUM' ? 'bg-[#cd79a3] text-midnight-charcoal font-bold border-none' : 'bg-transparent border border-white/15 text-[#c5c6d0] hover:border-white/25'"
                       class="py-3.5 rounded-xl text-center active:scale-95 transition-all outline-none cursor-pointer">
                 <span class="block ">MEDIUM</span>
                 <span class="block text-[9px] opacity-80 mt-0.5">$11K</span>
               </button>
               <button type="button" 
                       (click)="calculator.activeArchitecturalTier.set('LARGE'); calculator.showNotification('Architectural Tier calibrated to Large', 'success')"
-                      [ngClass]="calculator.activeArchitecturalTier() === 'LARGE' ? 'bg-[#E2E8F0] text-midnight-charcoal font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
+                      [ngClass]="calculator.activeArchitecturalTier() === 'LARGE' ? 'bg-[#cd79a3] text-midnight-charcoal font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
                       class="py-3.5 rounded-xl text-center active:scale-95 transition-all outline-none cursor-pointer">
                 <span class="block ">LARGE</span>
                 <span class="block text-[9px] opacity-80 mt-0.5">$20K+</span>

@@ -13,7 +13,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div class="space-y-2">
             <span class="font-mono text-xs text-secondary-custom uppercase tracking-widest block">Technical Archive</span>
-            <h1 class="font-serif text-3xl md:text-5xl text-silver-leaf">Project Portfolio</h1>
+            <h1 class="font-serif text-3xl md:text-5xl text-silver-leaf leading-none">Project Portfolio</h1>
             <p class="text-xs text-on-surface-variant-custom max-w-md">Filtered grid catalog database containing precision-engineered CAD references.</p>
           </div>
 
@@ -54,7 +54,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
       <!-- Active Database Results Info -->
       <div class="mb-6 flex justify-between items-center bg-midnight-charcoal/20 border border-white/5 rounded-xl px-4 py-2 font-mono text-[10px] text-on-surface-variant-custom tracking-wider select-none">
         <span>GRID METRICS SYNCHRONIZED</span>
-        <span class="text-primary-custom">{{ calculator.filteredProjects().length }} MATCHING NODES</span>
+        <span class="text-primary-custom">{{ calculator.filteredProjects().length }} MATCHING PROJECTS</span>
       </div>
 
       <!-- Portfolio Projects Grid -->
@@ -86,11 +86,11 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                 <div class="pt-4 flex justify-between border-t border-silver-leaf/10 font-mono text-xs">
                   <div class="flex flex-col">
                     <span class="text-[9px] text-on-surface-variant-custom uppercase tracking-wider block">Typology</span>
-                    <span class="text-silver-leaf font-semibold block mt-0.5">{{ proj.typology }}</span>
+                    <span class="text-silver-leaf  block mt-0.5">{{ proj.typology }}</span>
                   </div>
                   <div class="flex flex-col text-right">
                     <span class="text-[9px] text-on-surface-variant-custom uppercase tracking-wider block">Magnitude</span>
-                    <span class="text-primary-custom font-bold select-all block mt-0.5">{{ proj.magnitude }}</span>
+                    <span class="text-primary-custom  select-all block mt-0.5">{{ proj.magnitude }}</span>
                   </div>
                 </div>
               </div>
