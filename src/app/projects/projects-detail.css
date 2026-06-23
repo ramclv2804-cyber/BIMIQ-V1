@@ -421,6 +421,26 @@
   margin-left: auto;
 }
 
+.ticket-item-raised {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 9px;
+  font-weight: 500;
+  color: #a78bfa;
+  background: rgba(167, 139, 250, 0.08);
+  border: 1px solid rgba(167, 139, 250, 0.15);
+  padding: 1px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+
+.ticket-raised-icon {
+  font-family: 'Material Symbols Rounded';
+  font-size: 11px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 16;
+}
+
 .ticket-item-comment {
   font-size: 12px;
   color: #9ca3af;

@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { SpatialCostCalculator } from './services/spatial-cost-calculator';
-import { Dashboard } from './dashboard/dashboard';
+import { Home } from './home/home';
 import { Portfolio } from './portfolio/portfolio';
 import { PriceEstimation } from './price-estimation/price-estimation';
 import { BimSelection } from './bim-selection/bim-selection';
 import { Signin } from './signin/signin';
-import { EstimationDashboard } from './estimation-dashboard/estimation-dashboard';
+import { AdminDashboard } from './adminDashboard/admin-dashboard';
 import { Projects } from './projects/projects';
 import { AppHeader } from './app-header/app-header';
 import { Resources } from './resources/resources';
@@ -20,12 +20,12 @@ import { DbValidator } from './db-validator/db-validator';
   imports: [
     CommonModule,
     AppHeader,
-    Dashboard,
+    Home,
     Portfolio,
     PriceEstimation,
     BimSelection,
     Signin,
-    EstimationDashboard,
+    AdminDashboard,
     Projects,
     Resources,
     DbValidator
@@ -49,7 +49,7 @@ export class App {
   }
 
   setTab(tab: string) {
-    this.calculator.setTab(tab as 'dashboard' | 'portfolio' | 'config');
+    this.calculator.setTab(tab as 'home' | 'portfolio' | 'config');
   }
 
   goToEstimator() {
@@ -72,11 +72,11 @@ export class App {
     // Try API login with email as username
     this.calculator.apiLogin(email, password)
       .then(user => {
-        this.calculator.loginUser(user.email, user.id, user.token);
+        this.calculator.loginUser(user.email, user.role, user.id, user.token);
       })
       .catch(() => {
         // Fallback: allow email-only login for backward compatibility
-        this.calculator.loginUser(email);
+        this.calculator.loginUser(email, 'client');
         this.calculator.showNotification('Database auth unavailable — signed in with local session.', 'info');
       });
   }

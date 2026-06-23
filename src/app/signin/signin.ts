@@ -69,10 +69,9 @@ export class Signin {
     this.isLoading = true;
     this.calculator.apiLogin(this.loginEmail.trim(), this.loginPassword.trim())
       .then(user => {
-        this.calculator.loginUser(user.email, user.id, user.token);
-        // Navigate based on role
+        this.calculator.loginUser(user.email, user.role, user.id, user.token);
         if (user.role === 'admin') {
-          this.router.navigate(['/estimations']);
+          this.router.navigate(['/dashboard']);
         } else {
           this.router.navigate(['/projects']);
         }
@@ -115,7 +114,7 @@ export class Signin {
     this.isLoading = true;
     this.calculator.apiSignup(this.signupUsername.trim(), this.signupPassword.trim(), this.signupEmail.trim())
       .then(user => {
-        this.calculator.loginUser(user.email, user.id, user.token);
+        this.calculator.loginUser(user.email, user.role, user.id, user.token);
         this.router.navigate(['/projects']);
       })
       .catch(err => {
@@ -129,7 +128,7 @@ export class Signin {
     this.router.navigate(['/']);
   }
 
-  setTab(tab: 'dashboard' | 'portfolio' | 'config') {
+  setTab(tab: 'home' | 'portfolio' | 'config') {
     this.calculator.setTab(tab);
     this.router.navigate(['/']);
   }

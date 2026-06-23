@@ -41,6 +41,13 @@
   <nav class="hidden md:flex items-center gap-8">
     <button type="button"
       class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
+      [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'home' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+      (click)="setTab('home')">
+      <span class="hover-underline-animate pb-0.5"
+        [class.after:scale-x-100]="currentUrl() === '/' && calculator.activeTab() === 'home'">Home</span>
+    </button>
+    <button type="button"
+      class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
       [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'portfolio' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
       (click)="setTab('portfolio')">
       <span class="hover-underline-animate pb-0.5"
@@ -54,15 +61,15 @@
         [class.after:scale-x-100]="currentUrl() === '/' && calculator.activeTab() === 'config'">Price Estimate</span>
     </button>
     @if (isLoggedIn()) {
-    @if (user()?.name === 'Clove' || user()?.name === 'clove') {
+    @if (user()?.role === 'admin') {
     <button type="button"
       class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
-      [ngClass]="currentUrl() === '/estimations' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-      (click)="goToEstimations()">
+      [ngClass]="currentUrl() === '/dashboard' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+      (click)="goToDashboard()">
       <span class="hover-underline-animate pb-0.5"
-        [class.after:scale-x-100]="currentUrl() === '/estimations'">Estimations</span>
+        [class.after:scale-x-100]="currentUrl() === '/dashboard'">Dashboard</span>
     </button>
-    } @else {
+    }
     <button type="button"
       class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
       [ngClass]="currentUrl() === '/projects' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
@@ -70,7 +77,6 @@
       <span class="hover-underline-animate pb-0.5"
         [class.after:scale-x-100]="currentUrl() === '/projects'">Projects</span>
     </button>
-    }
     }
     <button type="button"
       class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
@@ -155,12 +161,12 @@
     <!-- <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="toggleMobileMenu()"></div> -->
     <div class="absolute top-18 left-4 right-4 bg-[#121216] border border-white/30 rounded-2xl shadow-2xl py-3 animate-fade-slide-up overflow-hidden">
       <nav class="flex flex-col gap-0.5 px-3">
-        <button type="button" (click)="navigateAndClose('/', 'dashboard')"
+        <button type="button" (click)="navigateAndClose('/', 'home')"
           class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-          [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'dashboard' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+          [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'home' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
           <span class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-sm">dashboard</span>
-            Dashboard
+            <span class="material-symbols-outlined text-sm">home</span>
+            Home
           </span>
         </button>
         <button type="button" (click)="navigateAndClose('/', 'portfolio')"
@@ -180,25 +186,24 @@
           </span>
         </button>
         @if (isLoggedIn()) {
-          @if (user()?.name === 'clove') {
-            <button type="button" (click)="navigateAndClose('/estimations')"
-              class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-              [ngClass]="currentUrl() === '/estimations' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
-              <span class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-sm">analytics</span>
-                Estimations
-              </span>
-            </button>
-          } @else {
-            <button type="button" (click)="navigateAndClose('/projects')"
-              class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-              [ngClass]="currentUrl() === '/projects' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
-              <span class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-sm">folder</span>
-                Projects 
-              </span>
-            </button>
+          @if (user()?.role === 'admin') {
+          <button type="button" (click)="navigateAndClose('/dashboard')"
+            class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
+            [ngClass]="currentUrl() === '/dashboard' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+            <span class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-sm">analytics</span>
+              Dashboard
+            </span>
+          </button>
           }
+          <button type="button" (click)="navigateAndClose('/projects')"
+            class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
+            [ngClass]="currentUrl() === '/projects' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+            <span class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-sm">folder</span>
+              Projects 
+            </span>
+          </button>
         }
         <button type="button" (click)="navigateAndClose('/resources')"
           class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"

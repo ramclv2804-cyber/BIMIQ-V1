@@ -57,7 +57,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                     </div>
 
                     <div class="space-y-1.5 flex flex-col relative">
-                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Type of Building <span class="text-red-400">*</span></span>
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider select-none block font-mono">Type of Building <span class="text-red-400">*</span></span>
                       <div class="relative">
                         <button type="button" (click)="toggleBuildingTypeDropdown(); $event.stopPropagation()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
@@ -82,7 +82,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                     </div>
 
                     <div class="space-y-1.5 flex flex-col relative">
-                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Requirements <span class="text-red-400">*</span></span>
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider  select-none block font-mono">Requirements <span class="text-red-400">*</span></span>
                       <div class="relative">
                           <button type="button" (click)="toggleCadRequirementsDropdown(); $event.stopPropagation()"
                             class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
@@ -116,7 +116,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                     </div>
 
                     <div class="space-y-1.5 flex flex-col relative">
-                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Scale <span class="text-red-400">*</span></span>
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider  select-none block font-mono">Scale <span class="text-red-400">*</span></span>
                       <div class="relative">
                         <button type="button" (click)="toggleCadScaleDropdown(); $event.stopPropagation()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
@@ -141,7 +141,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                     </div>
 
                       <div class="space-y-1.5 flex flex-col relative">
-                        <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">AutoCAD Version <span class="text-red-400">*</span></span>
+                        <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider select-none block font-mono">AutoCAD Version <span class="text-red-400">*</span></span>
                         <div class="relative">
                           <button type="button" (click)="calculator.toggleAutocadDropdown(); $event.stopPropagation()"
                             class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
@@ -166,7 +166,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                       </div>
 
                     <div class="space-y-1.5 flex flex-col">
-                      <label for="step1Desc" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Description</label>
+                      <label for="step1Desc" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider  select-none block font-mono">Description</label>
                       <textarea id="step1Desc" [value]="calculator.description()" (input)="calculator.description.set($any($event.target).value)" rows="3" placeholder="Any additional notes or instructions..." class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all resize-none"></textarea>
                     </div>
 
@@ -210,7 +210,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                     </div>
 
                     <div class="space-y-1.5 flex flex-col relative">
-                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Type of Building <span class="text-red-400">*</span></span>
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider  select-none block font-mono">Type of Building <span class="text-red-400">*</span></span>
                       <div class="relative">
                         <button type="button" (click)="toggleBuildingTypeDropdown(); $event.stopPropagation()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
@@ -235,7 +235,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                     </div>
 
                     <div class="space-y-1.5 flex flex-col relative">
-                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Requirements <span class="text-red-400">*</span></span>
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider  select-none block font-mono">Requirements <span class="text-red-400">*</span></span>
                       <div class="relative">
                         <button type="button" (click)="toggleBimRequirementsDropdown(); $event.stopPropagation()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
@@ -269,7 +269,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                     </div>
 
                     <div class="space-y-1.5 flex flex-col relative">
-                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Add On's</span>
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider  select-none block font-mono">Add On's</span>
                       <div class="relative">
                         <button type="button" (click)="toggleBimAddOnsDropdown(); $event.stopPropagation()"
                           class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
@@ -327,7 +327,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                     </div>
 
                     <div class="space-y-1.5 flex flex-col relative">
-                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Revit Version <span class="text-red-400">*</span></span>
+                      <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider  select-none block font-mono">Revit Version <span class="text-red-400">*</span></span>
                       <div class="relative">
                           <button type="button" (click)="calculator.toggleRevitDropdown(); $event.stopPropagation()"
                             class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
@@ -352,12 +352,12 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                     </div>
 
                     <div class="space-y-1.5 flex flex-col">
-                      <label for="step1Desc" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Description</label>
+                      <label for="step1Desc" class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider  select-none block font-mono">Description</label>
                       <textarea id="step1Desc" [value]="calculator.description()" (input)="calculator.description.set($any($event.target).value)" rows="3" placeholder="Any additional notes or instructions..." class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all resize-none"></textarea>
                     </div>
 
                     <div class="space-y-1.5 flex flex-col relative  hidden">
-                    <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider font-bold select-none block font-mono">Quotation Currency <span class="text-red-400">*</span></span>
+                    <span class="text-[10px] text-on-surface-variant-custom uppercase tracking-wider  select-none block font-mono">Quotation Currency <span class="text-red-400">*</span></span>
                     <div class="relative font-mono">
                       <button type="button" (click)="toggleCurrencyDropdown(); $event.stopPropagation()" class="w-full flex items-center justify-between bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf text-xs font-mono focus:outline-none focus:border-primary-custom cursor-pointer transition-all select-none">
                         <span>{{ calculator.getCurrencyLabel(calculator.selectedCurrency()) }}</span>
@@ -491,7 +491,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                     BACK
                   </button>
                  
-                    <button type="button" (click)="goToStep(3); triggerQuoteRequest();confirmOrder() "
+                    <button type="button" (click)="goToStep(3); triggerQuoteRequest(); "
                     class="flex-1 bg-primary-custom text-on-primary-custom py-2.5 rounded-xl font-mono text-[10px] uppercase font-bold tracking-widest active:scale-95 hover:opacity-90 transition-all flex items-center justify-center gap-2 focus:outline-none shadow-lg shadow-primary-custom/10 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer border-none">
                       <span class="material-symbols-outlined text-sm">{{ calculator.placeOrder() ? 'check_circle' : 'shopping_cart' }}</span>
                        Confirm Order
@@ -564,15 +564,11 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                   <!-- Actions -->
                   <div class="px-6 py-4 border-t border-white/5 flex items-center justify-end gap-3">
                     <button type="button" (click)="goToStep(2)"
-                      class="flex items-center justify-center gap-2 border border-silver-leaf/20 bg-transparent text-silver-leaf px-4 py-2.5 rounded-xl font-mono text-[9px] uppercase tracking-widest hover:bg-white/5 active:scale-95 transition-all cursor-pointer">
+                      class="flex hidden items-center justify-center gap-2 border border-silver-leaf/20 bg-transparent text-silver-leaf px-4 py-2.5 rounded-xl font-mono text-[9px] uppercase tracking-widest hover:bg-white/5 active:scale-95 transition-all cursor-pointer">
                       <span class="material-symbols-outlined text-sm">arrow_back</span>
                       Back
                     </button>
                     <div class="flex items-center gap-2">
-                      <button type="button" (click)="triggerQuoteRequest()"
-                        class="flex hidden items-center justify-center gap-2 border border-primary-custom/40 bg-primary-custom/5 text-primary-custom px-4 py-2.5 rounded-xl font-mono text-[9px] uppercase tracking-widest font-bold hover:bg-primary-custom/10 active:scale-95 transition-all cursor-pointer">
-                        Request Quote
-                      </button>
                       <button type="button" (click)="triggerEstimateDownload()"
                         class="flex items-center justify-center gap-2 bg-primary-custom text-on-primary-custom px-4 py-2.5 rounded-xl font-mono text-[9px] uppercase font-bold tracking-widest active:scale-95 hover:opacity-90 transition-all cursor-pointer border-none shadow-lg shadow-primary-custom/10">
                         <span class="material-symbols-outlined text-sm">download</span>
@@ -886,7 +882,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
             <!-- Actions -->
             <div class="flex gap-3 pt-2 border-t border-white/5 mt-2">
               
-              <button type="button" (click)="confirmOrder()"
+              <button type="button" (click)="triggerQuoteRequest()"
                 class="flex-1 py-2.5 bg-primary-custom text-on-primary-custom rounded-lg hover:opacity-90 active:scale-95 font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-lg shadow-primary-custom/10">
                 <span class="flex items-center justify-center gap-2">
                   <span class="material-symbols-outlined text-sm">shopping_cart</span>
@@ -987,12 +983,15 @@ export class PriceEstimation implements OnInit {
       invoiceDueDate: '',
       payment: 'Yet to Pay',
       workflowStatus: 'Yet to Award',
-      comments: `Order placed via Price Estimation. ${c.uploadLink() ? 'Upload: ' + c.uploadLink() : ''}${c.pointCloudLink() ? ' | Point Cloud: ' + c.pointCloudLink() : ''}`
+      comments: '',
+      remark: c.remark(),
+      uploadLink: c.uploadLink(),
+      pointCloudLink: c.pointCloudLink(),
+      descriptionLink: c.descriptionLink(),
     };
 
     c.addUserProject(newProject);
     this.closePreviewModal();
-    this.triggerQuoteRequest();
     this.goToStep(3);
     c.placeOrder.set(true);
     c.showNotification('Order placed successfully! Check Order Summary for details.', 'success');
@@ -1596,10 +1595,88 @@ export class PriceEstimation implements OnInit {
     console.log('Expected Delivery Date:', c.expectedDeliveryDate());
     console.log('Total Price:', c.calculatedSmartEstimate().currencySymbol + c.calculatedSmartEstimate().totalPrice, c.selectedCurrency());
     console.log('========================');
+    this.sendQuoteEmail();
+    this.confirmOrder();
     this.calculator.showNotification('Initiating connection with production director...', 'info');
     setTimeout(() => {
       this.calculator.showNotification(`Handshake complete. Production pipeline coordinates sent securely to ${c.smartEmail()}!`, 'success');
     }, 2200);
+  }
+
+  private async sendQuoteEmail() {
+    const c = this.calculator;
+    const isBim = c.selectedModelingWay() === 'bim';
+    const estimate = c.calculatedSmartEstimate();
+    const mode = isBim ? 'Scan to BIM' : 'Scan to CAD';
+    const specs: [string, string | string[] | null | undefined][] = [
+      ['Project Name', c.smartProjectName()],
+      ['Mode', mode],
+      ['Area', `${c.smartScanSize()} ${c.smartIsMetric() ? 'Sq.m' : 'Sq.ft'}`],
+      ['Building Type', c.selectedBuildingType()],
+      ['Requirements', isBim ? c.bimRequirements() : c.cadRequirements()],
+    ];
+    if (isBim) {
+      specs.push(['Add Ons', c.bimAddOns()], ['LOD Level', c.smartLODLevel()], ['Revit Version', c.smartRevitVersion()]);
+    } else {
+      specs.push(['Scale', c.cadScale()], ['AutoCAD Version', c.smartAutocadVersion()]);
+    }
+    specs.push(
+      ['Currency', c.selectedCurrency()],
+      ['Description', c.description()],
+      ['Email', c.smartEmail()],
+    );
+    const uploads: [string, string | string[] | null | undefined][] = [
+      ['Upload Link', c.uploadLink()],
+      ['Point Cloud Link', c.pointCloudLink()],
+      ['Description Link', c.descriptionLink()],
+      ['Remark', c.remark()],
+    ];
+    const order: [string, string | string[] | null | undefined][] = [
+      ['Project Number', c.projectNumber()],
+      ['Order Placed Date', c.orderPlacedDate()],
+      ['Point Cloud Issue Date', c.pointCloudIssueDate()],
+      ['Expected Delivery Date', c.expectedDeliveryDate()],
+      ['Total Price', `${estimate.currencySymbol}${estimate.totalPrice} ${c.selectedCurrency()}`],
+    ];
+
+    const formatValue = (val: string | string[] | null | undefined) =>
+      Array.isArray(val) ? (val.length ? val.join(', ') : '-') : val || '-';
+
+    const rows = (data: [string, string | string[] | null | undefined][]) =>
+      data.map(([label, val]) =>
+        `<tr><td style="padding:6px 12px;border:1px solid #ddd;font-weight:600;background:#fafafa">${label}</td><td style="padding:6px 12px;border:1px solid #ddd">${formatValue(val)}</td></tr>`
+      ).join('');
+
+    const html = `
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+        <div style="background:linear-gradient(135deg,#1a3a5c,#2a5a8c);color:#fff;padding:24px;text-align:center;border-radius:8px 8px 0 0">
+          <h1 style="margin:0;font-size:24px;letter-spacing:1px">QUOTE REQUEST</h1>
+          <p style="margin:8px 0 0;opacity:.85;font-size:14px">BIM-IQ | clove Technologies</p>
+        </div>
+        <div style="padding:20px;border:1px solid #ddd;border-top:0">
+          <h2 style="color:#1a3a5c;font-size:15px;margin:0 0 10px;border-bottom:2px solid #1a3a5c;padding-bottom:6px">Project Specifications</h2>
+          <table style="width:100%;border-collapse:collapse;font-size:13px">${rows(specs)}</table>
+          <h2 style="color:#1a3a5c;font-size:15px;margin:20px 0 10px;border-bottom:2px solid #1a3a5c;padding-bottom:6px">Upload &amp; Project Info</h2>
+          <table style="width:100%;border-collapse:collapse;font-size:13px">${rows(uploads)}</table>
+          <h2 style="color:#1a3a5c;font-size:15px;margin:20px 0 10px;border-bottom:2px solid #1a3a5c;padding-bottom:6px">Order Summary</h2>
+          <table style="width:100%;border-collapse:collapse;font-size:13px">${rows(order)}</table>
+        </div>
+
+      </div>`;
+
+console.log('Generated Quote Request HTML:', html);
+
+    // try {
+    //   const res = await fetch('/api/quote/request', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ html, subject: `New Quote Request: ${c.smartProjectName() || 'No Project Name'}`, email: c.smartEmail() }),
+    //   });
+    //   if (!res.ok) throw new Error('Server error');
+    //   console.log('[Quote] Email sent successfully');
+    // } catch (err) {
+    //   console.error('[Quote] Failed to send email:', err);
+    // }
   }
 
   toggleInteriorArchitecture() {

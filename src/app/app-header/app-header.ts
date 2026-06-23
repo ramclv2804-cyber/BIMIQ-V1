@@ -41,23 +41,23 @@ export class AppHeader {
   navigateAndClose(url: string, tab?: string) {
     this.isMobileMenuOpen.set(false);
     if (tab) {
-      this.calculator.setTab(tab as 'dashboard' | 'portfolio' | 'config');
+      this.calculator.setTab(tab as 'home' | 'portfolio' | 'config');
     }
     this.router.navigate([url]);
   }
 
   goHome() {
-    this.calculator.setTab('dashboard');
+    this.calculator.setTab('home');
     this.router.navigate(['/']);
   }
 
   setTab(tab: string) {
-    this.calculator.setTab(tab as 'dashboard' | 'portfolio' | 'config');
+    this.calculator.setTab(tab as 'home' | 'portfolio' | 'config');
     this.router.navigate(['/']);
   }
 
-  goToEstimations() {
-    this.router.navigate(['/estimations']);
+  goToDashboard() {
+    this.router.navigate(['/dashboard']);
   }
 
   goToProjects() {

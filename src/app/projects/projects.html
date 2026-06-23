@@ -2,11 +2,29 @@
 
 <div class="projects-page">
   <div class="page-hero">
+
     <div class="hero-content">
       <div class="hero-top">
-        <span class="hero-badge">PORTFOLIO</span>
-        <h1>My Projects</h1>
-        <p class="hero-sub">Track, manage and oversee all your BIM projects in one place</p>
+        <div class="hero-top-left">
+          <span class="hero-badge">PORTFOLIO</span>
+          @if (isAdmin()) {
+          <h1>{{ selectedUserName() ? selectedUserName() + ' projects portfolio' : '' }}</h1>
+          } @else {
+          <h1>My Projects</h1>
+          }
+          <p class="hero-sub">Track, manage and oversee all your BIM projects in one place</p>
+        </div>
+        @if (isAdmin()) {
+        <div class="filter-card" style="margin-left:auto;">
+          <label class="filter-label">Select client</label>
+          <select class="filter-select" [value]="filterUser() ?? ''" (change)="onUserSelect($any($event.target).value)">
+            <option value="">select client</option>
+            @for (u of allUsers(); track u.id) {
+            <option [value]="u.id">{{ u.username }} ({{ u.email }})</option>
+            }
+          </select>
+        </div>
+        }
       </div>
       <div class="hero-stats-grid">
         <div class="stat-group">
@@ -119,6 +137,7 @@
         <option value="Paid">Paid</option>
       </select>
     </div>
+
   </div>
 
   <div class="projects-grid">
@@ -154,9 +173,14 @@
             <span class="chip-icon">source</span>
             {{ p.scope }}
           </span>
+          <span class="meta-chip" *ngIf="p.createdAt">
+            <span class="chip-icon">calendar_today</span>
+            {{ p.createdAt | date:'MMM d, y' }}
+          </span>
         </div>
         <div class="card-tags">
-          <span class="tag-chip" [class.tag-lod]="p.scope !== 'Scan to CAD'" [class.tag-scale]="p.scope === 'Scan to CAD'">{{ p.scope === 'Scan to CAD' ? p.scale : p.lod }}</span>
+          <span class="tag-chip" [class.tag-lod]="p.scope !== 'Scan to CAD'"
+            [class.tag-scale]="p.scope === 'Scan to CAD'">{{ p.scope === 'Scan to CAD' ? p.scale : p.lod }}</span>
           <span class="tag-chip tag-workflow">{{ p.workflowStatus }}</span>
           <span class="tag-chip tag-billing">{{ p.billing }}</span>
           <span class="tag-chip tag-payment" [class.paid]="p.payment === 'Paid'">{{ p.payment }}</span>
@@ -236,7 +260,8 @@
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Area">Area</span>
-                <span class="info-card-row-value"><span class="chip-icon">straighten</span> {{ p.sft | number }} sft</span>
+                <span class="info-card-row-value"><span class="chip-icon">straighten</span> {{ p.sft | number }}
+                  sft</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Scope">Scope</span>
@@ -252,7 +277,8 @@
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Status">Status</span>
-                <span class="info-card-row-value"><span class="chip-icon">assignment</span> {{ p.workflowStatus }}</span>
+                <span class="info-card-row-value"><span class="chip-icon">assignment</span> {{ p.workflowStatus
+                  }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="addon">addon's</span>
@@ -270,27 +296,33 @@
             <div class="info-card-body">
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Started">Started</span>
-                <span class="info-card-row-value"><span class="date-icon">calendar_today</span> {{ p.startDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">calendar_today</span> {{ p.startDate |
+                  date:'MMM d, y' }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="End Date">End Date</span>
-                <span class="info-card-row-value"><span class="date-icon">event</span> {{ p.endDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">event</span> {{ p.endDate | date:'MMM d, y'
+                  }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Expected Delivery">Expected Delivery</span>
-                <span class="info-card-row-value"><span class="date-icon">local_shipping</span> {{ p.expectedClientDeliveryDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">local_shipping</span> {{
+                  p.expectedClientDeliveryDate | date:'MMM d, y' }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.proposalSent">
                 <span class="info-card-row-label" title="Proposal Sent">Proposal Sent</span>
-                <span class="info-card-row-value"><span class="date-icon">forward_to_inbox</span> {{ p.proposalSent | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">forward_to_inbox</span> {{ p.proposalSent |
+                  date:'MMM d, y' }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.purchaseOrderIssued">
                 <span class="info-card-row-label" title="Purchase Order Issued">PO Issued</span>
-                <span class="info-card-row-value"><span class="date-icon">description</span> {{ p.purchaseOrderIssued | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">description</span> {{ p.purchaseOrderIssued |
+                  date:'MMM d, y' }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.e57IssuedDate">
                 <span class="info-card-row-label" title="E57 Issued">E57 Issued</span>
-                <span class="info-card-row-value"><span class="date-icon">cloud_download</span> {{ p.e57IssuedDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">cloud_download</span> {{ p.e57IssuedDate |
+                  date:'MMM d, y' }}</span>
               </div>
             </div>
           </div>
@@ -304,27 +336,33 @@
             <div class="info-card-body">
               <div class="info-card-row highlight">
                 <span class="info-card-row-label" title="Cost">Cost</span>
-                <span class="info-card-row-value cost-value"> {{ calculator.getCurrencySymbol(p.currency) }}{{ p.cost | number }}</span>
+                <span class="info-card-row-value cost-value"> {{ calculator.getCurrencySymbol(p.currency) }}{{ p.cost |
+                  number }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Billing">Billing</span>
-                <span class="info-card-row-value" [style.color]="p.billing === 'Invoiced' ? '#4ade80' : '#f87171'"><span class="chip-icon">receipt</span> {{ p.billing }}</span>
+                <span class="info-card-row-value" [style.color]="p.billing === 'Invoiced' ? '#4ade80' : '#f87171'"><span
+                    class="chip-icon">receipt</span> {{ p.billing }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Payment">Payment</span>
-                <span class="info-card-row-value" [style.color]="p.payment === 'Paid' ? '#4ade80' : '#f87171'"><span class="chip-icon">payments</span> {{ p.payment }}</span>
+                <span class="info-card-row-value" [style.color]="p.payment === 'Paid' ? '#4ade80' : '#f87171'"><span
+                    class="chip-icon">payments</span> {{ p.payment }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.invoiceNumber">
                 <span class="info-card-row-label" title="Invoice Number">Invoice No</span>
-                <span class="info-card-row-value"><span class="chip-icon">receipt_long</span> {{ p.invoiceNumber }}</span>
+                <span class="info-card-row-value"><span class="chip-icon">receipt_long</span> {{ p.invoiceNumber
+                  }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.invoiceDate">
                 <span class="info-card-row-label" title="Invoice Date">Invoice Date</span>
-                <span class="info-card-row-value"><span class="date-icon">event_available</span> {{ p.invoiceDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">event_available</span> {{ p.invoiceDate |
+                  date:'MMM d, y' }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.invoiceDueDate">
                 <span class="info-card-row-label" title="Due Date">Due Date</span>
-                <span class="info-card-row-value"><span class="date-icon">gavel</span> {{ p.invoiceDueDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">gavel</span> {{ p.invoiceDueDate | date:'MMM
+                  d, y' }}</span>
               </div>
             </div>
           </div>
@@ -351,7 +389,12 @@
                     <span class="ticket-item-id">#{{ t.id.toString().slice(-6) }}</span>
                     <span class="ticket-item-date">{{ t.createdAt | date:'MMM d, y' }}</span>
                     <span class="ticket-item-time">{{ t.createdAt | date:'h:mm a' }}</span>
+
                     <span class="ticket-item-badge" *ngIf="t.url">attached</span>
+                  </div>
+                  <div class="ticket-item-raised my-1" *ngIf="t.raisedByUsername">
+                    <span class="ticket-raised-icon">person</span>
+                    {{ t.raisedByUsername }}
                   </div>
                   <p class="ticket-item-comment" *ngIf="t.comments">{{ t.comments }}</p>
                   <a *ngIf="t.url" [href]="t.url" target="_blank" class="ticket-item-link">
@@ -382,31 +425,31 @@
             <div class="project-links">
               <span class="req-label">Project Links:</span>
               <div class="links-list">
-                <a *ngIf="calculator.uploadLink()" [href]="calculator.uploadLink()" target="_blank" class="link-chip">
+                <a *ngIf="p.uploadLink" [href]="p.uploadLink" target="_blank" class="link-chip">
                   <span class="link-chip-icon">cloud_upload</span>
                   <span class="link-chip-body">
                     <span class="link-chip-title">Upload Link (DWG / JPEGs / PDFs)</span>
-                    <span class="link-chip-text">{{ calculator.uploadLink() }}</span>
+                    <span class="link-chip-text">{{ p.uploadLink }}</span>
                   </span>
                   <span class="link-chip-ext">↗</span>
                 </a>
-                <a *ngIf="calculator.pointCloudLink()" [href]="calculator.pointCloudLink()" target="_blank" class="link-chip">
+                <a *ngIf="p.pointCloudLink" [href]="p.pointCloudLink" target="_blank" class="link-chip">
                   <span class="link-chip-icon">point_scan</span>
                   <span class="link-chip-body">
                     <span class="link-chip-title">Point Cloud / PDF / Upload Link</span>
-                    <span class="link-chip-text">{{ calculator.pointCloudLink() }}</span>
+                    <span class="link-chip-text">{{ p.pointCloudLink }}</span>
                   </span>
                   <span class="link-chip-ext">↗</span>
                 </a>
-                <a *ngIf="calculator.descriptionLink()" [href]="calculator.descriptionLink()" target="_blank" class="link-chip">
+                <a *ngIf="p.descriptionLink" [href]="p.descriptionLink" target="_blank" class="link-chip">
                   <span class="link-chip-icon">description</span>
                   <span class="link-chip-body">
                     <span class="link-chip-title">Description Link (Etf, Erf, if any)</span>
-                    <span class="link-chip-text">{{ calculator.descriptionLink() }}</span>
+                    <span class="link-chip-text">{{ p.descriptionLink }}</span>
                   </span>
                   <span class="link-chip-ext">↗</span>
                 </a>
-                <span class="links-empty" *ngIf="!calculator.uploadLink() && !calculator.pointCloudLink() && !calculator.descriptionLink()">
+                <span class="links-empty" *ngIf="!p.uploadLink && !p.pointCloudLink && !p.descriptionLink">
                   No links added yet
                 </span>
               </div>
@@ -465,7 +508,8 @@
       <div class="ticket-header-chip">
         <span class="ticket-chip-icon">attach_money</span>
         <span class="ticket-chip-label">Cost</span>
-        <span class="ticket-chip-value accent" [title]="calculator.getCurrencySymbol(p.currency) + (p.cost | number)">{{ calculator.getCurrencySymbol(p.currency) }}{{ p.cost | number }}</span>
+        <span class="ticket-chip-value accent" [title]="calculator.getCurrencySymbol(p.currency) + (p.cost | number)">{{
+          calculator.getCurrencySymbol(p.currency) }}{{ p.cost | number }}</span>
       </div>
       <div class="ticket-header-chip">
         <span class="ticket-chip-icon">straighten</span>
@@ -482,7 +526,8 @@
         Attachment Link
       </label>
       <div class="ticket-file-wrap">
-        <input type="url" id="ticketFile" class="ticket-file-input" placeholder="Paste a link..." [value]="ticketUrl()" (input)="onTicketUrlChange($event)" />
+        <input type="url" id="ticketFile" class="ticket-file-input" placeholder="Paste a link..." [value]="ticketUrl()"
+          (input)="onTicketUrlChange($event)" />
         <label for="ticketFile" class="ticket-file-label">
           <span class="ticket-file-icon">link</span>
           <span class="ticket-file-text">{{ ticketUrl() || 'Paste a link...' }}</span>
@@ -495,19 +540,12 @@
         <span class="ticket-label-icon">comment</span>
         Comments
       </label>
-      <textarea
-        id="ticketComments"
-        class="ticket-textarea"
-        placeholder="Describe your issue or request..."
-        [value]="ticketComments()"
-        (input)="ticketComments.set($any($event.target).value)"
-        rows="4"
-      ></textarea>
+      <textarea id="ticketComments" class="ticket-textarea" placeholder="Describe your issue or request..."
+        [value]="ticketComments()" (input)="ticketComments.set($any($event.target).value)" rows="4"></textarea>
     </div>
   </div>
 
   <div class="ticket-modal-footer">
-    <button class="ticket-btn-cancel" (click)="closeTicket()">Cancel</button>
     <button class="ticket-btn-submit" (click)="submitTicket()">Submit Ticket</button>
   </div>
 </div>

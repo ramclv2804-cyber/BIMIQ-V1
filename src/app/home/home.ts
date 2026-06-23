@@ -4,7 +4,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'app-dashboard',
+  selector: 'app-home',
   imports: [CommonModule],
   template: `
     <div class="animate-fade-slide-up opacity-0 space-y-24">
@@ -587,7 +587,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
     </div>
   `,
 })
-export class Dashboard {
+export class Home {
   calculator = inject(SpatialCostCalculator);
   platformId = inject(PLATFORM_ID);
 

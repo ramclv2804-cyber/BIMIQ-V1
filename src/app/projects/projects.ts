@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, inject, computed, signal, afterNextRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppHeader } from '../app-header/app-header';
 import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-calculator';
@@ -10,6 +10,9 @@ interface Milestone { title: string; date: string; status: 'completed' | 'curren
 interface Ticket {
   id: number;
   projectName: string;
+  projectId?: number;
+  userId?: number;
+  raisedByUsername?: string;
   url: string;
   comments: string;
   createdAt: string;
@@ -42,7 +45,25 @@ export class Projects {
   ];
 
 
+  filterUser = signal<number | null>(null);
+  allUsers = computed(() => this.calculator.allUsers());
+  isAdmin = computed(() => this.calculator.currentUser()?.role === 'admin');
+  selectedUserName = computed(() => {
+    const id = this.filterUser();
+    if (!id) return null;
+    return this.allUsers().find(u => u.id === id)?.username ?? null;
+  });
+
   projects = computed(() => this.calculator.userProjects());
+
+  constructor() {
+    afterNextRender(() => {
+      if (this.isAdmin()) {
+        this.calculator.userProjects.set([]);
+        this.calculator.loadAllUsers();
+      }
+    });
+  }
 
   totalCost = computed(() => this.projects().reduce((s, p) => s + p.cost, 0));
   totalSft = computed(() => this.projects().reduce((s, p) => s + p.sft, 0));
@@ -95,6 +116,16 @@ export class Projects {
     this.filterPayment.set('all');
   }
 
+  onUserSelect(value: string) {
+    const id = value ? Number(value) : null;
+    this.filterUser.set(id);
+    if (id) {
+      this.calculator.loadProjectsForUser(id);
+    } else {
+      this.calculator.userProjects.set([]);
+    }
+  }
+
   trackCard = (_i: number, p: UserProject) => p.projectName + this.animKey();
   getStatusColor(status: string): string {
     const colorMap: Record<string, string> = {
@@ -105,10 +136,6 @@ export class Projects {
     };
     return colorMap[status] || '#94a3b8';
   }
-  // getStatusLabel(status: string): string {
-  //   const m = this.statusFilters.find(s => s.key === status);
-  //   return m ? m.label : status;
-  // }
 
   detailProject = signal<UserProject | null>(null);
   isDescExpanded = signal(false);
@@ -116,7 +143,10 @@ export class Projects {
   openDetail(project: UserProject) {
     this.detailProject.set(project);
     this.isDescExpanded.set(false);
+    // Load tickets from database for this project
+    this.loadTicketsForProject(project);
   }
+
   closeDetail() {
     this.detailProject.set(null);
   }
@@ -136,6 +166,46 @@ export class Projects {
     );
   });
 
+  /** Load tickets from the database for the given project */
+  private async loadTicketsForProject(project: UserProject) {
+    try {
+      let result: { tickets: unknown[]; count: number };
+
+      // Prefer fetching by project_id (works for all authenticated users)
+      if (project.id) {
+        result = await this.calculator.apiGetProjectTickets(project.id);
+      } else {
+        // Fallback: fetch current user's own tickets and filter by project name
+        result = await this.calculator.apiGetMyTickets();
+      }
+
+      if (result.tickets && result.tickets.length > 0) {
+        const mapped = (result.tickets as any[])
+          .filter((t: any) =>
+            project.id
+              ? Number(t.project_id) === project.id
+              : t.project_name === project.projectName
+          )
+          .map((t: any) => ({
+            id: t.id as number,
+            projectName: t.project_name as string,
+            projectId: t.project_id as number,
+            userId: t.user_id as number,
+            raisedByUsername: t.raised_by_username as string || undefined,
+            url: t.ticket_urls as string || '',
+            comments: t.ticket_comments as string || '',
+            createdAt: t.created_at as string,
+          })) as Ticket[];
+        this.tickets.update(map => ({
+          ...map,
+          [project.projectName]: mapped,
+        }));
+      }
+    } catch {
+      // Silently fall back to local tickets
+    }
+  }
+
   openTicket(project: UserProject) {
     this.ticketProject.set(project);
     this.ticketComments.set('');
@@ -151,21 +221,44 @@ export class Projects {
     this.ticketUrl.set(input.value);
   }
 
-  submitTicket() {
+  async submitTicket() {
     const p = this.ticketProject();
     if (!p) return;
     const url = this.ticketUrl();
+    const comments = this.ticketComments();
+    const userId = this.calculator.dbUserId();
+
     const ticket: Ticket = {
       id: Date.now(),
       projectName: p.projectName,
+      userId: userId || undefined,
       url,
-      comments: this.ticketComments(),
+      comments,
       createdAt: new Date().toISOString(),
     };
+
+    // Save to local state immediately
     this.tickets.update(map => ({
       ...map,
       [p.projectName]: [...(map[p.projectName] || []), ticket],
     }));
+
+    // Persist to database via API
+    if (userId) {
+      try {
+        const currentUser = this.calculator.currentUser();
+        await this.calculator.apiCreateTicket({
+          project_id: p.id || null,
+          project_name: p.projectName,
+          ticket_urls: url || null,
+          ticket_comments: comments || null,
+          raised_by_username: currentUser?.name || currentUser?.email?.split('@')[0] || 'Unknown',
+        });
+      } catch (err) {
+        console.warn('[Tickets] Failed to persist ticket to database:', err);
+      }
+    }
+
     this.closeTicket();
   }
 
@@ -180,7 +273,7 @@ export class Projects {
     { value: '142', label: 'Total Tasks', icon: 'assignment', color: '#668dc1' },
     { value: '36', label: 'Files', icon: 'folder', color: '#50c48e' },
     { value: '12', label: 'Issues', icon: 'bug_report', color: '#b59954' },
-    { value: '2,840', label: 'Hours', icon: 'schedule', color: '#a78bfa' },
+    { value: '2,840', label: 'Schedule', icon: 'schedule', color: '#a78bfa' },
   ];
 
   milestones: Milestone[] = [

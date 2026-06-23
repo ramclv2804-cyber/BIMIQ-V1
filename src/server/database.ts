@@ -5,8 +5,11 @@ import { scryptSync, randomBytes, timingSafeEqual } from 'node:crypto';
 function getDbPath(): string {
   // Allow override via environment variable
   if (process.env['DB_PATH']) return process.env['DB_PATH'];
-
-  const currentDir = import.meta.dirname;
+   const currentDir = import.meta.dirname;
+   
+  debugger
+  console.log(`[DB] No DB_PATH env var set. Using default path based on execution context.`,join(currentDir, '..', 'database.db'));
+ 
 
   // Production: running from dist/app/server/
   if (currentDir.includes(`${sep}dist${sep}`)) {
@@ -64,8 +67,9 @@ export function initDatabase(): Database.Database {
       username   TEXT    NOT NULL UNIQUE,
       password   TEXT    NOT NULL,
       email      TEXT    NOT NULL UNIQUE,
-      role       TEXT    DEFAULT 'user',
-      created_at TEXT    DEFAULT (datetime('now'))
+      role       TEXT    DEFAULT 'client',
+      status     INTEGER DEFAULT 1,
+      created_at TEXT    DEFAULT (datetime('now', '+5 hours', '+30 minutes'))
     )
   `);
 
@@ -101,8 +105,30 @@ export function initDatabase(): Database.Database {
       payment                   TEXT,
       workflow_status           TEXT    DEFAULT 'Yet to Award',
       comments                  TEXT,
-      created_at                TEXT    DEFAULT (datetime('now')),
+      remark                    TEXT,
+      upload_link               TEXT,
+      point_cloud_link          TEXT,
+      description_link          TEXT,
+      status                    INTEGER DEFAULT 1,
+      created_at                TEXT    DEFAULT (datetime('now', '+5 hours', '+30 minutes')),
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  // ── Tickets table ──
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS tickets (
+      id                INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id           INTEGER NOT NULL,
+      project_id        INTEGER,
+      project_name      TEXT,
+      ticket_urls       TEXT,
+      ticket_comments   TEXT,
+      ticket_status     TEXT    DEFAULT '1',
+      raised_by_username TEXT,
+      created_at        TEXT    DEFAULT (datetime('now', '+5 hours', '+30 minutes')),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL
     )
   `);
 
@@ -110,6 +136,18 @@ export function initDatabase(): Database.Database {
   db.exec(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`);
   db.exec(`CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)`);
   db.exec(`CREATE INDEX IF NOT EXISTS idx_projects_user_id ON projects(user_id)`);
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_tickets_user_id ON tickets(user_id)`);
+  db.exec(`CREATE INDEX IF NOT EXISTS idx_tickets_project_id ON tickets(project_id)`);
+
+  // Migration: convert existing UTC timestamps to IST (run once)
+  db.exec(`CREATE TABLE IF NOT EXISTS _migrations (name TEXT PRIMARY KEY, run_at TEXT DEFAULT (datetime('now')))`);
+  const migrated = db.prepare(`SELECT name FROM _migrations WHERE name = 'ist_timestamps'`).get();
+  if (!migrated) {
+    db.exec(`UPDATE projects SET created_at = datetime(created_at, '+5 hours', '+30 minutes') WHERE created_at IS NOT NULL`);
+    db.exec(`UPDATE users SET created_at = datetime(created_at, '+5 hours', '+30 minutes') WHERE created_at IS NOT NULL`);
+    db.prepare(`INSERT INTO _migrations (name) VALUES ('ist_timestamps')`).run();
+    console.log(`[DB] Migrated existing timestamps from UTC to IST`);
+  }
 
   console.log(`[DB] SQLite database initialized at ${DB_PATH}`);
   return db;
@@ -129,38 +167,42 @@ export interface UserRow {
 }
 
 /** Create a new user. Password is hashed with scrypt before storage. Returns the inserted user row. */
+function istNow(): string {
+  return new Date(Date.now() + 19800000).toISOString().replace('T', ' ').substring(0, 19);
+}
+
 export function createUser(username: string, password: string, email: string): UserRow {
   ensureDb();
   const hashed = hashPassword(password);
   const stmt = db.prepare(
-    `INSERT INTO users (username, password, email) VALUES (?, ?, ?)`
+    `INSERT INTO users (username, password, email, created_at) VALUES (?, ?, ?, ?)`
   );
-  const result = stmt.run(username, hashed, email);
+  const result = stmt.run(username, hashed, email, istNow());
   return getUserById(result.lastInsertRowid as number)!;
 }
 
 /** Find a user by username. */
 export function getUserByUsername(username: string): UserRow | undefined {
   ensureDb();
-  return db.prepare(`SELECT * FROM users WHERE username = ?`).get(username) as UserRow | undefined;
+  return db.prepare(`SELECT * FROM users WHERE username = ? AND status = 1`).get(username) as UserRow | undefined;
 }
 
 /** Find a user by email. */
 export function getUserByEmail(email: string): UserRow | undefined {
   ensureDb();
-  return db.prepare(`SELECT * FROM users WHERE email = ?`).get(email) as UserRow | undefined;
+  return db.prepare(`SELECT * FROM users WHERE email = ? AND status = 1`).get(email) as UserRow | undefined;
 }
 
 /** Find a user by id. */
 export function getUserById(id: number): UserRow | undefined {
   ensureDb();
-  return db.prepare(`SELECT * FROM users WHERE id = ?`).get(id) as UserRow | undefined;
+  return db.prepare(`SELECT * FROM users WHERE id = ? AND status = 1`).get(id) as UserRow | undefined;
 }
 
 /** Get all users (passwords excluded for safety). */
 export function getAllUsers(): Omit<UserRow, 'password'>[] {
   ensureDb();
-  return db.prepare(`SELECT id, username, email, role, created_at FROM users`).all() as Omit<UserRow, 'password'>[];
+  return db.prepare(`SELECT id, username, email, role, created_at FROM users WHERE status = 1`).all() as Omit<UserRow, 'password'>[];
 }
 
 /**
@@ -214,6 +256,11 @@ export interface ProjectRow {
   payment: string;
   workflow_status: string;
   comments: string;
+  remark: string;
+  upload_link: string;
+  point_cloud_link: string;
+  description_link: string;
+  status: number;
   created_at: string;
 }
 
@@ -245,11 +292,16 @@ export interface CreateProjectInput {
   payment?: string;
   workflow_status?: string;
   comments?: string;
+  remark?: string;
+  upload_link?: string;
+  point_cloud_link?: string;
+  description_link?: string;
 }
 
 /** Create a new project associated with a user. Returns the inserted row. */
 export function createProject(userId: number, input: CreateProjectInput): ProjectRow {
   ensureDb();
+  const timestamp = istNow();
   const stmt = db.prepare(`
     INSERT INTO projects (
       user_id, project_no, client, project_name, building_type, description,
@@ -257,14 +309,18 @@ export function createProject(userId: number, input: CreateProjectInput): Projec
       proposal_sent, purchase_order_issued, e57_issued_date,
       start_date, end_date, expected_delivery_date,
       cost, currency, billing, billing_status, invoice_number,
-      invoice_date, invoice_due_date, payment, workflow_status, comments
+      invoice_date, invoice_due_date, payment, workflow_status, comments,
+      upload_link, point_cloud_link, description_link, remark,
+      created_at
     ) VALUES (
       @user_id, @project_no, @client, @project_name, @building_type, @description,
       @requirements, @scope, @lod, @scale, @add_on, @sft,
       @proposal_sent, @purchase_order_issued, @e57_issued_date,
       @start_date, @end_date, @expected_delivery_date,
       @cost, @currency, @billing, @billing_status, @invoice_number,
-      @invoice_date, @invoice_due_date, @payment, @workflow_status, @comments
+      @invoice_date, @invoice_due_date, @payment, @workflow_status, @comments,
+      @upload_link, @point_cloud_link, @description_link, @remark,
+      @created_at
     )
   `);
 
@@ -297,6 +353,11 @@ export function createProject(userId: number, input: CreateProjectInput): Projec
     payment: input.payment || null,
     workflow_status: input.workflow_status || 'Yet to Award',
     comments: input.comments || null,
+    remark: input.remark || null,
+    upload_link: input.upload_link || null,
+    point_cloud_link: input.point_cloud_link || null,
+    description_link: input.description_link || null,
+    created_at: timestamp,
   });
 
   return getProjectById(result.lastInsertRowid as number)!;
@@ -305,19 +366,159 @@ export function createProject(userId: number, input: CreateProjectInput): Projec
 /** Get all projects for a specific user. */
 export function getUserProjects(userId: number): ProjectRow[] {
   ensureDb();
-  return db.prepare(`SELECT * FROM projects WHERE user_id = ? ORDER BY created_at DESC`).all(userId) as ProjectRow[];
+  return db.prepare(`SELECT * FROM projects WHERE user_id = ? AND status = 1 ORDER BY created_at DESC`).all(userId) as ProjectRow[];
 }
 
 /** Get a single project by id. */
 export function getProjectById(id: number): ProjectRow | undefined {
   ensureDb();
-  return db.prepare(`SELECT * FROM projects WHERE id = ?`).get(id) as ProjectRow | undefined;
+  return db.prepare(`SELECT * FROM projects WHERE id = ? AND status = 1`).get(id) as ProjectRow | undefined;
 }
 
 /** Get all projects across all users (admin use). */
 export function getAllProjects(): ProjectRow[] {
   ensureDb();
-  return db.prepare(`SELECT * FROM projects ORDER BY created_at DESC`).all() as ProjectRow[];
+  return db.prepare(`SELECT * FROM projects WHERE status = 1 ORDER BY created_at DESC`).all() as ProjectRow[];
+}
+
+export interface AdminDashboardStats {
+  totalProjects: number;
+  totalUsers: number;
+  totalCost: number;
+  totalSft: number;
+  statusBreakdown: { status: string; count: number; cost: number }[];
+  scopeBreakdown: { scope: string; count: number }[];
+  billingBreakdown: { billing: string; count: number }[];
+  paymentBreakdown: { payment: string; count: number }[];
+  recentProjects: (ProjectRow & { username: string })[];
+  projectsPerUser: { userId: number; username: string; email: string; count: number; totalCost: number }[];
+}
+
+export function getAdminDashboardStats(): AdminDashboardStats {
+  ensureDb();
+
+  const allProjects = getAllProjects();
+  const allUsers = getAllUsers();
+
+  const statusBreakdown = db.prepare(`
+    SELECT COALESCE(workflow_status, 'Yet to Award') as status, COUNT(*) as count, COALESCE(SUM(cost), 0) as cost
+    FROM projects WHERE status = 1 GROUP BY workflow_status
+  `).all() as { status: string; count: number; cost: number }[];
+
+  const scopeBreakdown = db.prepare(`
+    SELECT COALESCE(scope, 'Unspecified') as scope, COUNT(*) as count
+    FROM projects WHERE status = 1 GROUP BY scope
+  `).all() as { scope: string; count: number }[];
+
+  const billingBreakdown = db.prepare(`
+    SELECT COALESCE(billing, 'Unknown') as billing, COUNT(*) as count
+    FROM projects WHERE status = 1 GROUP BY billing
+  `).all() as { billing: string; count: number }[];
+
+  const paymentBreakdown = db.prepare(`
+    SELECT COALESCE(payment, 'Unknown') as payment, COUNT(*) as count
+    FROM projects WHERE status = 1 GROUP BY payment
+  `).all() as { payment: string; count: number }[];
+
+  const recentProjects = db.prepare(`
+    SELECT p.*, u.username FROM projects p
+    JOIN users u ON u.id = p.user_id
+    WHERE p.status = 1 ORDER BY p.created_at DESC LIMIT 10
+  `).all() as (ProjectRow & { username: string })[];
+
+  const projectsPerUser = db.prepare(`
+    SELECT p.user_id as userId, u.username, u.email, COUNT(*) as count, COALESCE(SUM(p.cost), 0) as totalCost
+    FROM projects p JOIN users u ON u.id = p.user_id
+    WHERE p.status = 1 GROUP BY p.user_id ORDER BY count DESC
+  `).all() as { userId: number; username: string; email: string; count: number; totalCost: number }[];
+
+  return {
+    totalProjects: allProjects.length,
+    totalUsers: allUsers.filter(u => u.role === 'client').length,
+    totalCost: allProjects.reduce((s, p) => s + p.cost, 0),
+    totalSft: allProjects.reduce((s, p) => s + p.sft, 0),
+    statusBreakdown,
+    scopeBreakdown,
+    billingBreakdown,
+    paymentBreakdown,
+    recentProjects,
+    projectsPerUser,
+  };
+}
+
+// ──────────────────────────────────────────────
+//  TICKET OPERATIONS
+// ──────────────────────────────────────────────
+
+export interface TicketRow {
+  id: number;
+  user_id: number;
+  project_id: number | null;
+  project_name: string;
+  ticket_urls: string;
+  ticket_comments: string;
+  ticket_status: string;
+  raised_by_username: string | null;
+  created_at: string;
+}
+
+export interface CreateTicketInput {
+  project_id?: number;
+  project_name?: string;
+  ticket_urls?: string;
+  ticket_comments?: string;
+  ticket_status?: string;
+  raised_by_username?: string;
+}
+
+/** Create a new ticket associated with a user. */
+export function createTicket(userId: number, input: CreateTicketInput): TicketRow {
+  ensureDb();
+  const stmt = db.prepare(`
+    INSERT INTO tickets (user_id, project_id, project_name, ticket_urls, ticket_comments, ticket_status, raised_by_username)
+    VALUES (@user_id, @project_id, @project_name, @ticket_urls, @ticket_comments, @ticket_status, @raised_by_username)
+  `);
+  const result = stmt.run({
+    user_id: userId,
+    project_id: input.project_id || null,
+    project_name: input.project_name || null,
+    ticket_urls: input.ticket_urls || null,
+    ticket_comments: input.ticket_comments || null,
+    ticket_status: input.ticket_status || '1',
+    raised_by_username: input.raised_by_username || null,
+  });
+  return getTicketById(result.lastInsertRowid as number)!;
+}
+
+/** Get a single ticket by id. */
+export function getTicketById(id: number): TicketRow | undefined {
+  ensureDb();
+  return db.prepare(`SELECT * FROM tickets WHERE id = ?`).get(id) as TicketRow | undefined;
+}
+
+/** Get all tickets for a specific project. */
+export function getProjectTickets(projectId: number): TicketRow[] {
+  ensureDb();
+  return db.prepare(`SELECT * FROM tickets WHERE project_id = ? ORDER BY created_at DESC`).all(projectId) as TicketRow[];
+}
+
+/** Get all tickets for a specific user. */
+export function getUserTickets(userId: number): TicketRow[] {
+  ensureDb();
+  return db.prepare(`SELECT * FROM tickets WHERE user_id = ? ORDER BY created_at DESC`).all(userId) as TicketRow[];
+}
+
+/** Get all tickets across all users (admin use). */
+export function getAllTickets(): TicketRow[] {
+  ensureDb();
+  return db.prepare(`SELECT * FROM tickets ORDER BY created_at DESC`).all() as TicketRow[];
+}
+
+/** Update a ticket's status. */
+export function updateTicketStatus(id: number, status: string): TicketRow | undefined {
+  ensureDb();
+  db.prepare(`UPDATE tickets SET status = ? WHERE id = ?`).run(status, id);
+  return getTicketById(id);
 }
 
 // ──────────────────────────────────────────────
@@ -420,7 +621,7 @@ function ensureDb() {
 /** Default users to seed into the database (matching the original hardcoded users array). */
 const DEFAULT_USERS = [
   { username: 'clove', password: '123', email: 'clove@example.com', role: 'admin' },
-  { username: 'user', password: '123', email: 'user@example.com', role: 'user' },
+  { username: 'user', password: '123', email: 'user@example.com', role: 'client' },
   { username: 'engineer', password: 'bimiq2026', email: 'engineer@axisxd.com', role: 'admin' },
 ];
 
@@ -454,4 +655,4 @@ export function seedDefaultUsers(): void {
   console.log(`[DB] Seeding complete — ${total.count} users in database.`);
 }
 
-export default { initDatabase, createUser, getUserByUsername, getUserByEmail, getUserById, getAllUsers, createProject, getUserProjects, getProjectById, getAllProjects, validateDatabase, authenticateUser, hashPassword, verifyPassword, seedDefaultUsers };
+export default { initDatabase, createUser, getUserByUsername, getUserByEmail, getUserById, getAllUsers, createProject, getUserProjects, getProjectById, getAllProjects, getAdminDashboardStats, validateDatabase, authenticateUser, hashPassword, verifyPassword, seedDefaultUsers, createTicket, getTicketById, getProjectTickets, getUserTickets, getAllTickets, updateTicketStatus };

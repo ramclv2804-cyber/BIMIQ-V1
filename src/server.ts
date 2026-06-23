@@ -7,8 +7,10 @@ import {
 import express from 'express';
 import {join, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import { initDatabase, createUser, getUserByUsername, getUserByEmail, createProject, getUserProjects, getAllUsers, validateDatabase, authenticateUser, seedDefaultUsers } from './server/database';
+import 'dotenv/config';
+import { initDatabase, createUser, getUserByUsername, getUserByEmail, getUserById, createProject, getUserProjects, getAllUsers, getAdminDashboardStats, validateDatabase, authenticateUser, seedDefaultUsers, createTicket, getProjectTickets, getUserTickets, getAllTickets, updateTicketStatus } from './server/database';
 import { generateToken, requireAuth, optionalAuth, revokeToken } from './server/auth';
+import { sendMail, sendTicketRaiseEmail } from './server/mail';
 
 const serverDir = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = join(serverDir, '../browser');
@@ -22,7 +24,7 @@ app.use(express.urlencoded({ limit: '250mb', extended: true }));
 
 // ── Initialize SQLite Database & seed default users ──
 initDatabase();
-// seedDefaultUsers();
+seedDefaultUsers();
 
 // ═══════════════════════════════════════════════
 //  AUTH API ROUTES (public)
@@ -166,8 +168,30 @@ app.post('/api/auth/logout', requireAuth, (req, res) => {
  */
 app.get('/api/users', requireAuth, (_req, res) => {
   try {
-    const users = getAllUsers();
+    const users = getAllUsers().filter(u => u.role === 'client');
     return res.json({ users, count: users.length });
+  } catch (error: unknown) {
+    const err = error as Error;
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════
+//  ADMIN DASHBOARD API ROUTE (protected)
+// ═══════════════════════════════════════════════
+
+/**
+ * GET /api/admin/dashboard
+ * Returns aggregated dashboard statistics. Admin only.
+ */
+app.get('/api/admin/dashboard', requireAuth, (req, res) => {
+  try {
+    const authUser = (req as unknown as { [key: string]: unknown })['user'] as { userId: number; role: string };
+    if (authUser.role !== 'admin') {
+      return res.status(403).json({ error: 'Admin access required.' });
+    }
+    const stats = getAdminDashboardStats();
+    return res.json(stats);
   } catch (error: unknown) {
     const err = error as Error;
     return res.status(500).json({ error: err.message });
@@ -203,12 +227,28 @@ app.post('/api/projects', requireAuth, (req, res) => {
 
 /**
  * GET /api/projects
- * Get all projects for the authenticated user.
- * Requires JWT auth. user_id is taken from the token.
+ * Get projects — by default for the authenticated user.
+ * Admins can pass ?user_id=X to view another user's projects.
+ * Requires JWT auth.
  */
 app.get('/api/projects', requireAuth, (req, res) => {
   try {
-    const authUser = (req as unknown as { [key: string]: unknown })['user'] as { userId: number };
+    const authUser = (req as unknown as { [key: string]: unknown })['user'] as { userId: number; role: string };
+    const targetUserId = req.query['user_id'] ? Number(req.query['user_id']) : null;
+
+    // If a specific user_id is requested, only admins may do this
+    if (targetUserId) {
+      if (authUser.role !== 'admin') {
+        return res.status(403).json({ error: 'Only admins can view other users projects.' });
+      }
+      const targetUser = getUserById(targetUserId);
+      if (!targetUser) {
+        return res.status(404).json({ error: 'User not found.' });
+      }
+      const projects = getUserProjects(targetUserId);
+      return res.json({ projects, count: projects.length });
+    }
+
     const projects = getUserProjects(authUser.userId);
     return res.json({ projects, count: projects.length });
   } catch (error: unknown) {
@@ -230,6 +270,108 @@ app.get('/api/db/validate', requireAuth, (_req, res) => {
   try {
     const result = validateDatabase();
     return res.json(result);
+  } catch (error: unknown) {
+    const err = error as Error;
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// ═══════════════════════════════════════════════
+//  TICKET API ROUTES (protected)
+// ═══════════════════════════════════════════════
+
+/**
+ * POST /api/tickets
+ * Create a new ticket for a project. Requires JWT auth.
+ * Body: { project_id?, project_name?, url?, comments? }
+ */
+app.post('/api/tickets', requireAuth, async (req, res) => {
+  try {
+    const authUser = (req as unknown as { [key: string]: unknown })['user'] as { userId: number; username: string; email: string };
+    const ticketData = req.body;
+
+    // Attach who raised this ticket (the authenticated user)
+    const ticket = createTicket(authUser.userId, {
+      ...ticketData,
+      raised_by_username: authUser.username,
+    });
+    console.log(`[DB] Ticket created with id=${ticket.id} raised by user=${authUser.username} (id=${authUser.userId})`);
+
+    // ── Send email notification (fire-and-forget, doesn't block response) ──
+    sendTicketRaiseEmail({
+      ticketId: ticket.id,
+      projectName: ticketData.project_name || 'Unknown Project',
+      raisedByUsername: authUser.username,
+      raisedByEmail: authUser.email,
+      ticketUrl: ticketData.ticket_urls || undefined,
+      ticketComments: ticketData.ticket_comments || undefined,
+    }).then(() => {
+      console.log(`[Ticket] Email notification sent for ticket #${ticket.id}`);
+    }).catch((err: Error) => {
+      console.warn(`[Ticket] Failed to send email notification for ticket #${ticket.id}:`, err);
+    });
+
+    return res.status(201).json(ticket);
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('[DB] Create ticket error:', err);
+    return res.status(500).json({ error: err.message || 'Internal server error creating ticket.' });
+  }
+});
+
+/**
+ * GET /api/tickets
+ * Get tickets — optionally filtered by project_id or user_id.
+ * Admins can pass ?user_id=X to view another user's tickets.
+ * Requires JWT auth.
+ */
+app.get('/api/tickets', requireAuth, (req, res) => {
+  try {
+    const authUser = (req as unknown as { [key: string]: unknown })['user'] as { userId: number; role: string };
+    const projectId = req.query['project_id'] ? Number(req.query['project_id']) : null;
+    const targetUserId = req.query['user_id'] ? Number(req.query['user_id']) : null;
+
+    // If a specific user_id is requested, only admins may do this
+    if (targetUserId) {
+      if (authUser.role !== 'admin') {
+        return res.status(403).json({ error: 'Only admins can view other users tickets.' });
+      }
+      const tickets = getUserTickets(targetUserId);
+      return res.json({ tickets, count: tickets.length });
+    }
+
+    if (projectId) {
+      const tickets = getProjectTickets(projectId);
+      return res.json({ tickets, count: tickets.length });
+    }
+
+    // Default: return current user's tickets
+    const tickets = getUserTickets(authUser.userId);
+    return res.json({ tickets, count: tickets.length });
+  } catch (error: unknown) {
+    const err = error as Error;
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/tickets/:id
+ * Update a ticket (e.g., change status). Requires JWT auth.
+ */
+app.patch('/api/tickets/:id', requireAuth, (req, res) => {
+  try {
+    const id = Number(req.params['id']);
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: 'status is required.' });
+    }
+
+    const ticket = updateTicketStatus(id, status);
+    if (!ticket) {
+      return res.status(404).json({ error: 'Ticket not found.' });
+    }
+    return res.json(ticket);
   } catch (error: unknown) {
     const err = error as Error;
     return res.status(500).json({ error: err.message });
@@ -357,6 +499,35 @@ app.post('/api/estimate/extract', async (req, res): Promise<unknown> => {
 });
 
 /**
+ * POST /api/quote/request
+ * Send a quote request email with project details.
+ */
+app.post('/api/quote/request', async (req, res) => {
+  try {
+    const { html, subject, email } = req.body;
+    console.log(`[Quote] Received quote request for  subject: ${subject}`);
+
+    const cc = process.env['MAILGUN_CC']?.split(',').map(s => s.trim()).filter(Boolean);
+    const bcc = process.env['MAILGUN_BCC']?.split(',').map(s => s.trim()).filter(Boolean);
+
+    await sendMail({
+      to: 'unreal.qc.team@gmail.com',
+      ...(cc?.length ? { cc } : {}),
+      ...(bcc?.length ? { bcc } : {}),
+      subject: subject || 'New Quote Request',
+      html: html || '',
+    });
+
+    console.log(`[Quote] Quote email sent`);
+    return res.json({ success: true, message: `Quote request sent` });
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error('[Quote] Error sending quote email:', err);
+    return res.status(500).json({ error: err.message || 'Failed to send quote request' });
+  }
+});
+
+/**
  * Serve static files from /browser
  */
 app.use(
@@ -385,6 +556,7 @@ app.use((req, res, next) => {
  */
 if (isMainModule(import.meta.url) || process.env['pm_id']) {
   const port = process.env['PORT'] || 9001;
+
   app.listen(port, (error) => {
     if (error) {
       throw error;

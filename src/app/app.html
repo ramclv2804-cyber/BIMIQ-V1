@@ -1,7 +1,7 @@
 @if (currentUrl() === '/login') {
   <app-signin />
-} @else if (currentUrl() === '/estimations') {
-  <app-estimation-dashboard />
+} @else if (currentUrl() === '/dashboard') {
+  <app-admin-dashboard />
 } @else if (currentUrl() === '/projects') {
   <app-projects />
 } @else if (currentUrl() === '/resources') {
@@ -33,9 +33,9 @@
   <main class="relative pt-30 pb-32 max-w-[1280px] mx-auto px-6 md:px-20 min-h-screen">
 
     <!-- VIEW 1: UNIFIED DASHBOARD -->
-    @if (calculator.activeTab() === 'dashboard') {
+    @if (calculator.activeTab() === 'home') {
       <div class="animate-fade-slide-up opacity-0 focus:outline-none">
-        <app-dashboard />
+        <app-home />
       </div>
     }
 
@@ -75,7 +75,7 @@
     <div class="max-w-[1280px] mx-auto px-6 md:px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 text-xs text-on-surface-variant-custom text-left">
 
       <div class="space-y-4">
-        <button type="button" (click)="setTab('dashboard')" class="flex items-center gap-3 bg-transparent border-none cursor-pointer text-left focus:outline-none">
+        <button type="button" (click)="setTab('home')" class="flex items-center gap-3 bg-transparent border-none cursor-pointer text-left focus:outline-none">
           <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6">
             <defs>
               <linearGradient id="logo-blue-f" x1="0%" y1="0%" x2="100%" y2="100%">

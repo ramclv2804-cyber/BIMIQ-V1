@@ -163,7 +163,6 @@
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   color: #e9c349;
-  font-weight: 600;
   text-transform: uppercase;
   display: block;
   margin-bottom: 0.15rem;
@@ -207,7 +206,6 @@
   color: rgba(255, 255, 255, 0.4);
   font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.7rem;
-  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
@@ -269,7 +267,6 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.4);
-  font-weight: 600;
 }
 
 .field input {
@@ -350,7 +347,6 @@
   border-radius: 0.75rem;
   font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.7rem;
-  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   cursor: pointer;
@@ -406,7 +402,6 @@
   color: #DAE1FF;
   font-family: inherit;
   font-size: inherit;
-  font-weight: 600;
   cursor: pointer;
   padding: 0;
   transition: color 0.2s;

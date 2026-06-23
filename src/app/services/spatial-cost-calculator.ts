@@ -13,6 +13,7 @@ export interface Project {
 }
 
 export interface UserProject {
+  id?: number;
   projectNo: string;
   client: string;
   projectName: string;
@@ -40,21 +41,39 @@ export interface UserProject {
   payment: string;
   workflowStatus: string;
   comments: string;
+  remark: string;
+  uploadLink: string;
+  pointCloudLink: string;
+  descriptionLink: string;
+  createdAt?: string;
+}
+
+export interface AdminDashboardData {
+  totalProjects: number;
+  totalUsers: number;
+  totalCost: number;
+  totalSft: number;
+  statusBreakdown: { status: string; count: number; cost: number }[];
+  scopeBreakdown: { scope: string; count: number }[];
+  billingBreakdown: { billing: string; count: number }[];
+  paymentBreakdown: { payment: string; count: number }[];
+  recentProjects: Record<string, unknown>[];
+  projectsPerUser: { userId: number; username: string; email: string; count: number; totalCost: number }[];
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class SpatialCostCalculator {
-  // Navigation active state: 'dashboard' | 'portfolio' | 'config'
-  activeTab = signal<'dashboard' | 'portfolio' | 'config'>('dashboard');
+  // Navigation active state: 'home' | 'portfolio' | 'config'
+  activeTab = signal<'home' | 'portfolio' | 'config'>('home');
 
   // User Authentication State
   isLoggedIn = signal<boolean>(false);
   isLoginModalOpen = signal<boolean>(false);
   currentUser = signal<{ email: string; name: string; initials: string; role: string } | null>(null);
 
-  loginEmailInput = signal<string>('engineer@axisxd.com');
+  loginEmailInput = signal<string>('');
   loginPasswordInput = signal<string>('••••••••');
 
   /** Database user ID from SQLite, used for associating projects */
@@ -134,12 +153,40 @@ export class SpatialCostCalculator {
 
   /** Fetch projects for a user from the server API. */
   async apiGetUserProjects(userId: number): Promise<{ projects: UserProject[]; count: number }> {
+    return this.apiRequest(`/projects`);
+  }
+
+  /** Fetch projects for a specific user (admin only). */
+  async apiGetAdminUserProjects(userId: number): Promise<{ projects: UserProject[]; count: number }> {
     return this.apiRequest(`/projects?user_id=${userId}`);
   }
 
   /** Fetch all registered users from the server API. */
   async apiGetAllUsers(): Promise<{ users: { id: number; username: string; email: string; role: string; created_at: string }[]; count: number }> {
     return this.apiRequest('/users');
+  }
+
+  /** Create a new ticket via the server API. */
+  async apiCreateTicket(ticketData: Record<string, unknown>): Promise<unknown> {
+    return this.apiRequest('/tickets', {
+      method: 'POST',
+      body: JSON.stringify(ticketData),
+    });
+  }
+
+  /** Fetch tickets for a project from the server API. */
+  async apiGetProjectTickets(projectId: number): Promise<{ tickets: unknown[]; count: number }> {
+    return this.apiRequest(`/tickets?project_id=${projectId}`);
+  }
+
+  /** Fetch tickets for the current authenticated user (no user_id param — works for all users). */
+  async apiGetMyTickets(): Promise<{ tickets: unknown[]; count: number }> {
+    return this.apiRequest('/tickets');
+  }
+
+  /** Fetch tickets for a specific user (admin only — passes ?user_id= param). */
+  async apiGetUserTickets(userId: number): Promise<{ tickets: unknown[]; count: number }> {
+    return this.apiRequest(`/tickets?user_id=${userId}`);
   }
 
   /** Validate the database via the server API. */
@@ -170,7 +217,7 @@ export class SpatialCostCalculator {
             email: data.email,
             name: uppercaseName,
             initials: nameStr.substring(0, 2).toUpperCase(),
-            role: 'Project Chief Coordinator'
+            role: data.role ,
           });
           this.smartEmail.set(data.email);
           this.isLoggedIn.set(true);
@@ -197,9 +244,9 @@ export class SpatialCostCalculator {
     }
   }
 
-  private setSessionCookie(email: string, dbUserId?: number, jwtToken?: string) {
+  private setSessionCookie(email: string, dbUserId?: number, jwtToken?: string, role?: string) {
     if (!this.isBrowser) return;
-    const data = JSON.stringify({ email, dbUserId, jwtToken });
+    const data = JSON.stringify({ email, dbUserId, jwtToken, role });
     document.cookie = `${this.cookieKey}=${encodeURIComponent(data)}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
     // Also store token in dedicated cookie for easier access
     if (jwtToken) {
@@ -209,12 +256,17 @@ export class SpatialCostCalculator {
 
   clearSessionCookie() {
     if (!this.isBrowser) return;
-    document.cookie = `${this.cookieKey}=; path=/; max-age=0; SameSite=Lax`;
-    document.cookie = `${this.tokenCookieKey}=; path=/; max-age=0; SameSite=Lax`;
+    document.cookie.split(';').forEach(c => {
+      const eqPos = c.indexOf('=');
+      const name = eqPos > -1 ? c.slice(0, eqPos).trim() : c.trim();
+      if (!name) return;
+      document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+      document.cookie = `${name}=; path=/; domain=${location.hostname}; max-age=0; SameSite=Lax`;
+    });
   }
 
-  loginUser(email: string, dbUserId?: number, jwtToken?: string) {
-    const trimmed = email.trim() || 'engineer@axisxd.com';
+  loginUser(email: string, role: string, dbUserId?: number, jwtToken?: string) {
+    const trimmed = email.trim();
     const nameStr = trimmed.split('@')[0];
     const uppercaseName = nameStr.charAt(0).toUpperCase() + nameStr.slice(1);
     const initials = nameStr.substring(0, 2).toUpperCase();
@@ -222,14 +274,14 @@ export class SpatialCostCalculator {
       email: trimmed,
       name: uppercaseName,
       initials: initials,
-      role: 'Project Chief Coordinator'
+      role,
     });
     this.smartEmail.set(trimmed);
     this.isLoggedIn.set(true);
     this.isLoginModalOpen.set(false);
     if (dbUserId) this.dbUserId.set(dbUserId);
     if (jwtToken) this.jwtToken.set(jwtToken);
-    this.setSessionCookie(trimmed, dbUserId, jwtToken);
+    this.setSessionCookie(trimmed, dbUserId, jwtToken, role);
     if (dbUserId) this.loadUserProjects();
     this.showNotification(`Authorized session established under node: ${trimmed}`, 'success');
   }
@@ -253,6 +305,7 @@ export class SpatialCostCalculator {
   private projectsCookieKey = 'bimiq_projects';
 
   userProjects = signal<UserProject[]>([]);
+  allUsers = signal<{ id: number; username: string; email: string; role: string }[]>([]);
 
   private getProjectsCookieKeyForUser(): string {
     const user = this.currentUser();
@@ -282,6 +335,7 @@ export class SpatialCostCalculator {
         if (result.projects && result.projects.length > 0) {
           // Map DB columns back to UserProject interface
           const mapped = result.projects.map((p: any) => ({
+            id: (p.id as number) || undefined,
             projectNo: (p.project_no as string) || '',
             client: (p.client as string) || '',
             projectName: (p.project_name as string) || '',
@@ -309,6 +363,11 @@ export class SpatialCostCalculator {
             payment: (p.payment as string) || '',
             workflowStatus: (p.workflow_status as string) || 'Yet to Award',
             comments: (p.comments as string) || '',
+            remark: (p.remark as string) || '',
+            uploadLink: (p.upload_link as string) || '',
+            pointCloudLink: (p.point_cloud_link as string) || '',
+            descriptionLink: (p.description_link as string) || '',
+            createdAt: (p.created_at as string) || undefined,
           })) as UserProject[];
           this.userProjects.set(mapped);
           return;
@@ -335,11 +394,79 @@ export class SpatialCostCalculator {
     this.userProjects.set([]);
   }
 
+  async loadAllUsers() {
+    try {
+      const result = await this.apiGetAllUsers();
+      this.allUsers.set(result.users);
+    } catch {
+      this.allUsers.set([]);
+    }
+  }
+
+  async loadProjectsForUser(userId: number) {
+    this.userProjects.set([]);
+    try {
+      const result = await this.apiGetAdminUserProjects(userId);
+      if (result.projects && result.projects.length > 0) {
+        const mapped = result.projects.map((p: any) => ({
+          id: (p.id as number) || undefined,
+          projectNo: (p.project_no as string) || '',
+          client: (p.client as string) || '',
+          projectName: (p.project_name as string) || '',
+          buildingType: (p.building_type as string) || '',
+          description: (p.description as string) || '',
+          requirements: (p.requirements as string) || '',
+          scope: (p.scope as string) || '',
+          lod: (p.lod as string) || '',
+          scale: (p.scale as string) || '',
+          addOn: (p.add_on as string) || '',
+          sft: (p.sft as number) || 0,
+          proposalSent: (p.proposal_sent as string) || '',
+          purchaseOrderIssued: (p.purchase_order_issued as string) || '',
+          e57IssuedDate: (p.e57_issued_date as string) || '',
+          startDate: (p.start_date as string) || '',
+          endDate: (p.end_date as string) || '',
+          expectedClientDeliveryDate: (p.expected_delivery_date as string) || '',
+          cost: (p.cost as number) || 0,
+          currency: (p.currency as string) || 'USD',
+          billing: (p.billing as string) || '',
+          billingStatus: (p.billing_status as string) || '',
+          invoiceNumber: (p.invoice_number as string) || '',
+          invoiceDate: (p.invoice_date as string) || '',
+          invoiceDueDate: (p.invoice_due_date as string) || '',
+          payment: (p.payment as string) || '',
+          workflowStatus: (p.workflow_status as string) || 'Yet to Award',
+          comments: (p.comments as string) || '',
+          remark: (p.remark as string) || '',
+          uploadLink: (p.upload_link as string) || '',
+          pointCloudLink: (p.point_cloud_link as string) || '',
+          descriptionLink: (p.description_link as string) || '',
+          createdAt: (p.created_at as string) || undefined,
+        })) as UserProject[];
+        this.userProjects.set(mapped);
+      }
+    } catch {
+      this.userProjects.set([]);
+    }
+  }
+
+  dashboardData = signal<AdminDashboardData | null>(null);
+
+  async loadAdminDashboard() {
+    try {
+      const data = await this.apiRequest<AdminDashboardData>('/admin/dashboard');
+      this.dashboardData.set(data);
+    } catch {
+      this.dashboardData.set(null);
+    }
+  }
+
   addUserProject(project: UserProject) {
+    // Add to local state immediately for instant UI
     this.userProjects.update(list => [...list, project]);
     this.saveUserProjectsCookie();
 
-    // Also persist to SQLite database via server API
+    // Fire async API call to persist to DB and capture the returned id
     const userId = this.dbUserId();
     if (userId) {
       this.apiCreateProject({
@@ -371,6 +498,17 @@ export class SpatialCostCalculator {
         payment: project.payment,
         workflow_status: project.workflowStatus,
         comments: project.comments,
+        remark: project.remark,
+        upload_link: project.uploadLink,
+        point_cloud_link: project.pointCloudLink,
+        description_link: project.descriptionLink,
+      }).then((created: any) => {
+        // Capture the returned DB id and update the project in local state
+        if (created?.id) {
+          project.id = created.id as number;
+          // Persist the updated project (with id) to cookie
+          this.saveUserProjectsCookie();
+        }
       }).catch(err => console.warn('[DB] Failed to save project to database:', err));
     }
   }
@@ -699,9 +837,9 @@ export class SpatialCostCalculator {
   isLiveTwinViewerOpen = signal<boolean>(true);
 
   // Step 2 common fields
-  uploadLink = signal<string>('https://drive.google.com/drive/folders/abc123');
-  pointCloudLink = signal<string>('https://pointcloud.example.com/project-xyz');
-  descriptionLink = signal<string>('https://docs.google.com/document/d/def456');
+  uploadLink = signal<string>('');
+  pointCloudLink = signal<string>('');
+  descriptionLink = signal<string>('');
   description = signal<string>('');
   remark = signal<string>('');
   // manualEstimation = signal<string>('');
@@ -1889,7 +2027,7 @@ export class SpatialCostCalculator {
     this.showNotification(`Project ${code} created successfully inside local database node!`, 'success');
   }
 
-  setTab(tab: 'dashboard' | 'portfolio' | 'config') {
+  setTab(tab: 'home' | 'portfolio' | 'config') {
     this.activeTab.set(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
