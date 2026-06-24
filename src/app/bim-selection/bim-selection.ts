@@ -7,15 +7,15 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
   selector: 'app-bim-selection',
   imports: [CommonModule],
   template: `
-    <div class="glass-panel p-6 md:p-8 rounded-3xl border border-silver-leaf/15 bg-midnight-charcoal/35 w-full space-y-6 antialiased">
+    <div class="glass-panel p-4 md:p-8 rounded-2xl md:rounded-3xl border border-silver-leaf/15 bg-midnight-charcoal/35 w-full space-y-5 md:space-y-6 antialiased">
       <div class="text-center md:text-left space-y-1 select-none">
-        <h2 class="font-serif text-2xl md:text-3xl text-silver-leaf">Let's get you an estimate</h2>
-        <p class="text-xs text-on-surface-variant-custom/80 font-sans leading-relaxed">
+        <h2 class="font-serif text-xl md:text-3xl text-silver-leaf">Let's get you an estimate</h2>
+        <p class="text-[11px] md:text-xs text-on-surface-variant-custom/80 font-sans leading-relaxed">
           How would you like us to bring your space online?
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         <!-- OPTION 1: Scan to BIM -->
         @let isBimDisabled = calculator.modelingSelectionLocked() && calculator.selectedModelingWay() !== 'bim';
         <button 
@@ -28,7 +28,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           [class.border-white/5]="isBimDisabled"
           [class.opacity-40]="isBimDisabled"
           [ngClass]="isBimDisabled ? 'cursor-not-allowed' : 'cursor-pointer'"
-          class="w-full flex items-start gap-4 p-5 rounded-2xl border text-left transition-all hover:bg-white/5 focus:outline-none relative group select-none">
+          class="w-full flex items-start gap-3 md:gap-4 p-4 md:p-5 rounded-xl md:rounded-2xl border text-left transition-all hover:bg-white/5 focus:outline-none relative group select-none">
           <div class="mt-1 flex items-center justify-center">
             @if (calculator.selectedModelingWay() === 'bim') {
               <span class="material-symbols-outlined text-primary-custom text-2xl fill-1">radio_button_checked</span>
@@ -57,7 +57,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           [class.border-white/5]="isCadDisabled"
           [class.opacity-40]="isCadDisabled"
           [ngClass]="isCadDisabled ? 'cursor-not-allowed' : 'cursor-pointer'"
-          class="w-full flex items-start gap-4 p-5 rounded-2xl border text-left transition-all hover:bg-white/5 focus:outline-none relative group select-none">
+          class="w-full flex items-start gap-3 md:gap-4 p-4 md:p-5 rounded-xl md:rounded-2xl border text-left transition-all hover:bg-white/5 focus:outline-none relative group select-none">
           <div class="mt-1 flex items-center justify-center">
             @if (calculator.selectedModelingWay() === 'scan_to_cad') {
               <span class="material-symbols-outlined text-primary-custom text-2xl fill-1">radio_button_checked</span>

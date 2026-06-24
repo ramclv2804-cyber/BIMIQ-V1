@@ -496,9 +496,12 @@ export function getTicketById(id: number): TicketRow | undefined {
   return db.prepare(`SELECT * FROM tickets WHERE id = ?`).get(id) as TicketRow | undefined;
 }
 
-/** Get all tickets for a specific project. */
-export function getProjectTickets(projectId: number): TicketRow[] {
+/** Get all tickets for a specific project, optionally filtered by ticket_status. */
+export function getProjectTickets(projectId: number, status?: string): TicketRow[] {
   ensureDb();
+  if (status) {
+    return db.prepare(`SELECT * FROM tickets WHERE project_id = ? AND ticket_status = ? ORDER BY created_at DESC`).all(projectId, status) as TicketRow[];
+  }
   return db.prepare(`SELECT * FROM tickets WHERE project_id = ? ORDER BY created_at DESC`).all(projectId) as TicketRow[];
 }
 
@@ -621,8 +624,7 @@ function ensureDb() {
 /** Default users to seed into the database (matching the original hardcoded users array). */
 const DEFAULT_USERS = [
   { username: 'clove', password: '123', email: 'clove@example.com', role: 'admin' },
-  { username: 'user', password: '123', email: 'user@example.com', role: 'client' },
-  { username: 'engineer', password: 'bimiq2026', email: 'engineer@axisxd.com', role: 'admin' },
+  // { username: 'engineer', password: 'bimiq2026', email: 'engineer@axisxd.com', role: 'admin' },
 ];
 
 /**

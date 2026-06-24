@@ -226,13 +226,7 @@
       <div class="banner-overlay"></div>
       <div class="banner-content">
         <div class="banner-top-row">
-          <div class="banner-chips">
-            <span class="detail-status" [style.background]="getStatusColor(p.workflowStatus) + '18'"
-              [style.color]="getStatusColor(p.workflowStatus)">
-              <span class="status-bullet"></span>
-              {{ p.workflowStatus }}
-            </span>
-          </div>
+ 
           <h1 class="detail-title">{{ p.projectName }}</h1>
         </div>
 
@@ -377,30 +371,31 @@
         <div class="tickets-card">
           <h3 class="section-title">
             <span class="section-title-icon">confirmation_number</span>
-            Tickets
-            <span class="tickets-count" *ngIf="projectTickets().length">({{ projectTickets().length }})</span>
+            <span>Tickets</span>
+            <div class="ticket-filter-group">
+              <button class="ticket-filter-btn ticket-filter-inprogress" [class.active]="ticketStatusFilter() === '1'" (click)="setTicketFilter('1')">In Progress</button>
+              <button class="ticket-filter-btn ticket-filter-completed" [class.active]="ticketStatusFilter() === '2'" (click)="setTicketFilter('2')">Completed</button>
+            </div>
+            <span class="tickets-notif" *ngIf="projectTickets().length">
+              <span class="tickets-notif-icon">notifications</span>
+              <span class="tickets-notif-count">{{ projectTickets().length }}</span>
+            </span>
           </h3>
           <div class="tickets-scroll">
             <div class="tickets-list" *ngIf="projectTickets().length; else noTickets">
-              <div class="ticket-item" *ngFor="let t of projectTickets()">
-                <div class="ticket-item-line"></div>
+              <div class="ticket-item" *ngFor="let t of filteredProjectTickets()" (click)="openTicketDetail(t)">
                 <div class="ticket-item-body">
                   <div class="ticket-item-header">
-                    <span class="ticket-item-id">#{{ t.id.toString().slice(-6) }}</span>
                     <span class="ticket-item-date">{{ t.createdAt | date:'MMM d, y' }}</span>
+                    <span class="ticket-item-sep">|</span>
                     <span class="ticket-item-time">{{ t.createdAt | date:'h:mm a' }}</span>
-
-                    <span class="ticket-item-badge" *ngIf="t.url">attached</span>
+                    <span class="ticket-item-badge ticket-badge-{{ t.status || '1' }}">{{ ticketStatusLabel(t.status) }}</span>
+                    <span *ngIf="t.url" class="ticket-item-attach">attached</span>
                   </div>
-                  <div class="ticket-item-raised my-1" *ngIf="t.raisedByUsername">
-                    <span class="ticket-raised-icon">person</span>
-                    {{ t.raisedByUsername }}
+                  <div class="ticket-item-sub" *ngIf="t.comments || t.raisedByUsername || t.url">
+                    <span *ngIf="t.raisedByUsername" class="ticket-item-author">Raised: <span class="ticket-author-name">{{ t.raisedByUsername }}</span></span>
+                    <span *ngIf="t.comments" class="ticket-item-text ticket-comment-clamp">comments: {{ t.comments }}</span>
                   </div>
-                  <p class="ticket-item-comment" *ngIf="t.comments">{{ t.comments }}</p>
-                  <a *ngIf="t.url" [href]="t.url" target="_blank" class="ticket-item-link">
-                    <span class="ticket-link-icon">link</span>
-                    <span class="ticket-link-text">{{ t.url }}</span>
-                  </a>
                 </div>
               </div>
             </div>
@@ -502,19 +497,8 @@
     <div class="ticket-header-right">
       <div class="ticket-header-chip">
         <span class="ticket-chip-icon">folder</span>
-        <span class="ticket-chip-label">Project</span>
+        <span class="ticket-chip-label">Project: </span>
         <span class="ticket-chip-value" [title]="p.projectName">{{ p.projectName }}</span>
-      </div>
-      <div class="ticket-header-chip">
-        <span class="ticket-chip-icon">attach_money</span>
-        <span class="ticket-chip-label">Cost</span>
-        <span class="ticket-chip-value accent" [title]="calculator.getCurrencySymbol(p.currency) + (p.cost | number)">{{
-          calculator.getCurrencySymbol(p.currency) }}{{ p.cost | number }}</span>
-      </div>
-      <div class="ticket-header-chip">
-        <span class="ticket-chip-icon">straighten</span>
-        <span class="ticket-chip-label">SFT</span>
-        <span class="ticket-chip-value" [title]="(p.sft | number) + ' sft'">{{ p.sft | number }}</span>
       </div>
     </div>
   </div>
@@ -547,5 +531,62 @@
 
   <div class="ticket-modal-footer">
     <button class="ticket-btn-submit" (click)="submitTicket()">Submit Ticket</button>
+  </div>
+</div>
+
+<!-- TICKET DETAIL MODAL -->
+<div class="modal-backdrop ticket-detail-backdrop" *ngIf="selectedTicket()" (click)="closeTicketDetail()"></div>
+<div class="ticket-detail-modal" *ngIf="selectedTicket(); let t">
+  <button class="modal-close-btn" (click)="closeTicketDetail()">
+    <span>close</span>
+  </button>
+
+  <div class="ticket-detail-header">
+    <div class="ticket-detail-header-top">
+      <div class="ticket-detail-header-left">
+        <div class="ticket-detail-icon">
+          <span>confirmation_number</span>
+        </div>
+        <div>
+          <h2 class="ticket-detail-title">Ticket </h2>
+          <div class="ticket-detail-meta">
+            <span class="ticket-detail-date">{{ t.createdAt | date:'MMM d, y' }}</span>
+            <span class="ticket-detail-sep">•</span>
+            <span class="ticket-detail-time">{{ t.createdAt | date:'h:mm a' }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="ticket-detail-chip ticket-detail-chip-{{ t.status || '1' }}">
+        <span class="ticket-detail-chip-dot"></span>
+        {{ ticketStatusLabel(t.status) }}
+      </div>
+    </div>
+    <div class="ticket-detail-header-divider"></div>
+    <div class="ticket-detail-raised" *ngIf="t.raisedByUsername">
+      <span class="ticket-detail-raised-icon">person</span>
+      <span>Raised by</span>
+      <span class="ticket-detail-raised-name">{{ t.raisedByUsername }}</span>
+    </div>
+  </div>
+
+  <div class="ticket-detail-body">
+    <div class="ticket-detail-card" *ngIf="t.comments">
+      <div class="ticket-detail-card-title">
+        <span class="ticket-detail-card-icon">comment</span>
+        Comments
+      </div>
+      <p class="ticket-detail-comment">{{ t.comments }}</p>
+    </div>
+
+    <div class="ticket-detail-card" *ngIf="t.url">
+      <div class="ticket-detail-card-title">
+        <span class="ticket-detail-card-icon">link</span>
+        Attachment Link
+      </div>
+      <a [href]="t.url" target="_blank" class="ticket-detail-link">
+        <span class="ticket-detail-link-icon">open_in_new</span>
+        <span class="ticket-detail-link-text">{{ t.url }}</span>
+      </a>
+    </div>
   </div>
 </div>

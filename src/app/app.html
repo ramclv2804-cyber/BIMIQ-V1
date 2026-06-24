@@ -50,7 +50,7 @@
     @if (calculator.activeTab() === 'config') {
       <div class="space-y-10 animate-fade-slide-up opacity-0 text-left">
 
-        <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-white/5 pb-4">
+        <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4  pb-4">
           <div>
             <h1 class="font-serif text-3xl md:text-5xl text-silver-leaf leading-none">Cost Estimation Configuration</h1>
             <p class="text-[11px] text-on-surface-variant-custom mt-2 max-w-lg leading-relaxed font-sans">
@@ -67,16 +67,15 @@
       </div>
     }
   </main>
+}
 
+  <!-- FOOTER (appears on all pages) -->
+  <footer class="w-full py-12 md:py-16 border-t border-silver-leaf/10 bg-[#0A0A0C] font-mono select-none">
+    <div class="max-w-[1280px] mx-auto px-4 md:px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-10 text-xs text-on-surface-variant-custom text-left">
 
-
-  <!-- FOOTER -->
-  <footer class="w-full py-16 border-t border-silver-leaf/10 bg-[#0A0A0C] font-mono select-none">
-    <div class="max-w-[1280px] mx-auto px-6 md:px-20 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 text-xs text-on-surface-variant-custom text-left">
-
-      <div class="space-y-4">
+      <div class="space-y-3 md:space-y-4">
         <button type="button" (click)="setTab('home')" class="flex items-center gap-3 bg-transparent border-none cursor-pointer text-left focus:outline-none">
-          <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6">
+          <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6">
             <defs>
               <linearGradient id="logo-blue-f" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#dae1ff" />
@@ -99,50 +98,50 @@
             <circle cx="4" cy="9" r="2" fill="url(#logo-blue-f)" />
             <circle cx="28" cy="9" r="2" fill="url(#logo-pink-f)" />
           </svg>
-          <span class="text-silver-leaf text-sm tracking-widest font-black uppercase transition-colors hover:text-[#DF80AC] duration-300">
+          <span class="text-silver-leaf text-xs md:text-sm tracking-widest font-black uppercase transition-colors hover:text-[#DF80AC] duration-300">
             BIM-<span class="text-secondary-custom font-normal">IQ</span>
           </span>
         </button>
-        <p class="leading-relaxed text-[11px] text-slate-400 font-sans">
+        <p class="leading-relaxed text-[10px] md:text-[11px] text-slate-400 font-sans">
           Convert raw physical LiDAR scans into fully compliant Autodesk Revit sheets and CAD floor plans. Managed via automated geometric pipeline validation models.
         </p>
-        <div class="pt-2">
+        <div class="pt-1 md:pt-2">
           <button
             id="btn-footer-add-project"
             type="button"
             (click)="goToEstimator()"
-            class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary-custom/10 border border-primary-custom/25 text-primary-custom text-[10px] font-bold uppercase transition-all duration-300 hover:bg-primary-custom/20 hover:scale-[1.03] active:scale-95 cursor-pointer">
+            class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-primary-custom/10 border border-primary-custom/25 text-primary-custom text-[9px] md:text-[10px] font-bold uppercase transition-all duration-300 hover:bg-primary-custom/20 hover:scale-[1.03] active:scale-95 cursor-pointer">
             <span class="material-symbols-outlined text-sm">add_circle</span>
             <span>Initiate Project Node</span>
           </button>
         </div>
       </div>
 
-      <div class="space-y-4 font-sans">
-        <div class="text-silver-leaf text-[11px] uppercase tracking-wider font-bold border-b border-white/5 pb-2 font-mono">Digital Project Specifications</div>
-        <ul class="space-y-2 text-[11px] text-slate-400 list-none p-0 m-0">
+      <div class="space-y-3 md:space-y-4 font-sans">
+        <div class="text-silver-leaf text-[10px] md:text-[11px] uppercase tracking-wider font-bold border-b border-white/5 pb-2 font-mono">Digital Project Specifications</div>
+        <ul class="space-y-1.5 md:space-y-2 text-[10px] md:text-[11px] text-slate-400 list-none p-0 m-0">
           <li class="flex items-center gap-2 mt-1 hover:text-white transition duration-200">
-            <span class="text-emerald-400 font-bold select-none text-[14px]">•</span>
+            <span class="text-emerald-400 font-bold select-none text-[12px] md:text-[14px]">•</span>
             <span>Orthophoto High-Res Floor Plans</span>
           </li>
           <li class="flex items-center gap-2 hover:text-white transition duration-200">
-            <span class="text-primary-custom font-bold select-none text-[14px]">•</span>
+            <span class="text-primary-custom font-bold select-none text-[12px] md:text-[14px]">•</span>
             <span>LOD 200 schematic design layout</span>
           </li>
           <li class="flex items-center gap-2 hover:text-white transition duration-200">
-            <span class="text-primary-custom font-bold select-none text-[14px]">•</span>
+            <span class="text-primary-custom font-bold select-none text-[12px] md:text-[14px]">•</span>
             <span>LOD 300 building information modeling</span>
           </li>
           <li class="flex items-center gap-2 hover:text-white transition duration-200">
-            <span class="text-secondary-custom font-bold select-none text-[14px]">•</span>
+            <span class="text-secondary-custom font-bold select-none text-[12px] md:text-[14px]">•</span>
             <span>LOD 350 precision clash co-ordinates</span>
           </li>
         </ul>
       </div>
 
-      <div class="space-y-4">
-        <div class="text-silver-leaf text-[11px] uppercase tracking-wider font-bold border-b border-white/5 pb-2">Platform & Safety</div>
-        <div class="flex flex-col gap-2 text-[11px]">
+      <div class="space-y-3 md:space-y-4">
+        <div class="text-silver-leaf text-[10px] md:text-[11px] uppercase tracking-wider font-bold border-b border-white/5 pb-2">Platform & Safety</div>
+        <div class="flex flex-col gap-1.5 md:gap-2 text-[10px] md:text-[11px]">
           <button type="button" (click)="calculator.showNotification('Documentation accessed successfully.', 'success')" class="text-left text-slate-400 hover:text-white hover:translate-x-1 transition duration-200 focus:outline-none bg-transparent border-none cursor-pointer py-0.5 font-mono">
             System Documentation Overview
           </button>
@@ -157,7 +156,7 @@
           </button>
           <button type="button" (click)="goToDbValidator()"
             class="text-left text-emerald-400 hover:text-emerald-300 hover:translate-x-1 transition duration-200 py-0.5 font-mono flex items-center gap-2 bg-transparent border-none cursor-pointer w-full">
-            <span class="material-symbols-outlined text-[14px]">database</span>
+            <span class="material-symbols-outlined text-[12px] md:text-[14px]">database</span>
             Database Control Panel
           </button>
         </div>
@@ -165,12 +164,10 @@
 
     </div>
 
-    <div class="max-w-[1280px] mx-auto px-6 md:px-20 mt-12 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-slate-500 font-mono">
+    <div class="max-w-[1280px] mx-auto px-4 md:px-20 mt-8 md:mt-12 pt-5 md:pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4 text-[8px] md:text-[10px] text-slate-500 font-mono">
       <span>&copy; 2026 BIM-IQ / INTEGRATED PIPELINE NETWORK. ALL RIGHTS RESERVED.</span>
     </div>
   </footer>
-}
-
 
   <!-- USER SIGN IN DIALOG MODAL -->
   @if (calculator.isLoginModalOpen()) {

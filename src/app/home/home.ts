@@ -7,10 +7,10 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
   selector: 'app-home',
   imports: [CommonModule],
   template: `
-    <div class="animate-fade-slide-up opacity-0 space-y-24">
+    <div class="animate-fade-slide-up opacity-0 space-y-16 md:space-y-24">
 
       <!-- ================= SECTION 1: YOUR BUILDING ONLINE PORTAL ================= -->
-      <section class="relative py-32 px-6 md:px-12 text-center overflow-hidden" id="hero-portal-section">
+      <section class="relative py-20 md:py-32 px-4 md:px-12 text-center overflow-hidden" id="hero-portal-section">
         <!-- Professional BIM High-Resolution Background Render with luxury tint and dark vignette overlay -->
         <div class="absolute inset-0 z-0 pointer-events-none select-none">
           <img src="/bim_modern_render.png" alt="BIM Digital Twin Background" class="w-full h-full object-cover opacity-85 filter contrast-[1.12] saturate-[1.05]" referrerpolicy="no-referrer" />
@@ -25,27 +25,27 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         <div class="max-w-3xl mx-auto space-y-6 relative z-10">
         
           
-          <h1 class="font-serif text-4xl md:text-6xl leading-tight tracking-tight text-white font-semibold select-none text-center drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+          <h1 class="font-serif text-3xl md:text-6xl leading-tight tracking-tight text-white font-semibold select-none text-center drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
             Your building, online.
-            <span class="block font-serif italic md:text-5xl text-primary-custom font-normal mt-1">With unprecedented detail.</span>
+            <span class="block font-serif italic text-xl md:text-5xl text-primary-custom font-normal mt-1">With unprecedented detail.</span>
           </h1>
           
-          <p class="max-w-xl mx-auto font-sans text-xs md:text-sm leading-relaxed text-slate-200 text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+          <p class="max-w-xl mx-auto font-sans text-[11px] md:text-sm leading-relaxed text-slate-200 text-center drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
             Transform physical assets into high-fidelity digital twins. Access Revit models, CAD documentation, and 360° panoramas instantly in your browser.
           </p>
           
-          <div class="flex flex-wrap items-center justify-center gap-4 pt-4 select-none">
-            <button type="button" (click)="calculator.setTab('config')" class="bg-primary-custom text-on-primary-custom font-mono text-xs uppercase tracking-widest px-8 py-3.5 rounded-lg border-none hover:opacity-95 active:scale-95 transition-all font-bold cursor-pointer shadow-lg shadow-primary-custom/15">
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4 select-none">
+            <button type="button" (click)="calculator.setTab('config')" class="w-full sm:w-auto bg-primary-custom text-on-primary-custom font-mono text-[10px] md:text-xs uppercase tracking-widest px-6 md:px-8 py-3 md:py-3.5 rounded-lg border-none hover:opacity-95 active:scale-95 transition-all font-bold cursor-pointer shadow-lg shadow-primary-custom/15">
              Try Price Estimation
             </button>
-            <button type="button" (click)="watchDemo()" class="border border-white/20 hover:border-white/50 bg-[#0A0A0D]/80 text-silver-leaf font-mono text-xs uppercase tracking-widest px-8 py-3.5 rounded-lg active:scale-95 transition-all font-bold cursor-pointer hover:bg-white/10 backdrop-blur-md">
+            <button type="button" (click)="watchDemo()" class="w-full sm:w-auto border border-white/20 hover:border-white/50 bg-[#0A0A0D]/80 text-silver-leaf font-mono text-[10px] md:text-xs uppercase tracking-widest px-6 md:px-8 py-3 md:py-3.5 rounded-lg active:scale-95 transition-all font-bold cursor-pointer hover:bg-white/10 backdrop-blur-md">
               Watch Live Demo
             </button>
           </div>
         </div>
 
         <!-- STRATEGIC PARTNERS SECTION - BRAND PARTNERS ROW -->
-        <div class="mt-20 pt-10 border-t border-white/5 overflow-hidden w-full" id="brand-partners-section">
+        <div class="mt-12 md:mt-20 pt-6 md:pt-10 border-t border-white/5 overflow-hidden w-full" id="brand-partners-section">
           <div class="max-w-5xl mx-auto space-y-6">
             <p class="font-mono text-[10px] uppercase tracking-widest text-[#C86B98] font-bold text-center select-none">TRUSTED BY STRATEGIC PARTNERS</p>
             
@@ -127,8 +127,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           </div>
         </div>
 
-        <!-- GIS World Map container utilizing live Leaflet.js matching exact styles requested -->
-        <div class="relative h-[480px] bg-[#A9D0E2] rounded-2xl glass-panel overflow-hidden shadow-2xl group">
+        <!-- GIS World Map container utilizing live Leaflet.js matching exact styles requested -->          <div class="relative h-[350px] md:h-[480px] bg-[#A9D0E2] rounded-xl md:rounded-2xl glass-panel overflow-hidden shadow-2xl group">
           
           <!-- Leaflet Interactive Div -->
           <div id="map_div" class="w-full h-full z-0"></div>
@@ -189,16 +188,16 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
 
         <!-- ================= SECTION 6: SERVICE SPECIFICATION TIERS ================= -->
-      <section class="space-y-6 text-left pt-12 border-t border-white/5" id="service-sectors-tiers">
+      <section class="space-y-5 md:space-y-6 text-left pt-8 md:pt-12 border-t border-white/5" id="service-sectors-tiers">
         <div>
           <p class="font-mono text-xs text-[#C86B98] mb-1 uppercase tracking-widest ">BIM SERVICE SECTORS</p>
           <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf select-none font-bold">Our Services</h2>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           
           <!-- Card 1: MEP Pipeline Design -->
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-midnight-charcoal/80 flex flex-col justify-between h-auto gap-6 transition-all hover:border-white/10 select-none">
+          <div class="glass-panel p-5 md:p-6 rounded-xl md:rounded-2xl border border-white/5 bg-midnight-charcoal/80 flex flex-col justify-between h-auto gap-4 md:gap-6 transition-all hover:border-white/10 select-none">
             <div class="space-y-4">
               <div class="flex justify-between items-center">
                 <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
@@ -215,7 +214,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-2 font-mono text-[10px]">
+            <div class="grid grid-cols-3 gap-1.5 md:gap-2 font-mono text-[9px] md:text-[10px]">
               <button type="button" 
                       (click)="calculator.activeMepTier.set('SMALL'); calculator.showNotification('MEP Tier calibrated to Small', 'success')"
                       [ngClass]="calculator.activeMepTier() === 'SMALL' ? 'bg-primary-custom text-on-primary-custom font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
@@ -258,7 +257,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-2 font-mono text-[10px]">
+            <div class="grid grid-cols-3 gap-1.5 md:gap-2 font-mono text-[9px] md:text-[10px]">
               <button type="button" 
                       (click)="calculator.activeStructuralTier.set('SMALL'); calculator.showNotification('Structural Tier calibrated to Small', 'success')"
                       [ngClass]="calculator.activeStructuralTier() === 'SMALL' ? 'bg-secondary-custom text-on-secondary-custom font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
@@ -301,7 +300,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
               </div>
             </div>
 
-            <div class="grid grid-cols-3 gap-2 font-mono text-[10px]">
+            <div class="grid grid-cols-3 gap-1.5 md:gap-2 font-mono text-[9px] md:text-[10px]">
               <button type="button" 
                       (click)="calculator.activeArchitecturalTier.set('SMALL'); calculator.showNotification('Architectural Tier calibrated to Small', 'success')"
                       [ngClass]="calculator.activeArchitecturalTier() === 'SMALL' ? 'bg-[#cd79a3] text-midnight-charcoal font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
@@ -330,30 +329,30 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
       </section>
 
       <!-- Pricing Quick Link summary segment preserved for seamless calculations flow -->
-      <section class="glass-panel p-6 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4 bg-midnight-charcoal/30 border border-primary-custom/10 select-none text-left" id="pricing-summary-cta">
-        <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-primary-custom text-[28px] animate-pulse">analytics</span>
+      <section class="glass-panel p-4 md:p-6 rounded-xl md:rounded-2xl flex flex-col md:flex-row justify-between items-center gap-3 md:gap-4 bg-midnight-charcoal/30 border border-primary-custom/10 select-none text-left" id="pricing-summary-cta">
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <span class="material-symbols-outlined text-primary-custom text-[24px] md:text-[28px] animate-pulse shrink-0">analytics</span>
           <div>
-            <p class="font-mono text-[9px] text-primary-custom uppercase tracking-widest">Live Synthesis State</p>
-            <h4 class="font-serif text-base text-silver-leaf mt-1 animate-pulse">Accumulated Quick Tier Target Estimate System</h4>
+            <p class="font-mono text-[8px] md:text-[9px] text-primary-custom uppercase tracking-widest">Live Synthesis State</p>
+            <h4 class="font-serif text-sm md:text-base text-silver-leaf mt-1 animate-pulse">Accumulated Quick Tier Target Estimate System</h4>
           </div>
         </div>
-        <div class="flex items-center gap-4 text-right">
-          <span class="font-mono text-3.5xl text-primary-custom font-normal select-all">\${{ getTotal() | number }}</span>
+        <div class="flex items-center gap-3 md:gap-4 text-right w-full md:w-auto justify-between md:justify-end">
+          <span class="font-mono text-2xl md:text-3.5xl text-primary-custom font-normal select-all">\${{ getTotal() | number }}</span>
           <button type="button" 
                   (click)="calculator.setTab('config'); calculator.showNotification('Linked securely to comprehensive estimators.', 'info')"
-                  class="bg-white/5 hover:bg-primary-custom hover:text-on-primary-custom p-3.5 rounded-xl transition-all duration-300 border border-white/10 flex items-center justify-center focus:outline-none cursor-pointer">
+                  class="bg-white/5 hover:bg-primary-custom hover:text-on-primary-custom p-3 md:p-3.5 rounded-xl transition-all duration-300 border border-white/10 flex items-center justify-center focus:outline-none cursor-pointer">
             <span class="material-symbols-outlined text-xs">tune</span>
           </button>
         </div>
       </section>
 
        <!-- ================= SECTION 4: STREAMLINED OS VIEWPORTS ================= -->
-      <section class="space-y-6 pt-12 border-t border-white/5 text-left select-none" id="operating-system-viewports-section">
+      <section class="space-y-5 md:space-y-6 pt-8 md:pt-12 border-t border-white/5 text-left select-none" id="operating-system-viewports-section">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
           <div>
             <p class="font-mono text-xs text-primary-custom mb-1 uppercase tracking-widest">Streamlined Operating System</p>
-            <h3 class="font-serif text-2xl md:text-3xl text-silver-leaf">View, Order, Share, Export.</h3>
+            <h3 class="font-serif text-xl md:text-3xl text-silver-leaf">View, Order, Share, Export.</h3>
           </div>
           <p class="max-w-md text-xs text-on-surface-variant-custom leading-relaxed font-sans">
             A frictionless cloud journey from laser point-cloud site capture to enterprise-level architecture asset management.
@@ -362,22 +361,22 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
           <!-- Item 01 -->
-          <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-primary-custom/25 transition-all">
+          <div class="glass-panel p-4 md:p-5 rounded-xl border border-white/5 relative flex flex-col gap-4 md:gap-6 hover:border-primary-custom/25 transition-all">
             <span class="font-mono text-xs text-primary-custom/40 text-right block">01 / ACCESS</span>
             <div>
-              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">View</h5>
-              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
+              <h5 class="font-serif text-base md:text-[18px] text-silver-leaf font-bold">View</h5>
+              <p class="text-[10px] md:text-[11px] text-on-surface-variant-custom mt-1.5 md:mt-2 leading-relaxed">
                 Inspect every corner of your modeled facility layout in high-definition interactive 3D structures and layered 2D floorplans.
               </p>
             </div>
           </div>
 
           <!-- Item 02 -->
-          <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-primary-custom/25 transition-all">
+          <div class="glass-panel p-4 md:p-5 rounded-xl border border-white/5 relative flex flex-col gap-4 md:gap-6 hover:border-primary-custom/25 transition-all">
             <span class="font-mono text-xs text-primary-custom/40 text-right block">02 / DEMAND</span>
             <div>
-              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">Order</h5>
-              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
+              <h5 class="font-serif text-base md:text-[18px] text-silver-leaf font-bold">Order</h5>
+              <p class="text-[10px] md:text-[11px] text-on-surface-variant-custom mt-1.5 md:mt-2 leading-relaxed">
                 Request new surveys or 3D coordinate model updates with an instant calculator. No traditional tedious RFPs required.
               </p>
             </div>
@@ -387,8 +386,8 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-[#DF80AC]/25 transition-all">
             <span class="font-mono text-xs  text-[#DF80AC]/40 text-right block">03 / COLLABORATION</span>
             <div>
-              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">Share</h5>
-              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
+              <h5 class="font-serif text-base md:text-[18px] text-silver-leaf font-bold">Share</h5>
+              <p class="text-[10px] md:text-[11px] text-on-surface-variant-custom mt-1.5 md:mt-2 leading-relaxed">
                 Collaborate securely with external engineers and sub-consultants using expiring tokens and revocable access links.
               </p>
             </div>
@@ -398,8 +397,8 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           <div class="glass-panel p-5 rounded-xl border border-white/5 relative flex flex-col gap-6 hover:border-[#e9c349]/25 transition-all">
             <span class="font-mono text-xs text-[#e9c349]/40 text-right block">04 / INTEGRATION</span>
             <div>
-              <h5 class="font-serif text-[18px] text-silver-leaf font-bold">Export</h5>
-              <p class="text-[11px] text-on-surface-variant-custom mt-2 leading-relaxed">
+              <h5 class="font-serif text-base md:text-[18px] text-silver-leaf font-bold">Export</h5>
+              <p class="text-[10px] md:text-[11px] text-on-surface-variant-custom mt-1.5 md:mt-2 leading-relaxed">
                 Direct native API integration with Autodesk Construction Cloud (ACC), Procore, and Bentley ProjectWise repositories.
               </p>
             </div>
@@ -408,7 +407,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
       </section>
 
       <!-- ================= SECTION 3: INTEGRATED BROWSER SECTION ================= -->
-      <section class="space-y-8 text-left" id="integrated-browser-section">
+      <section class="space-y-6 md:space-y-8 text-left" id="integrated-browser-section">
         <div>
           <p class="font-mono text-xs text-[#DF80AC] bg-[#DF80AC]/10 border border-[#DF80AC]/15 px-2.5 py-1 rounded inline-block uppercase tracking-widest text-left scale-95 origin-left">File Delivery Engine</p>
           <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf mt-2 select-none">Integrated browser-based viewer</h2>
@@ -417,10 +416,10 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           <!-- Left side column: LOD 350 Revit View Mockup precisely designed after visual cues -->
-          <div class="lg:col-span-7 bg-[#111215] border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex flex-col h-[400px] relative select-none">
+          <div class="lg:col-span-7 bg-[#111215] border border-white/10 rounded-xl md:rounded-2xl overflow-hidden shadow-2xl flex flex-col h-[300px] md:h-[400px] relative select-none">
             
             <!-- Heading bars -->
-            <div class="px-5 py-3.5 bg-background-custom border-b border-white/5 flex items-center justify-between font-mono text-xs shrink-0">
+            <div class="px-4 md:px-5 py-2.5 md:py-3.5 bg-background-custom border-b border-white/5 flex items-center justify-between font-mono text-[10px] md:text-xs shrink-0">
               <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary-custom text-sm">architecture</span>
                 <span class="font-bold text-silver-leaf uppercase tracking-wider text-[11px]">{{ activeModel().title }} Viewer</span>
@@ -463,13 +462,13 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           </div>
 
           <!-- Right side column: Stacked precision metadata cards exactly as reference listing -->
-          <div class="lg:col-span-5 space-y-4">
+          <div class="lg:col-span-5 space-y-3 md:space-y-4">
             
             <!-- Card 1 -->
-            <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-primary-custom/25 transition-all group hover:bg-[#151619]/40 animate-fade-slide-up opacity-0" style="animation-delay: 60ms;">
+            <div class="glass-panel p-4 md:p-5 rounded-xl border border-white/5 hover:border-primary-custom/25 transition-all group hover:bg-[#151619]/40 animate-fade-slide-up opacity-0" style="animation-delay: 60ms;">
               <div class="flex items-center gap-3 mb-2 font-mono">
                 <span class="material-symbols-outlined text-primary-custom" style="font-variation-settings: 'FILL' 1;">architecture</span>
-                <h4 class="font-serif text-lg text-silver-leaf font-bold">Native CAD Precision</h4>
+                <h4 class="font-serif text-base md:text-lg text-silver-leaf font-bold">Native CAD Precision</h4>
               </div>
               <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans">
                 Instant access to layered DWG files directly within the platform. Inspect structural vectors quickly without high-overhead software installations.
@@ -480,7 +479,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#DF80AC]/25 transition-all group hover:bg-[#151619]/40 animate-fade-slide-up opacity-0" style="animation-delay: 140ms;">
               <div class="flex items-center gap-3 mb-2 font-mono">
                 <span class="material-symbols-outlined text-[#DF80AC]" style="font-variation-settings: 'FILL' 1;">photo_camera_back</span>
-                <h4 class="font-serif text-lg text-silver-leaf font-bold">360° Continuity</h4>
+                <h4 class="font-serif text-base md:text-lg text-silver-leaf font-bold">360° Continuity</h4>
               </div>
               <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans">
                 Navigate immersive high-resolution 360° survey photography linked directly to multi-level CAD floorplans for verified remote field site coordination.
@@ -491,7 +490,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             <div class="glass-panel p-5 rounded-xl border border-white/5 hover:border-[#e9c349]/25 transition-all group hover:bg-[#151619]/40 animate-fade-slide-up opacity-0" style="animation-delay: 220ms;">
               <div class="flex items-center gap-3 mb-2 font-mono">
                 <span class="material-symbols-outlined text-[#e9c349]">sync</span>
-                <h4 class="font-serif text-lg text-silver-leaf font-bold">BIM Coordination</h4>
+                <h4 class="font-serif text-base md:text-lg text-silver-leaf font-bold">BIM Coordination</h4>
               </div>
               <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans">
                 Automated synchronization between scanning stakeholders and remote modeling engineers ensuring everyone works with zero-delay data accuracy.
@@ -505,11 +504,11 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
      
       <!-- ================= SECTION 5: TECHNICAL ARCHIVE RECENT DEPLOYMENTS ================= -->
-      <section class="space-y-6 text-left pt-12 border-t border-white/5" id="technical-archive-section">
+      <section class="space-y-5 md:space-y-6 text-left pt-8 md:pt-12 border-t border-white/5" id="technical-archive-section">
         <div class="flex items-center justify-between">
           <div>
             <p class="font-mono text-xs text-[#C86B98] mb-1 uppercase tracking-widest">RECENT DEPLOYMENTS</p>
-            <h2 class="font-serif text-3xl md:text-chart-font-custom text-silver-leaf select-none font-bold">Technical Archive</h2>
+            <h2 class="font-serif text-2xl md:text-chart-font-custom text-silver-leaf select-none font-bold">Technical Archive</h2>
           </div>
           <button type="button" 
                   (click)="calculator.setTab('portfolio')"
@@ -519,11 +518,11 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           </button>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 font-mono">
+        <div class="grid grid-cols-1 gap-2 md:gap-3 font-mono">
           <!-- Project 1 -->
           <button type="button" (click)="calculator.openArchiveProject('Vertex', 'MEP', 'Opening archive node: PROJECT_001 The Vertex Pavilion')"
                style="animation-delay: 50ms;"
-               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
+               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-3 md:p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
             <div class="flex items-center gap-4">
               <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=120&q=80" 
                    alt="The Vertex Pavilion" 
@@ -543,7 +542,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           <!-- Project 2 -->
           <button type="button" (click)="calculator.openArchiveProject('Obsidian', 'STRUCTURAL', 'Opening archive node: PROJECT_005 Obsidian Terminal')"
                style="animation-delay: 110ms;"
-               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
+               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-3 md:p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
             <div class="flex items-center gap-4">
               <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=120&q=80" 
                    alt="Obsidian Terminal" 
@@ -563,7 +562,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           <!-- Project 3 -->
           <button type="button" (click)="calculator.openArchiveProject('Flux', 'ARCHITECTURAL', 'Opening archive node: PROJECT_016 Flux Residential')"
                style="animation-delay: 170ms;"
-               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
+               class="w-full text-left bg-transparent p-0 flex items-center justify-between p-3 md:p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
             <div class="flex items-center gap-4">
               <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80" 
                    alt="Flux Residential" 
@@ -900,7 +899,7 @@ export class Home {
   }
 
   watchDemo() {
-    this.calculator.showNotification('Launching HD BIM Platform VR Multi-player Simulator...', 'success');
+    window.open('https://realityxd.axisxd.com/realityxd/?pid=9sd45g7fd2dfgdf6p3qr', '_blank');
   }
 
   cycleModel() {

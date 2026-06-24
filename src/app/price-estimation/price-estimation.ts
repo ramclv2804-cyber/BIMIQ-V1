@@ -25,15 +25,15 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
 
                 @if (calculator.selectedModelingWay() === 'scan_to_cad') {
                   <!-- === SCAN TO CAD FORM === -->
-                  <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
-                    <div class="flex items-center gap-2 mb-2 select-none">
-                      <span class="material-symbols-outlined text-primary-custom">draw</span>
-                      <span class="text-[10px] text-primary-custom font-bold uppercase tracking-wider font-mono">Scan to CAD Specifications</span>
+                  <div class="glass-panel p-4 md:p-6 rounded-xl md:rounded-2xl border border-silver-leaf/5 space-y-4 md:space-y-5 bg-[#0F0F12]/40">
+                    <div class="flex items-center gap-2 mb-1 md:mb-2 select-none">
+                      <span class="material-symbols-outlined text-primary-custom text-xs md:text-sm">draw</span>
+                      <span class="text-[9px] md:text-[10px] text-primary-custom font-bold uppercase tracking-wider font-mono">Scan to CAD Specifications</span>
                     </div>
 
                     <div class="space-y-2">
-                      <label for="cadProjectName" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Name <span class="text-red-400">*</span></label>
-                      <input id="cadProjectName" [value]="calculator.smartProjectName()" (input)="calculator.smartProjectName.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="text" placeholder="My Project"/>
+                      <label for="cadProjectName" class="font-mono text-[9px] md:text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Name <span class="text-red-400">*</span></label>
+                      <input id="cadProjectName" [value]="calculator.smartProjectName()" (input)="calculator.smartProjectName.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 md:px-4 py-2.5 md:py-3 text-silver-leaf font-sans text-[11px] md:text-xs focus:outline-none focus:border-primary-custom transition-all" type="text" placeholder="My Project"/>
                     </div>
 
                     <div class="space-y-2">
@@ -178,22 +178,22 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                   </div>
                 } @else {
                   <!-- === SCAN TO BIM FORM === -->
-                  <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
-                    <div class="flex items-center gap-2 mb-2 select-none">
-                      <span class="material-symbols-outlined text-primary-custom">view_in_ar</span>
-                      <span class="text-[10px] text-primary-custom font-bold uppercase tracking-wider font-mono">Scan to BIM Specifications</span>
+                  <div class="glass-panel p-4 md:p-6 rounded-xl md:rounded-2xl border border-silver-leaf/5 space-y-4 md:space-y-5 bg-[#0F0F12]/40">
+                    <div class="flex items-center gap-2 mb-1 md:mb-2 select-none">
+                      <span class="material-symbols-outlined text-primary-custom text-xs md:text-sm">view_in_ar</span>
+                      <span class="text-[9px] md:text-[10px] text-primary-custom font-bold uppercase tracking-wider font-mono">Scan to BIM Specifications</span>
                     </div>
 
                     <div class="space-y-2">
-                      <label for="bimProjectName" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Name <span class="text-red-400">*</span></label>
-                      <input id="bimProjectName" [value]="calculator.smartProjectName()" (input)="calculator.smartProjectName.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-4 py-3 text-silver-leaf font-sans text-xs focus:outline-none focus:border-primary-custom transition-all" type="text" placeholder="My Project"/>
+                      <label for="bimProjectName" class="font-mono text-[9px] md:text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Project Name <span class="text-red-400">*</span></label>
+                      <input id="bimProjectName" [value]="calculator.smartProjectName()" (input)="calculator.smartProjectName.set($any($event.target).value)" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg px-3 md:px-4 py-2.5 md:py-3 text-silver-leaf font-sans text-[11px] md:text-xs focus:outline-none focus:border-primary-custom transition-all" type="text" placeholder="My Project"/>
                     </div>
 
                     <div class="space-y-2">
                       <div class="flex items-center justify-between">
-                        <label for="bimArea" class="font-mono text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Area <span class="text-red-400">*</span></label>
+                        <label for="bimArea" class="font-mono text-[9px] md:text-[10px] text-on-surface-variant-custom uppercase tracking-wider block font-bold">Area <span class="text-red-400">*</span></label>
                         <button type="button" (click)="calculator.smartIsMetric.set(!calculator.smartIsMetric())"
-                          class="px-1.5 py-0.5 rounded text-[8px] font-bold font-mono uppercase tracking-wider border transition-all select-none cursor-pointer"
+                          class="px-1.5 py-0.5 rounded text-[7px] md:text-[8px] font-bold font-mono uppercase tracking-wider border transition-all select-none cursor-pointer"
                           [class.bg-[#DF80AC]/15]="calculator.smartIsMetric()"
                           [class.text-[#DF80AC]]="calculator.smartIsMetric()"
                           [class.border-[#DF80AC]/30]="calculator.smartIsMetric()"
@@ -204,8 +204,8 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                         </button>
                       </div>
                       <div class="relative">
-                        <input id="bimArea" [value]="calculator.smartScanSize()" (input)="calculator.smartScanSize.set($any($event.target).value || 0)"oninput="this.value = this.value.replace(/[^0-9+]/g, '');" placeholder="1500" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg pl-4 pr-16 py-3 font-mono tracking-wide text-silver-leaf focus:outline-none focus:border-primary-custom transition-all text-xs"/>
-                        <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] text-[#DF80AC] font-bold uppercase tracking-widest select-none font-mono">{{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}</span>
+                        <input id="bimArea" [value]="calculator.smartScanSize()" (input)="calculator.smartScanSize.set($any($event.target).value || 0)"oninput="this.value = this.value.replace(/[^0-9+]/g, '');" placeholder="1500" class="w-full bg-[#19191D] border border-outline-variant-custom rounded-lg pl-3 md:pl-4 pr-14 md:pr-16 py-2.5 md:py-3 font-mono tracking-wide text-silver-leaf focus:outline-none focus:border-primary-custom transition-all text-[11px] md:text-xs"/>
+                        <span class="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 text-[8px] md:text-[9px] text-[#DF80AC] font-bold uppercase tracking-widest select-none font-mono">{{ calculator.smartIsMetric() ? 'Sq.m' : 'Sq.ft' }}</span>
                       </div>
                     </div>
 
@@ -310,18 +310,18 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                           [class.bg-primary-custom/10]="calculator.smartLODLevel() === 'LOD_200'"
                           [class.text-primary-custom]="calculator.smartLODLevel() === 'LOD_200'"
                           [class.border-white/10]="calculator.smartLODLevel() !== 'LOD_200'"
-                          class="flex-1 p-3 rounded-xl border font-mono text-xs text-silver-leaf text-center cursor-pointer transition-all hover:bg-white/5 select-none">
+                          class="flex-1 p-2.5 md:p-3 rounded-lg md:rounded-xl border font-mono text-[10px] md:text-xs text-silver-leaf text-center cursor-pointer transition-all hover:bg-white/5 select-none">
                           <div class="font-bold">LOD 200</div>
-                          <div class="text-[9px] text-on-surface-variant-custom mt-0.5">Concept Design</div>
+                          <div class="text-[8px] md:text-[9px] text-on-surface-variant-custom mt-0.5">Concept Design</div>
                         </button>
                         <button type="button" (click)="calculator.smartLODLevel.set('LOD_300')"
                           [class.border-primary-custom]="calculator.smartLODLevel() === 'LOD_300'"
                           [class.bg-primary-custom/10]="calculator.smartLODLevel() === 'LOD_300'"
                           [class.text-primary-custom]="calculator.smartLODLevel() === 'LOD_300'"
                           [class.border-white/10]="calculator.smartLODLevel() !== 'LOD_300'"
-                          class="flex-1 p-3 rounded-xl border font-mono text-xs text-silver-leaf text-center cursor-pointer transition-all hover:bg-white/5 select-none">
+                          class="flex-1 p-2.5 md:p-3 rounded-lg md:rounded-xl border font-mono text-[10px] md:text-xs text-silver-leaf text-center cursor-pointer transition-all hover:bg-white/5 select-none">
                           <div class="font-bold">LOD 300</div>
-                          <div class="text-[9px] text-on-surface-variant-custom mt-0.5">Design Development</div>
+                          <div class="text-[8px] md:text-[9px] text-on-surface-variant-custom mt-0.5">Design Development</div>
                         </button>
                       </div>
                     </div>
@@ -389,7 +389,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                 }
 
                 <!-- Common Fields: Currency + Email
-                <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
+                <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/5 space-y-5 bg-[#0F0F12]/40">
                   
                 </div> -->
 
@@ -434,7 +434,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                 </div>
 
                 <!-- Project Upload Details (Common for CAD & BIM) -->
-                <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/10 space-y-5 bg-[#0F0F12]/40">
+                <div class="glass-panel p-6 rounded-2xl border border-silver-leaf/5 space-y-5 bg-[#0F0F12]/40">
                   <div class="flex items-center gap-2 mb-2 select-none">
                     <span class="material-symbols-outlined text-primary-custom">cloud_upload</span>
                     <span class="font-mono text-[10px] text-primary-custom uppercase tracking-wider font-bold">Upload &amp; Project Info</span>
@@ -509,7 +509,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                   <span class="text-[9px] text-on-surface-variant-custom font-mono">Order Summary</span>
                 </div>
 
-                <div class="glass-panel rounded-2xl border border-silver-leaf/10 bg-[#0B0B0F] overflow-hidden">
+                <div class="glass-panel rounded-2xl border border-silver-leaf/5 bg-[#0B0B0F] overflow-hidden">
 
                   <!-- Header -->
                   <div class="px-6 pt-6 pb-4 border-b border-white/5">
@@ -525,9 +525,9 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                           <span class="material-symbols-outlined text-primary-custom">receipt_long</span>
                           <span class="font-mono text-[10px] text-primary-custom uppercase tracking-wider font-bold">Order Summary</span>
                         </div>
-                        <div class="flex items-center gap-3">
-                          <span class="font-mono text-lg text-silver-leaf font-bold tracking-tight">{{ calculator.projectNumber() }}</span>
-                          <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 font-mono text-[9px] uppercase tracking-widest font-bold">Confirmed</span>
+                        <div>
+                          <div class="font-mono text-lg text-silver-leaf font-bold tracking-tight">{{ calculator.smartProjectName() || 'Project' }}</div>
+                          <div class="font-mono text-[10px] text-on-surface-variant-custom tracking-tight">id: {{ calculator.projectNumber().split('-')[1] }}</div>
                         </div>
                       </div>
                       <div class="text-right">
@@ -583,158 +583,146 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
 
         </div>
 
-        <!-- Right Column: Visualizer -->
-        <div class="lg:col-span-7 lg:h-[calc(100vh-140px)] flex flex-col text-left">
+          <!-- Right Column: Visualizer -->
+          <div class="lg:col-span-7 lg:h-[calc(100vh-140px)] flex flex-col text-left">
 
-          <div class="flex-1 space-y-6 pr-1 ">
+            <!-- Stepper & Price Card (top) -->
+            <div class="sticky top-[70px] md:top-[85px] z-50 space-y-3 md:space-y-4 glass-panel rounded-xl md:rounded-2xl bg-[#131117]/80">
+              <!-- Step Progress Timeline -->
+              <div class="pt-3 md:pt-4 pb-2 shrink-0 select-none">
+                <div class="relative flex items-center justify-between px-2">
+                  <div class="absolute left-[10%] right-[10%] top-[12px] md:top-[14px] h-0.5 bg-white/10 -translate-y-1/2"></div>
+                  <div class="absolute left-[10%] top-[12px] md:top-[14px] h-0.5 bg-emerald-500 -translate-y-1/2 transition-all duration-500"
+                    [style.width.%]="formStep() === 1 ? 0 : formStep() === 2 ? 40 : 80"></div>
+                  @for (step of [1, 2, 3]; track step; let i = $index) {
+                    <div class="flex flex-col items-center gap-1 z-10 animate-fade-slide-up opacity-0" [style.animation-delay]="(i * 80) + 'ms'">
+                      <div (click)="goToStep(step)"
+                        [ngClass]="formStep() > step ? 'bg-emerald-500 border-emerald-500 cursor-pointer' : formStep() === step ? 'bg-primary-custom border-primary-custom ring-2 ring-primary-custom/30' : 'bg-[#19191D] border-white/10 cursor-pointer hover:border-white/30'"
+                        class="w-6 h-6 md:w-7 md:h-7 rounded-full border flex items-center justify-center text-[9px] md:text-[10px] font-bold font-mono transition-all duration-300 hover:scale-110 active:scale-95">
+                        @if (formStep() > step) {
+                          <span class="material-symbols-outlined text-[10px] md:text-xs text-white">check</span>
+                        } @else {
+                          <span [ngClass]="formStep() === step ? 'text-white' : 'text-on-surface-variant-custom'">{{ step }}</span>
+                        }
+                      </div>
+                      <span (click)="goToStep(step)"
+                        [ngClass]="formStep() === step ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom cursor-pointer hover:text-white'"
+                        class="text-[7px] md:text-[8px] uppercase tracking-wider font-mono transition-all duration-300 whitespace-nowrap">
+                        {{ step === 1 ? 'Project Specs' : step === 2 ? 'Links' : 'Valuation' }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Sticky Price Card -->
+              <div class="border-t border-white/5 shrink-0 z-20">
+                <section class="p-4 md:p-6 rounded-xl md:rounded-2xl relative overflow-hidden font-mono animate-fade-in text-left">
+                
+
+                <div class="mb-3 md:mb-4">
+                  <div class="flex justify-between items-start gap-3 md:gap-4">
+                    <div class="min-w-0 flex-1">
+                      <div class="text-[9px] md:text-[10px] text-[#DF80AC] uppercase tracking-widest font-bold">Calculated Smart Estimate</div>
+                      <div class="font-sans text-xl md:text-3.5xl font-bold text-silver-leaf mt-1 md:mt-2 flex items-baseline gap-1 select-all leading-none flex-wrap">
+                        <span class="text-base md:text-xl text-[#DF80AC]/50 font-mono">{{ calculator.calculatedSmartEstimate().currencySymbol }}</span>
+                        <span class="text-2xl md:text-4xl font-extrabold tracking-tight">{{ calculator.calculatedSmartEstimate().totalPrice | number: '1.2-2' }}</span>
+                        <span class="text-[10px] md:text-xs text-on-surface-variant-custom/60 ml-1 md:ml-2 uppercase font-mono">{{ calculator.selectedCurrency() }}</span>
+                      </div>
+                    </div>
+
+                    <div class="relative font-mono shrink-0 select-none z-30">
+                      <button
+                        type="button"
+                        (click)="toggleCardCurrencyDropdown($event)"
+                        class="flex items-center gap-1 px-2 py-1 md:px-2.5 md:py-1.5 bg-[#19191D] border border-white/15 rounded-lg text-[#DF80AC] text-[8px] md:text-[9px] font-bold uppercase tracking-wider hover:bg-white/5 active:scale-95 transition-all focus:outline-none cursor-pointer">
+                        <span>{{ calculator.selectedCurrency() }}</span>
+                        <span class="material-symbols-outlined text-[10px] md:text-[11px] transform transition-transform duration-250" [class.rotate-180]="isCardCurrencyOpen()">expand_more</span>
+                      </button>
+
+                      @if (isCardCurrencyOpen()) {
+                       <div (click)="$event.stopPropagation()"
+       class="absolute right-0 mt-1.5 w-24 md:w-28 max-h-[150px] overflow-y-auto bg-[#0F0F12] border border-white/10 rounded-lg shadow-2xl py-0.5 text-[8px] md:text-[9px] font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 z-40">
+                          @for (option of calculator.currencyOptions; track option.value) {
+                            <button
+                              type="button"
+                              (click)="calculator.selectedCurrency.set(option.value); isCardCurrencyOpen.set(false); $event.stopPropagation()"
+                              [class.text-primary-custom]="calculator.selectedCurrency() === option.value"
+                              [class.font-semibold]="calculator.selectedCurrency() === option.value"
+                              class="w-full px-2 md:px-2.5 py-1.5 text-left hover:bg-white/5 transition-colors flex items-center justify-between cursor-pointer border-none bg-transparent text-slate-300">
+                              <span>{{ option.value }}</span>
+                              @if (calculator.selectedCurrency() === option.value) {
+                                <span class="material-symbols-outlined text-[8px] md:text-[9px] text-primary-custom">done</span>
+                              }
+                            </button>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="mt-3 md:mt-4 pt-1 flex flex-col gap-1.5 text-[10px] md:text-[11px] text-slate-300 leading-none">
+                    <div class="flex items-center gap-1.5 font-mono">
+                      <span class="material-symbols-outlined text-[10px] md:text-xs text-[#DF80AC]">calendar_month</span>
+                      <span class="text-[11px] md:text-xs text-silver-leaf font-bold">{{ calculator.calculatedSmartEstimate().businessDaysText }}</span>
+                    </div>
+                  </div>
+
+                  @if (calculator.selectedModelingWay() === 'prebuilt') {
+                    <div class="mt-2.5 md:mt-3.5 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[9px] md:text-[10px] text-emerald-400 font-mono font-bold uppercase leading-normal">
+                      Prebuilt Discount Active (28% SLA offset)
+                    </div>
+                  }
+                  @if (calculator.selectedModelingWay() === 'bim' && calculator.usePrebuiltDesignLater()) {
+                    <div class="mt-2.5 md:mt-3.5 p-2 rounded-lg bg-[#DF80AC]/10 border border-[#DF80AC]/25 text-[9px] md:text-[10px] text-[#DF80AC] font-mono font-bold uppercase leading-normal">
+                      Using Prebuilt Design, Will Provide Later
+                    </div>
+                  }
+                </div>
+
+                
+              </section>
+       </div>
+            </div>
+
+            <!-- Visualizer (bottom) -->
+            <div class="flex-1 space-y-4 md:space-y-6 pr-0 md:pr-1 mt-3 md:mt-5">
 
           <!-- Explore External Site RealityXD -->
-          <div class="glass-panel p-4 rounded-xl bg-gradient-to-r from-primary-custom/10 to-[#DF80AC]/10 border border-[#DF80AC]/20 select-none">
-            <div class="flex flex-col sm:flex-row justify-between items-center gap-3">
-              <div class="text-left font-sans flex-1">
-                <h5 class="text-xs text-white">AxisXD Platform Integration</h5>
-                <p class="text-[9px] text-slate-400 mt-0.5 font-mono">Export coordinate assets directly to realityxd.axisxd.com.</p>
-              </div>
-              <a href="https://realityxd.axisxd.com/realityxd/?pid=9sd45g7fd2dfgdf6p3qr" target="_blank" class="w-full sm:w-auto flex items-center justify-center gap-1.5 bg-[#DF80AC] text-black font-mono text-[10px] uppercase tracking-widest px-4 py-2.5 rounded-lg hover:opacity-95 active:scale-95 transition-all outline-none font-bold shrink-0 shadow-md">
-                <span class="material-symbols-outlined text-xs">explore</span>
-                <span>Explore</span>
-              </a>
-            </div>
-          </div>
+          
 
           <!-- Visualizer -->
-          <div class="glass-panel p-5 rounded-2xl border border-white/10 bg-[#121216]/60 space-y-4">
-            <div class="flex items-center justify-between border-b border-white/5 pb-3">
-              <div class="flex items-center gap-2 font-mono">
-                <span class="material-symbols-outlined text-sm text-[#DF80AC] animate-pulse">videocam</span>
-                <span class="text-[10px] text-slate-300 uppercase tracking-widest font-bold">Reality Live Feed Visualizer</span>
+          <div class="glass-panel p-4 md:p-5 rounded-xl md:rounded-2xl border border-white/10 bg-[#121216]/60 space-y-3 md:space-y-4">
+            <div class="flex items-center justify-between  pb-2 md:pb-3 gap-2">
+              <div class="flex items-center gap-1.5 md:gap-2 font-mono min-w-0">
+                <span class="material-symbols-outlined text-xs md:text-sm text-[#DF80AC] animate-pulse shrink-0">videocam</span>
+                <span class="text-[9px] md:text-[10px] text-slate-300 uppercase tracking-widest font-bold truncate">Reality Live Feed Visualizer</span>
               </div>
-              <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase text-[8px] font-mono">
-                {{ calculator.selectedModelingWay() === 'bim' ? 'BIM Modeling Track' : 'CAD-to-BIM Track' }}
+              <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase text-[7px] md:text-[8px] font-mono shrink-0">
+                {{ calculator.selectedModelingWay() === 'bim' ? 'BIM Track' : 'CAD Track' }}
               </span>
             </div>
 
-            <div class="space-y-4">
+            <div class="space-y-3 md:space-y-4">
               <div class="space-y-1.5">
-                <div class="flex justify-between items-center font-mono text-[9px]">
-                  <span class="text-slate-400 uppercase tracking-wider ">Detailing Grade Standard Preview</span>
-                  <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase text-[8.5px]">
+                <div class="flex justify-between items-center font-mono text-[8px] md:text-[9px] gap-2">
+                  <span class="text-slate-400 uppercase tracking-wider truncate">Detailing Grade Standard Preview</span>
+                  <span class="bg-[#DF80AC]/10 text-[#DF80AC] border border-[#DF80AC]/25 px-1.5 py-0.5 rounded uppercase text-[7px] md:text-[8.5px] shrink-0">
                     {{ getSelectedLODLabel() }}
                   </span>
                 </div>
-                <div class="relative rounded-xl overflow-hidden aspect-video border border-white/5 bg-black/40 group relative">
+                <div class="relative rounded-xl overflow-hidden aspect-video border border-white/10 bg-black/40">
                   <img [src]="getLODPreviewImage()"
                        [alt]="getSelectedLODLabel() + ' preview'"
                        class="w-full h-full object-cover opacity-80 group-hover:scale-[1.03] transition-transform duration-700"
                        referrerpolicy="no-referrer" />
-                  <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-3 font-mono text-[11px] text-[#DF80AC] font-bold">
+                  <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-2 md:p-3 font-mono text-[10px] md:text-[11px] text-[#DF80AC] font-bold">
                     {{ getLODOverlayText() }}
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          </div>
-
-          <div class="sticky bottom-[5px] space-y-4 glass-panel mt-5 rounded-2xl bg-[#131117]/80">
-            <!-- Step Progress Timeline -->
-            <div class="pt-4 pb-2 shrink-0 select-none">
-              <div class="relative flex items-center justify-between px-2">
-                <div class="absolute left-[10%] right-[10%] top-[14px] h-0.5 bg-white/10 -translate-y-1/2"></div>
-                <div class="absolute left-[10%] top-[14px] h-0.5 bg-emerald-500 -translate-y-1/2 transition-all duration-500"
-                  [style.width.%]="formStep() === 1 ? 0 : formStep() === 2 ? 40 : 80"></div>
-                @for (step of [1, 2, 3]; track step; let i = $index) {
-                  <div class="flex flex-col items-center gap-1.5 z-10 animate-fade-slide-up opacity-0" [style.animation-delay]="(i * 80) + 'ms'">
-                    <div (click)="goToStep(step)"
-                      [ngClass]="formStep() > step ? 'bg-emerald-500 border-emerald-500 cursor-pointer' : formStep() === step ? 'bg-primary-custom border-primary-custom ring-2 ring-primary-custom/30' : 'bg-[#19191D] border-white/10 cursor-pointer hover:border-white/30'"
-                      class="w-7 h-7 rounded-full border flex items-center justify-center text-[10px] font-bold font-mono transition-all duration-300 hover:scale-110 active:scale-95">
-                      @if (formStep() > step) {
-                        <span class="material-symbols-outlined text-xs text-white">check</span>
-                      } @else {
-                        <span [ngClass]="formStep() === step ? 'text-white' : 'text-on-surface-variant-custom'">{{ step }}</span>
-                      }
-                    </div>
-                    <span (click)="goToStep(step)"
-                      [ngClass]="formStep() === step ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom cursor-pointer hover:text-white'"
-                      class="text-[8px] uppercase tracking-wider font-mono transition-all duration-300 whitespace-nowrap">
-                      {{ step === 1 ? 'Project Specs' : step === 2 ? 'Links' : 'Valuation' }}
-                    </span>
-                  </div>
-                }
-              </div>
             </div>
-
-            <!-- Sticky Price Card -->
-            <div class="border-t border-white/5 shrink-0 z-20">
-              <section class="p-6 rounded-2xl relative overflow-hidden font-mono animate-fade-in text-left">
-              
-
-              <div class="mb-4">
-                <div class="flex justify-between items-start gap-4">
-                  <div>
-                    <div class="text-[10px] text-[#DF80AC] uppercase tracking-widest font-bold">Calculated Smart Estimate</div>
-                    <div class="font-sans text-2xl md:text-3.5xl font-semibold text-silver-leaf mt-2 flex items-baseline gap-1 select-all leading-none">
-                      <span class="text-xl text-[#DF80AC]/50 font-mono">{{ calculator.calculatedSmartEstimate().currencySymbol }}</span>
-                      <span>{{ calculator.calculatedSmartEstimate().totalPrice | number: '1.2-2' }}</span>
-                      <span class="text-xs text-on-surface-variant-custom/60 ml-2 uppercase font-mono">{{ calculator.selectedCurrency() }}</span>
-                    </div>
-                  </div>
-
-                  <div class="relative font-mono shrink-0 select-none z-30">
-                    <button
-                      type="button"
-                      (click)="toggleCardCurrencyDropdown($event)"
-                      class="flex items-center gap-1 px-2.5 py-1.5 bg-[#19191D] border border-white/15 rounded-lg text-[#DF80AC] text-[9px] font-bold uppercase tracking-wider hover:bg-white/5 active:scale-95 transition-all focus:outline-none cursor-pointer">
-                      <span>{{ calculator.selectedCurrency() }}</span>
-                      <span class="material-symbols-outlined text-[11px] transform transition-transform duration-250" [class.rotate-180]="isCardCurrencyOpen()">expand_more</span>
-                    </button>
-
-                    @if (isCardCurrencyOpen()) {
-                     <div (click)="$event.stopPropagation()"
-     class="absolute right-0 mt-1.5 w-28 max-h-[150px] overflow-y-auto bg-[#0F0F12] border border-white/10 rounded-lg shadow-2xl py-0.5 text-[9px] font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 z-40">
-                        @for (option of calculator.currencyOptions; track option.value) {
-                          <button
-                            type="button"
-                            (click)="calculator.selectedCurrency.set(option.value); isCardCurrencyOpen.set(false); $event.stopPropagation()"
-                            [class.text-primary-custom]="calculator.selectedCurrency() === option.value"
-                            [class.font-semibold]="calculator.selectedCurrency() === option.value"
-                            class="w-full px-2.5 py-1.5 text-left hover:bg-white/5 transition-colors flex items-center justify-between cursor-pointer border-none bg-transparent text-slate-300">
-                            <span>{{ option.value }}</span>
-                            @if (calculator.selectedCurrency() === option.value) {
-                              <span class="material-symbols-outlined text-[9px] text-primary-custom">done</span>
-                            }
-                          </button>
-                        }
-                      </div>
-                    }
-                  </div>
-                </div>
-
-                <div class="mt-4 pt-1 flex flex-col gap-1.5 text-[11px] text-slate-300 leading-none">
-                  <div class="flex items-center gap-1.5 font-mono">
-                    <span class="material-symbols-outlined text-xs text-[#DF80AC]">calendar_month</span>
-                    <span class="text-xs text-silver-leaf font-bold">{{ calculator.calculatedSmartEstimate().businessDaysText }}</span>
-                  </div>
-                  <div class="text-[10px] hidden text-on-surface-variant-custom italic select-none pl-5.5 font-sans justify-start flex mt-0.5">
-                    ({{ calculator.calculatedSmartEstimate().dayRangeText }})
-                  </div>
-                </div>
-
-                @if (calculator.selectedModelingWay() === 'prebuilt') {
-                  <div class="mt-3.5 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-[10px] text-emerald-400 font-mono font-bold uppercase leading-normal">
-                    Prebuilt Discount Active (28% SLA offset)
-                  </div>
-                }
-                @if (calculator.selectedModelingWay() === 'bim' && calculator.usePrebuiltDesignLater()) {
-                  <div class="mt-3.5 p-2 rounded-lg bg-[#DF80AC]/10 border border-[#DF80AC]/25 text-[10px] text-[#DF80AC] font-mono font-bold uppercase leading-normal">
-                    Using Prebuilt Design, Will Provide Later
-                  </div>
-                }
-              </div>
-
-              
-            </section>
-     </div>
           </div>
 
         </div>
@@ -759,7 +747,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
               <!-- Project Info -->
               <div class="space-y-2">
                 <div class="text-[9px] text-primary-custom uppercase tracking-widest font-bold">Project Information</div>
-                <div class="bg-[#19191D] rounded-lg p-3 space-y-2 border border-white/5">
+                <div class="bg-[#19191D] rounded-lg p-3 space-y-2 border border-white/10">
                   <div class="flex justify-between">
                     <span class="text-slate-400 text-[10px] uppercase tracking-wider">Project Name</span>
                     <span class="text-silver-leaf text-[11px] text-right max-w-[60%]">{{ calculator.smartProjectName() || '—' }}</span>
@@ -782,7 +770,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
               <!-- Requirements -->
               <div class="space-y-2">
                 <div class="text-[9px] text-primary-custom uppercase tracking-widest font-bold">Scope Details</div>
-                <div class="bg-[#19191D] rounded-lg p-3 space-y-2 border border-white/5">
+                <div class="bg-[#19191D] rounded-lg p-3 space-y-2 border border-white/10">
                   @if (calculator.selectedModelingWay() === 'scan_to_cad') {
                     <div class="flex justify-between">
                       <span class="text-slate-400 text-[10px] uppercase tracking-wider">Requirements</span>
@@ -822,7 +810,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
               <!-- Additional Info -->
               <div class="space-y-2">
                 <div class="text-[9px] text-primary-custom uppercase tracking-widest font-bold">Additional Information</div>
-                <div class="bg-[#19191D] rounded-lg p-3 space-y-2 border border-white/5">
+                <div class="bg-[#19191D] rounded-lg p-3 space-y-2 border border-white/10">
                   <div class="flex justify-between">
                     <span class="text-slate-400 text-[10px] uppercase tracking-wider">Email</span>
                     <span class="text-silver-leaf text-[11px]  text-right max-w-[60%] break-all">{{ calculator.smartEmail() || '—' }}</span>
@@ -863,7 +851,7 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
               <!-- Pricing -->
               <div class="space-y-2">
                 <div class="text-[9px] text-primary-custom uppercase tracking-widest font-bold">Pricing</div>
-                <div class="bg-[#19191D] rounded-lg p-3 border border-white/5">
+                <div class="bg-[#19191D] rounded-lg p-3 border border-white/10">
                   <div class="flex justify-between items-center">
                     <span class="text-slate-400 text-[10px] uppercase tracking-wider">Total Estimate</span>
                     <div class="text-right">
@@ -1358,7 +1346,7 @@ export class PriceEstimation implements OnInit {
 
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
-      const proposalTitle = `Proposal: ${c.projectNumber() || '(Project Number)'} - ${mode} - ${c.smartProjectName() || 'Project'} Project.`;
+      const proposalTitle = `Proposal: ${c.projectNumber()} - ${mode} - ${c.smartProjectName()}.`;
       doc.text(proposalTitle, margin, y, { maxWidth: bodyW });
       y += 6;
 
@@ -1664,7 +1652,7 @@ export class PriceEstimation implements OnInit {
 
       </div>`;
 
-console.log('Generated Quote Request HTML:', html);
+    console.log('Generated Quote Request HTML:', html);
 
     // try {
     //   const res = await fetch('/api/quote/request', {

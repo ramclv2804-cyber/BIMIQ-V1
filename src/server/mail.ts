@@ -136,7 +136,7 @@ export async function sendTicketRaiseEmail(input: TicketRaiseEmailInput): Promis
     <div style="margin-bottom: 8px; padding-bottom: 6px; border-bottom: 2px solid #205493;">
       <h2 style="margin: 0; font-size: 15px; font-weight: 700; color: #205493;">Ticket Specifications</h2>
     </div>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; border-radius: 6px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;  box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
       ${rows}
     </table>
   `;

@@ -9,6 +9,7 @@
 
 .mobile-menu-container {
   animation: fadeIn 0.2s ease;
+  top: 5rem !important;
 }
 
 .hover-underline-animate.after\:scale-x-100::after {

@@ -174,9 +174,11 @@ export class SpatialCostCalculator {
     });
   }
 
-  /** Fetch tickets for a project from the server API. */
-  async apiGetProjectTickets(projectId: number): Promise<{ tickets: unknown[]; count: number }> {
-    return this.apiRequest(`/tickets?project_id=${projectId}`);
+  /** Fetch tickets for a project from the server API, optionally filtered by ticket_status. */
+  async apiGetProjectTickets(projectId: number, status?: string): Promise<{ tickets: unknown[]; count: number }> {
+    let url = `/tickets?project_id=${projectId}`;
+    if (status) url += `&ticket_status=${status}`;
+    return this.apiRequest(url);
   }
 
   /** Fetch tickets for the current authenticated user (no user_id param — works for all users). */
@@ -847,7 +849,9 @@ export class SpatialCostCalculator {
   placeOrder = signal<boolean>(false);
 
   // Step 3 fields
-  projectNumber = signal<string>('PRJ-' + Date.now().toString(36).toUpperCase());
+  projectNumber = signal<string>('PRJ-' + crypto.randomUUID().toUpperCase());
+  // projectNumber = signal<string>('PRJ-' + Date.now().toString(36).toUpperCase());
+
   orderPlacedDate = signal<string>(new Date().toISOString().split('T')[0]);
   pointCloudIssueDate = signal<string>('');
   expectedDeliveryDate = signal<string>('');

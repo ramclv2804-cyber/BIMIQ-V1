@@ -341,7 +341,8 @@ app.get('/api/tickets', requireAuth, (req, res) => {
     }
 
     if (projectId) {
-      const tickets = getProjectTickets(projectId);
+      const ticketStatus = req.query['ticket_status'] as string | undefined;
+      const tickets = getProjectTickets(projectId, ticketStatus || undefined);
       return res.json({ tickets, count: tickets.length });
     }
 

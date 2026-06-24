@@ -16,6 +16,7 @@ interface Ticket {
   url: string;
   comments: string;
   createdAt: string;
+  status?: string;
 }
 
 @Component({
@@ -92,6 +93,12 @@ export class Projects {
   filterPayment = signal<string>('all');
   animKey = signal(0);
 
+  ticketStatusFilter = signal<string>('1');
+
+  filteredProjectTickets = computed(() => {
+    return this.projectTickets();
+  });
+
   filteredProjects = computed(() => {
     const scope = this.filterScope();
     const lod = this.filterLod();
@@ -143,8 +150,9 @@ export class Projects {
   openDetail(project: UserProject) {
     this.detailProject.set(project);
     this.isDescExpanded.set(false);
-    // Load tickets from database for this project
-    this.loadTicketsForProject(project);
+    this.ticketStatusFilter.set('1');
+    // Load tickets from database for this project — initially only status 1 (In Progress)
+    this.loadTicketsForProject(project, '1');
   }
 
   closeDetail() {
@@ -156,6 +164,8 @@ export class Projects {
   ticketComments = signal('');
   ticketUrl = signal('');
 
+  selectedTicket = signal<Ticket | null>(null);
+
   tickets = signal<Record<string, Ticket[]>>({});
 
   projectTickets = computed(() => {
@@ -166,14 +176,23 @@ export class Projects {
     );
   });
 
-  /** Load tickets from the database for the given project */
-  private async loadTicketsForProject(project: UserProject) {
+  setTicketFilter(filter: string) {
+    this.ticketStatusFilter.set(filter);
+    // Reload tickets from database with the selected status filter
+    const project = this.detailProject();
+    if (project) {
+      this.loadTicketsForProject(project, filter);
+    }
+  }
+
+  /** Load tickets from the database for the given project, filtered by ticket_status */
+  private async loadTicketsForProject(project: UserProject, status: string = '1') {
     try {
       let result: { tickets: unknown[]; count: number };
 
       // Prefer fetching by project_id (works for all authenticated users)
       if (project.id) {
-        result = await this.calculator.apiGetProjectTickets(project.id);
+        result = await this.calculator.apiGetProjectTickets(project.id, status);
       } else {
         // Fallback: fetch current user's own tickets and filter by project name
         result = await this.calculator.apiGetMyTickets();
@@ -195,6 +214,7 @@ export class Projects {
             url: t.ticket_urls as string || '',
             comments: t.ticket_comments as string || '',
             createdAt: t.created_at as string,
+            status: t.ticket_status as string || '1',
           })) as Ticket[];
         this.tickets.update(map => ({
           ...map,
@@ -204,6 +224,23 @@ export class Projects {
     } catch {
       // Silently fall back to local tickets
     }
+  }
+
+  openTicketDetail(ticket: Ticket) {
+    this.selectedTicket.set(ticket);
+  }
+
+  closeTicketDetail() {
+    this.selectedTicket.set(null);
+  }
+
+  ticketStatusLabel(status?: string): string {
+    const labels: Record<string, string> = {
+      '1': 'In Progress',
+      '2': 'Completed',
+      '3': 'Under Revision',
+    };
+    return labels[status || ''] || 'Unknown';
   }
 
   openTicket(project: UserProject) {
