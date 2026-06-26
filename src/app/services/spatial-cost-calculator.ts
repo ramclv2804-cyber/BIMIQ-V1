@@ -34,12 +34,12 @@ export interface UserProject {
   cost: number;
   currency: string;
   billing: string;
-  billingStatus: string;
   invoiceNumber: string;
   invoiceDate: string;
   invoiceDueDate: string;
   payment: string;
   workflowStatus: string;
+  status?: number;
   comments: string;
   remark: string;
   uploadLink: string;
@@ -161,6 +161,19 @@ export class SpatialCostCalculator {
     return this.apiRequest(`/projects?user_id=${userId}`);
   }
 
+  /** Fetch all projects across all users (production/admin). */
+  async apiGetAllProjects(): Promise<{ projects: UserProject[]; count: number }> {
+    return this.apiRequest('/projects');
+  }
+
+  /** Update a project's workflow status. */
+  async apiUpdateProjectStatus(projectId: number, workflowStatus: string): Promise<unknown> {
+    return this.apiRequest(`/projects/${projectId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ workflow_status: workflowStatus }),
+    });
+  }
+
   /** Fetch all registered users from the server API. */
   async apiGetAllUsers(): Promise<{ users: { id: number; username: string; email: string; role: string; created_at: string }[]; count: number }> {
     return this.apiRequest('/users');
@@ -179,6 +192,14 @@ export class SpatialCostCalculator {
     let url = `/tickets?project_id=${projectId}`;
     if (status) url += `&ticket_status=${status}`;
     return this.apiRequest(url);
+  }
+
+  /** Update a ticket's status (e.g., change to '2' for Completed). */
+  async apiUpdateTicketStatus(ticketId: number, status: string): Promise<unknown> {
+    return this.apiRequest(`/tickets/${ticketId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
   }
 
   /** Fetch tickets for the current authenticated user (no user_id param — works for all users). */
@@ -336,7 +357,7 @@ export class SpatialCostCalculator {
         const result = await this.apiGetUserProjects(userId);
         if (result.projects && result.projects.length > 0) {
           // Map DB columns back to UserProject interface
-          const mapped = result.projects.map((p: any) => ({
+          let mapped = result.projects.map((p: any) => ({
             id: (p.id as number) || undefined,
             projectNo: (p.project_no as string) || '',
             client: (p.client as string) || '',
@@ -358,12 +379,12 @@ export class SpatialCostCalculator {
             cost: (p.cost as number) || 0,
             currency: (p.currency as string) || 'USD',
             billing: (p.billing as string) || '',
-            billingStatus: (p.billing_status as string) || '',
             invoiceNumber: (p.invoice_number as string) || '',
             invoiceDate: (p.invoice_date as string) || '',
             invoiceDueDate: (p.invoice_due_date as string) || '',
             payment: (p.payment as string) || '',
             workflowStatus: (p.workflow_status as string) || 'Yet to Award',
+            status: (p.status as number) ?? 1,
             comments: (p.comments as string) || '',
             remark: (p.remark as string) || '',
             uploadLink: (p.upload_link as string) || '',
@@ -371,6 +392,7 @@ export class SpatialCostCalculator {
             descriptionLink: (p.description_link as string) || '',
             createdAt: (p.created_at as string) || undefined,
           })) as UserProject[];
+
           this.userProjects.set(mapped);
           return;
         }
@@ -438,6 +460,7 @@ export class SpatialCostCalculator {
           invoiceDueDate: (p.invoice_due_date as string) || '',
           payment: (p.payment as string) || '',
           workflowStatus: (p.workflow_status as string) || 'Yet to Award',
+          status: (p.status as number) ?? 1,
           comments: (p.comments as string) || '',
           remark: (p.remark as string) || '',
           uploadLink: (p.upload_link as string) || '',
@@ -463,7 +486,7 @@ export class SpatialCostCalculator {
     }
   }
 
-  addUserProject(project: UserProject) {
+  addUserProject(project: UserProject): Promise<unknown> {
     // Add to local state immediately for instant UI
     this.userProjects.update(list => [...list, project]);
     this.saveUserProjectsCookie();
@@ -471,7 +494,7 @@ export class SpatialCostCalculator {
     // Fire async API call to persist to DB and capture the returned id
     const userId = this.dbUserId();
     if (userId) {
-      this.apiCreateProject({
+      return this.apiCreateProject({
         user_id: userId,
         project_no: project.projectNo,
         client: project.client,
@@ -493,12 +516,13 @@ export class SpatialCostCalculator {
         cost: project.cost,
         currency: project.currency,
         billing: project.billing,
-        billing_status: project.billingStatus,
+
         invoice_number: project.invoiceNumber,
         invoice_date: project.invoiceDate,
         invoice_due_date: project.invoiceDueDate,
         payment: project.payment,
         workflow_status: project.workflowStatus,
+        status: project.status ?? 1,
         comments: project.comments,
         remark: project.remark,
         upload_link: project.uploadLink,
@@ -511,8 +535,12 @@ export class SpatialCostCalculator {
           // Persist the updated project (with id) to cookie
           this.saveUserProjectsCookie();
         }
-      }).catch(err => console.warn('[DB] Failed to save project to database:', err));
+      }).catch(err => {
+        console.warn('[DB] Failed to save project to database:', err);
+        throw err;
+      });
     }
+    return Promise.resolve(null);
   }
 
   // Currency rates from OpenExchangeRates

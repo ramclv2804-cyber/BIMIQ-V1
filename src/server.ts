@@ -8,7 +8,7 @@ import express from 'express';
 import {join, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import 'dotenv/config';
-import { initDatabase, createUser, getUserByUsername, getUserByEmail, getUserById, createProject, getUserProjects, getAllUsers, getAdminDashboardStats, validateDatabase, authenticateUser, seedDefaultUsers, createTicket, getProjectTickets, getUserTickets, getAllTickets, updateTicketStatus } from './server/database';
+import { initDatabase, createUser, getUserByUsername, getUserByEmail, getUserById, createProject, getUserProjects, getAllUsers, getAllProjects, getAdminDashboardStats, validateDatabase, authenticateUser, seedDefaultUsers, createTicket, getProjectTickets, getUserTickets, getAllTickets, updateTicketStatus, updateProjectWorkflowStatus } from './server/database';
 import { generateToken, requireAuth, optionalAuth, revokeToken } from './server/auth';
 import { sendMail, sendTicketRaiseEmail } from './server/mail';
 
@@ -221,7 +221,8 @@ app.post('/api/projects', requireAuth, (req, res) => {
   } catch (error: unknown) {
     const err = error as Error;
     console.error('[DB] Create project error:', err);
-    return res.status(500).json({ error: err.message || 'Internal server error creating project.' });
+    const status = err.message.includes('already exists') ? 409 : 500;
+    return res.status(status).json({ error: err.message || 'Internal server error creating project.' });
   }
 });
 
@@ -229,6 +230,7 @@ app.post('/api/projects', requireAuth, (req, res) => {
  * GET /api/projects
  * Get projects — by default for the authenticated user.
  * Admins can pass ?user_id=X to view another user's projects.
+ * Production users see all projects
  * Requires JWT auth.
  */
 app.get('/api/projects', requireAuth, (req, res) => {
@@ -249,8 +251,45 @@ app.get('/api/projects', requireAuth, (req, res) => {
       return res.json({ projects, count: projects.length });
     }
 
+    // Production users see all projects (skip user filter)
+    if (authUser.role === 'production') {
+      const projects = getAllProjects();
+      return res.json({ projects, count: projects.length });
+    }
+
     const projects = getUserProjects(authUser.userId);
     return res.json({ projects, count: projects.length });
+  } catch (error: unknown) {
+    const err = error as Error;
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+
+/**
+ * PATCH /api/projects/:id
+ * Update a project (e.g., change workflow_status). Requires JWT auth.
+ */
+app.patch('/api/projects/:id', requireAuth, (req, res) => {
+  try {
+    const authUser = (req as unknown as { [key: string]: unknown })['user'] as { userId: number; role: string };
+    const id = Number(req.params['id']);
+    const { workflow_status } = req.body;
+
+    if (!workflow_status) {
+      return res.status(400).json({ error: 'workflow_status is required.' });
+    }
+
+    // Only admin and production roles can update project status
+    if (authUser.role !== 'admin' && authUser.role !== 'production') {
+      return res.status(403).json({ error: 'Only admin or production users can update project status.' });
+    }
+
+    const project = updateProjectWorkflowStatus(id, workflow_status);
+    if (!project) {
+      return res.status(404).json({ error: 'Project not found.' });
+    }
+    return res.json(project);
   } catch (error: unknown) {
     const err = error as Error;
     return res.status(500).json({ error: err.message });

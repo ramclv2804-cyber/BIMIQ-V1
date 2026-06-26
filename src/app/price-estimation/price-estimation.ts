@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Router } from '@angular/router';
 import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-calculator';
 
 @Component({
@@ -483,20 +484,30 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                   </div>
                 </div>
 
-                <!-- Back + Next Buttons -->
-                <div class="flex gap-3 pt-1">
+              
+                <!-- Save as Hold + Confirm Order Row -->
+                <div class="flex gap-3 pt-2">
+                  <button type="button" (click)="handleSaveAsHold()"
+                    class="flex-1 border border-amber-400/30 bg-amber-400/5 text-amber-400 py-2.5 rounded-xl font-mono text-[10px] uppercase font-bold tracking-widest active:scale-95 hover:bg-amber-400/10 transition-all flex items-center justify-center gap-2 focus:outline-none cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">save</span>
+                    Save as Hold
+                  </button>
+                  <button type="button" (click)="triggerQuoteRequest()"
+                    class="flex-1 bg-primary-custom text-on-primary-custom py-2.5 rounded-xl font-mono text-[10px] uppercase font-bold tracking-widest active:scale-95 hover:opacity-90 transition-all flex items-center justify-center gap-2 focus:outline-none shadow-lg shadow-primary-custom/10 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer border-none">
+                    <span class="material-symbols-outlined text-sm">{{ calculator.placeOrder() ? 'check_circle' : 'shopping_cart' }}</span>
+                    Confirm Order
+                  </button>
+                </div>
+
+                  <!-- Back Button -->
+                <div class="flex pt-1">
                   <button type="button" (click)="goToStep(1)"
                     class="flex-1 border border-silver-leaf/20 bg-transparent text-silver-leaf py-2.5 rounded-xl font-mono text-[10px] uppercase tracking-widest hover:bg-white/5 active:scale-95 transition-all flex items-center justify-center gap-2 focus:outline-none cursor-pointer">
                     <span class="material-symbols-outlined text-sm">arrow_back</span>
                     BACK
                   </button>
-                 
-                    <button type="button" (click)="goToStep(3); triggerQuoteRequest(); "
-                    class="flex-1 bg-primary-custom text-on-primary-custom py-2.5 rounded-xl font-mono text-[10px] uppercase font-bold tracking-widest active:scale-95 hover:opacity-90 transition-all flex items-center justify-center gap-2 focus:outline-none shadow-lg shadow-primary-custom/10 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer border-none">
-                      <span class="material-symbols-outlined text-sm">{{ calculator.placeOrder() ? 'check_circle' : 'shopping_cart' }}</span>
-                       Confirm Order
-                    </button>
                 </div>
+
               </div>
             }
 
@@ -869,7 +880,11 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
 
             <!-- Actions -->
             <div class="flex gap-3 pt-2 border-t border-white/5 mt-2">
-              
+              <button type="button" (click)="handleSaveAsHoldFromPreview()"
+                    class="flex-1 border border-amber-400/30 bg-amber-400/5 text-amber-400 py-2.5 rounded-xl font-mono text-[10px] uppercase font-bold tracking-widest active:scale-95 hover:bg-amber-400/10 transition-all flex items-center justify-center gap-2 focus:outline-none cursor-pointer">
+                    <span class="material-symbols-outlined text-sm">save</span>
+                    Save as Hold
+               </button>
               <button type="button" (click)="triggerQuoteRequest()"
                 class="flex-1 py-2.5 bg-primary-custom text-on-primary-custom rounded-lg hover:opacity-90 active:scale-95 font-mono text-xs font-bold uppercase transition-all cursor-pointer border-none shadow-lg shadow-primary-custom/10">
                 <span class="flex items-center justify-center gap-2">
@@ -877,22 +892,80 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
                   Confirm Order
                 </span>
               </button>
+
             </div>
           </div>
         </div>
       }
+
+    <!-- Hold Success Modal -->
+    @if (isHoldSuccessModalOpen()) {
+      <div class="fixed inset-0 bg-black/80 backdrop-blur-md z-[200] flex justify-center items-center p-4 animate-fade-in">
+        <div class="bg-[#121216] border border-amber-400/30 rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center flex flex-col items-center gap-4">
+          <span class="material-symbols-outlined text-amber-400 text-5xl">save</span>
+          <p class="font-mono text-sm text-silver-leaf leading-relaxed">
+            Your data has been saved as hold successfully!
+          </p>
+          <button type="button" (click)="isHoldSuccessModalOpen.set(false)"
+            class="w-full py-3 bg-amber-400/20 text-amber-400 rounded-xl font-mono text-xs uppercase font-bold tracking-widest hover:bg-amber-400/30 transition-all cursor-pointer border border-amber-400/30">
+            OK
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Project Success Modal -->
+    @if (isProjectSuccessModalOpen()) {
+      <div class="fixed inset-0 bg-black/80 backdrop-blur-md z-[200] flex justify-center items-center p-4 animate-fade-in">
+        <div class="bg-[#121216] border border-green-500/30 rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center flex flex-col items-center gap-4">
+          <span class="material-symbols-outlined text-green-400 text-5xl">check_circle</span>
+          <p class="font-mono text-sm text-silver-leaf leading-relaxed">
+            Your project has been created successfully!
+          </p>
+          <button type="button" (click)="isProjectSuccessModalOpen.set(false)"
+            class="w-full py-3 bg-green-500/20 text-green-400 rounded-xl font-mono text-xs uppercase font-bold tracking-widest hover:bg-green-500/30 transition-all cursor-pointer border border-green-500/30">
+            OK
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Project Fail Modal -->
+    @if (isProjectFailModalOpen()) {
+      <div class="fixed inset-0 bg-black/80 backdrop-blur-md z-[200] flex justify-center items-center p-4 animate-fade-in">
+        <div class="bg-[#121216] border border-red-500/30 rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center flex flex-col items-center gap-4">
+          <span class="material-symbols-outlined text-red-400 text-5xl">error</span>
+          <p class="font-mono text-sm text-silver-leaf leading-relaxed">
+            {{ projectErrorMessage() }}
+          </p>
+          <button type="button" (click)="isProjectFailModalOpen.set(false)"
+            class="w-full py-3 bg-red-500/20 text-red-400 rounded-xl font-mono text-xs uppercase font-bold tracking-widest hover:bg-red-500/30 transition-all cursor-pointer border border-red-500/30">
+            OK
+          </button>
+        </div>
+      </div>
+    }
   `,
 })
 export class PriceEstimation implements OnInit {
   calculator = inject(SpatialCostCalculator);
   sanitizer = inject(DomSanitizer);
+  router = inject(Router);
   isCardCurrencyOpen = signal<boolean>(false);
   formStep = signal<number>(1);
   buildingModelIndex = signal<number>(0);
   isPreviewModalOpen = signal<boolean>(false);
+  isProjectSuccessModalOpen = signal<boolean>(false);
+  isProjectFailModalOpen = signal<boolean>(false);
+  isHoldSuccessModalOpen = signal<boolean>(false);
+  projectErrorMessage = signal<string>('Your project creation failed. Something went wrong, please try again.');
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event) {
+    if (!this.calculator.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     const target = event.target as HTMLElement;
     if (!target.closest('.dropdown-toggle, .dropdown-panel')) {
       this.calculator.closeAllDropdowns();
@@ -933,8 +1006,9 @@ export class PriceEstimation implements OnInit {
     this.isPreviewModalOpen.set(false);
   }
 
-  confirmOrder() {
+  async saveAsHold(): Promise<boolean> {
     const c = this.calculator;
+    c.projectNumber.set('PRJ-' + crypto.randomUUID().toUpperCase());
     const est = c.calculatedSmartEstimate();
     const isCad = c.selectedModelingWay() === 'scan_to_cad';
     const scope = isCad ? 'Scan to CAD' : 'Scan to BIM';
@@ -965,12 +1039,12 @@ export class PriceEstimation implements OnInit {
       cost: est.totalPrice,
       currency: c.selectedCurrency(),
       billing: 'Yet to Invoice',
-      billingStatus: 'Yet to Invoice',
       invoiceNumber: '',
       invoiceDate: '',
       invoiceDueDate: '',
       payment: 'Yet to Pay',
       workflowStatus: 'Yet to Award',
+      status: 1,
       comments: '',
       remark: c.remark(),
       uploadLink: c.uploadLink(),
@@ -978,11 +1052,93 @@ export class PriceEstimation implements OnInit {
       descriptionLink: c.descriptionLink(),
     };
 
-    c.addUserProject(newProject);
-    this.closePreviewModal();
-    this.goToStep(3);
-    c.placeOrder.set(true);
-    c.showNotification('Order placed successfully! Check Order Summary for details.', 'success');
+    try {
+      await c.addUserProject(newProject);
+      c.placeOrder.set(false);
+      return true;
+    } catch (e) {
+      this.projectErrorMessage.set((e as Error)?.message || 'Your project creation failed. Something went wrong, please try again.');
+      return false;
+    }
+  }
+
+  async handleSaveAsHold() {
+    const ok = await this.saveAsHold();
+    if (ok) {
+      this.isHoldSuccessModalOpen.set(true);
+      this.goToStep(3);
+    } else {
+      this.isProjectFailModalOpen.set(true);
+    }
+  }
+
+  async handleSaveAsHoldFromPreview() {
+    const ok = await this.saveAsHold();
+    if (ok) {
+      this.isHoldSuccessModalOpen.set(true);
+      this.closePreviewModal();
+      this.goToStep(3);
+    } else {
+      this.isProjectFailModalOpen.set(true);
+    }
+  }
+
+  async confirmOrder(): Promise<boolean> {
+    const c = this.calculator;
+    c.projectNumber.set('PRJ-' + crypto.randomUUID().toUpperCase());
+    const est = c.calculatedSmartEstimate();
+    const isCad = c.selectedModelingWay() === 'scan_to_cad';
+    const scope = isCad ? 'Scan to CAD' : 'Scan to BIM';
+    const lod = isCad ? '' : c.smartLODLevel().replace('_', ' ');
+    const scale = isCad ? c.cadScale() : '';
+    const requirements = isCad ? c.cadRequirements().join(', ') : c.bimRequirements().join(', ');
+    const addOn = isCad ? '' : c.bimAddOns().join(', ');
+    const today = new Date().toISOString().split('T')[0];
+
+    const newProject: UserProject = {
+      projectNo: c.projectNumber(),
+      client: c.currentUser()?.name || '—',
+      projectName: c.smartProjectName(),
+      buildingType: c.selectedBuildingType(),
+      description: c.description(),
+      requirements,
+      scope,
+      lod,
+      scale,
+      addOn,
+      sft: c.smartScanSize(),
+      proposalSent: today,
+      purchaseOrderIssued: '',
+      e57IssuedDate: '',
+      startDate: today,
+      endDate: '',
+      expectedClientDeliveryDate: c.expectedDeliveryDate() || '',
+      cost: est.totalPrice,
+      currency: c.selectedCurrency(),
+      billing: 'Yet to Invoice',
+      invoiceNumber: '',
+      invoiceDate: '',
+      invoiceDueDate: '',
+      payment: 'Yet to Pay',
+      workflowStatus: 'In Progress',
+      status: 2,
+      comments: '',
+      remark: c.remark(),
+      uploadLink: c.uploadLink(),
+      pointCloudLink: c.pointCloudLink(),
+      descriptionLink: c.descriptionLink(),
+    };
+
+    try {
+      await c.addUserProject(newProject);
+      this.closePreviewModal();
+      this.goToStep(3);
+      c.placeOrder.set(true);
+      return true;
+    } catch (e) {
+      this.projectErrorMessage.set((e as Error)?.message || 'Your project creation failed. Something went wrong, please try again.');
+      return false;
+    }
   }
 
   isProjectDetailsValid(): boolean {
@@ -1544,7 +1700,7 @@ export class PriceEstimation implements OnInit {
     }
   }
 
-  triggerQuoteRequest() {
+  async triggerQuoteRequest() {
     const c = this.calculator;
     c.placeOrder.set(true);
     const mode = c.selectedModelingWay() === 'bim' ? 'Scan to BIM' : 'Scan to CAD';
@@ -1552,7 +1708,6 @@ export class PriceEstimation implements OnInit {
     console.log('Mode:', mode);
     console.log('--- Step 1: Project Specs ---');
     console.log('Project Name:', c.smartProjectName());
-    // console.log('Type:', c.projectType());
     console.log('Area:', c.smartScanSize(), c.smartIsMetric() ? 'Sq.m' : 'Sq.ft');
     console.log('Building Type:', c.selectedBuildingType());
     if (c.selectedModelingWay() === 'scan_to_cad') {
@@ -1573,7 +1728,6 @@ export class PriceEstimation implements OnInit {
     console.log('Point Cloud Link:', c.pointCloudLink());
     console.log('Description Link:', c.descriptionLink());
     console.log('Remark:', c.remark());
-    // console.log('Manual Estimation:', c.manualEstimation());
     console.log('Send Proposal:', c.sendProposal());
     console.log('Place Order:', c.placeOrder());
     console.log('--- Step 3: Order Summary ---');
@@ -1583,12 +1737,20 @@ export class PriceEstimation implements OnInit {
     console.log('Expected Delivery Date:', c.expectedDeliveryDate());
     console.log('Total Price:', c.calculatedSmartEstimate().currencySymbol + c.calculatedSmartEstimate().totalPrice, c.selectedCurrency());
     console.log('========================');
-    this.sendQuoteEmail();
-    this.confirmOrder();
-    this.calculator.showNotification('Initiating connection with production director...', 'info');
-    setTimeout(() => {
-      this.calculator.showNotification(`Handshake complete. Production pipeline coordinates sent securely to ${c.smartEmail()}!`, 'success');
-    }, 2200);
+
+    const success = await this.confirmOrder();
+    this.closePreviewModal();
+
+    if (success) {
+      this.isProjectSuccessModalOpen.set(true);
+      this.sendQuoteEmail();
+      this.calculator.showNotification('Initiating connection with production director...', 'info');
+      setTimeout(() => {
+        this.calculator.showNotification(`Handshake complete. Production pipeline coordinates sent securely to ${c.smartEmail()}!`, 'success');
+      }, 2200);
+    } else {
+      this.isProjectFailModalOpen.set(true);
+    }
   }
 
   private async sendQuoteEmail() {

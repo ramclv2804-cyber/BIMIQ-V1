@@ -49,6 +49,7 @@ export class Projects {
   filterUser = signal<number | null>(null);
   allUsers = computed(() => this.calculator.allUsers());
   isAdmin = computed(() => this.calculator.currentUser()?.role === 'admin');
+  isProduction = computed(() => this.calculator.currentUser()?.role === 'production');
   selectedUserName = computed(() => {
     const id = this.filterUser();
     if (!id) return null;
@@ -147,10 +148,16 @@ export class Projects {
   detailProject = signal<UserProject | null>(null);
   isDescExpanded = signal(false);
 
+  selectedProjectStatus = signal<string>('In Progress');
+  isChangingProjectStatus = signal(false);
+  isProjectStatusUnchanged = computed(() => this.selectedProjectStatus() === this.detailProject()?.workflowStatus);
+
   openDetail(project: UserProject) {
     this.detailProject.set(project);
     this.isDescExpanded.set(false);
     this.ticketStatusFilter.set('1');
+    // Default dropdown to current project workflow status
+    this.selectedProjectStatus.set(project.workflowStatus || 'In Progress');
     // Load tickets from database for this project — initially only status 1 (In Progress)
     this.loadTicketsForProject(project, '1');
   }
@@ -159,6 +166,39 @@ export class Projects {
     this.detailProject.set(null);
   }
   toggleDesc() { this.isDescExpanded.update(v => !v); }
+
+  async changeProjectStatus() {
+    const project = this.detailProject();
+    if (!project || !project.id) return;
+
+    const newStatus = this.selectedProjectStatus();
+    this.isChangingProjectStatus.set(true);
+
+    try {
+      await this.calculator.apiUpdateProjectStatus(project.id, newStatus);
+
+      // Update local state
+      this.detailProject.set({ ...project, workflowStatus: newStatus });
+
+      // Update in the projects list too
+      this.calculator.userProjects.update(list =>
+        list.map(p => p.id === project.id ? { ...p, workflowStatus: newStatus } : p)
+      );
+
+      this.statusAlert.set({
+        type: 'success',
+        message: `Project status changed to ${newStatus} successfully!`,
+      });
+    } catch (err) {
+      console.warn('[Projects] Failed to update project status:', err);
+      this.statusAlert.set({
+        type: 'error',
+        message: 'Failed to change project status. Please try again.',
+      });
+    } finally {
+      this.isChangingProjectStatus.set(false);
+    }
+  }
 
   ticketProject = signal<UserProject | null>(null);
   ticketComments = signal('');
@@ -228,11 +268,19 @@ export class Projects {
 
   openTicketDetail(ticket: Ticket) {
     this.selectedTicket.set(ticket);
+    // Default dropdown to the current ticket status
+    this.selectedNewStatus.set(ticket.status || '1');
   }
 
   closeTicketDetail() {
     this.selectedTicket.set(null);
   }
+
+  selectedNewStatus = signal<string>('1');
+  isChangingStatus = signal(false);
+  isStatusUnchanged = computed(() => this.selectedNewStatus() === this.selectedTicket()?.status);
+
+  statusAlert = signal<{ type: 'success' | 'error'; message: string } | null>(null);
 
   ticketStatusLabel(status?: string): string {
     const labels: Record<string, string> = {
@@ -241,6 +289,44 @@ export class Projects {
       '3': 'Under Revision',
     };
     return labels[status || ''] || 'Unknown';
+  }
+
+  closeStatusAlert() {
+    this.statusAlert.set(null);
+  }
+
+  async changeTicketStatus() {
+    const ticket = this.selectedTicket();
+    if (!ticket || !ticket.id) return;
+
+    const newStatus = this.selectedNewStatus();
+    this.isChangingStatus.set(true);
+
+    try {
+      await this.calculator.apiUpdateTicketStatus(ticket.id, newStatus);
+
+      // Update local state (create new object, avoid mutation)
+      this.selectedTicket.set({ ...ticket, status: newStatus });
+
+      // Refresh tickets list
+      const project = this.detailProject();
+      if (project) {
+        this.loadTicketsForProject(project, this.ticketStatusFilter());
+      }
+
+      this.statusAlert.set({
+        type: 'success',
+        message: `Ticket status changed to ${this.ticketStatusLabel(newStatus)} successfully!`,
+      });
+    } catch (err) {
+      console.warn('[Tickets] Failed to update ticket status:', err);
+      this.statusAlert.set({
+        type: 'error',
+        message: 'Failed to change ticket status. Please try again.',
+      });
+    } finally {
+      this.isChangingStatus.set(false);
+    }
   }
 
   openTicket(project: UserProject) {

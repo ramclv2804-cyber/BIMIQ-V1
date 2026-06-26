@@ -98,7 +98,6 @@ export function initDatabase(): Database.Database {
       cost                      REAL    DEFAULT 0,
       currency                  TEXT    DEFAULT 'USD',
       billing                   TEXT,
-      billing_status            TEXT,
       invoice_number            TEXT,
       invoice_date              TEXT,
       invoice_due_date          TEXT,
@@ -147,6 +146,14 @@ export function initDatabase(): Database.Database {
     db.exec(`UPDATE users SET created_at = datetime(created_at, '+5 hours', '+30 minutes') WHERE created_at IS NOT NULL`);
     db.prepare(`INSERT INTO _migrations (name) VALUES ('ist_timestamps')`).run();
     console.log(`[DB] Migrated existing timestamps from UTC to IST`);
+  }
+
+  // Migration: fix projects where status column has wrong values (should be 1, not 2/3/4)
+  const statusFixed = db.prepare(`SELECT name FROM _migrations WHERE name = 'fix_project_status'`).get();
+  if (!statusFixed) {
+    const fixedCount = db.prepare(`UPDATE projects SET status = 1 WHERE status > 1`).run();
+    db.prepare(`INSERT INTO _migrations (name) VALUES ('fix_project_status')`).run();
+    console.log(`[DB] Fixed project status values — ${fixedCount.changes} projects updated to status=1`);
   }
 
   console.log(`[DB] SQLite database initialized at ${DB_PATH}`);
@@ -249,7 +256,6 @@ export interface ProjectRow {
   cost: number;
   currency: string;
   billing: string;
-  billing_status: string;
   invoice_number: string;
   invoice_date: string;
   invoice_due_date: string;
@@ -285,12 +291,12 @@ export interface CreateProjectInput {
   cost?: number;
   currency?: string;
   billing?: string;
-  billing_status?: string;
   invoice_number?: string;
   invoice_date?: string;
   invoice_due_date?: string;
   payment?: string;
   workflow_status?: string;
+  status?: number;
   comments?: string;
   remark?: string;
   upload_link?: string;
@@ -301,6 +307,35 @@ export interface CreateProjectInput {
 /** Create a new project associated with a user. Returns the inserted row. */
 export function createProject(userId: number, input: CreateProjectInput): ProjectRow {
   ensureDb();
+
+  const existing = db.prepare(`
+    SELECT id FROM projects WHERE user_id = ?
+      AND IFNULL(client, '') = ? AND project_name = ? AND IFNULL(building_type, '') = ? AND IFNULL(description, '') = ?
+      AND IFNULL(requirements, '') = ? AND IFNULL(scope, '') = ? AND IFNULL(lod, '') = ? AND IFNULL(scale, '') = ? AND IFNULL(add_on, '') = ?
+      AND sft = ? AND cost = ? AND currency = ?
+      AND IFNULL(billing, '') = ? AND IFNULL(payment, '') = ? AND workflow_status = ?
+  `).get(
+    userId,
+    input.client ?? '',
+    input.project_name,
+    input.building_type ?? '',
+    input.description ?? '',
+    input.requirements ?? '',
+    input.scope ?? '',
+    input.lod ?? '',
+    input.scale ?? '',
+    input.add_on ?? '',
+    input.sft || 0,
+    input.cost || 0,
+    input.currency || 'USD',
+    input.billing ?? '',
+    input.payment ?? '',
+    input.workflow_status || 'Yet to Award',
+  );
+  if (existing) {
+    throw new Error('A project with same data already exists in your projects list.');
+  }
+
   const timestamp = istNow();
   const stmt = db.prepare(`
     INSERT INTO projects (
@@ -308,8 +343,9 @@ export function createProject(userId: number, input: CreateProjectInput): Projec
       requirements, scope, lod, scale, add_on, sft,
       proposal_sent, purchase_order_issued, e57_issued_date,
       start_date, end_date, expected_delivery_date,
-      cost, currency, billing, billing_status, invoice_number,
-      invoice_date, invoice_due_date, payment, workflow_status, comments,
+      cost, currency, billing, invoice_number,
+      invoice_date, invoice_due_date, payment, workflow_status,
+      status, comments,
       upload_link, point_cloud_link, description_link, remark,
       created_at
     ) VALUES (
@@ -317,8 +353,9 @@ export function createProject(userId: number, input: CreateProjectInput): Projec
       @requirements, @scope, @lod, @scale, @add_on, @sft,
       @proposal_sent, @purchase_order_issued, @e57_issued_date,
       @start_date, @end_date, @expected_delivery_date,
-      @cost, @currency, @billing, @billing_status, @invoice_number,
-      @invoice_date, @invoice_due_date, @payment, @workflow_status, @comments,
+      @cost, @currency, @billing, @invoice_number,
+      @invoice_date, @invoice_due_date, @payment, @workflow_status,
+      @status, @comments,
       @upload_link, @point_cloud_link, @description_link, @remark,
       @created_at
     )
@@ -346,12 +383,12 @@ export function createProject(userId: number, input: CreateProjectInput): Projec
     cost: input.cost || 0,
     currency: input.currency || 'USD',
     billing: input.billing || null,
-    billing_status: input.billing_status || null,
     invoice_number: input.invoice_number || null,
     invoice_date: input.invoice_date || null,
     invoice_due_date: input.invoice_due_date || null,
     payment: input.payment || null,
     workflow_status: input.workflow_status || 'Yet to Award',
+    status: input.status ?? 1,
     comments: input.comments || null,
     remark: input.remark || null,
     upload_link: input.upload_link || null,
@@ -366,19 +403,19 @@ export function createProject(userId: number, input: CreateProjectInput): Projec
 /** Get all projects for a specific user. */
 export function getUserProjects(userId: number): ProjectRow[] {
   ensureDb();
-  return db.prepare(`SELECT * FROM projects WHERE user_id = ? AND status = 1 ORDER BY created_at DESC`).all(userId) as ProjectRow[];
+  return db.prepare(`SELECT * FROM projects WHERE user_id = ? AND status > 1 ORDER BY created_at DESC`).all(userId) as ProjectRow[];
 }
 
 /** Get a single project by id. */
 export function getProjectById(id: number): ProjectRow | undefined {
   ensureDb();
-  return db.prepare(`SELECT * FROM projects WHERE id = ? AND status = 1`).get(id) as ProjectRow | undefined;
+  return db.prepare(`SELECT * FROM projects WHERE id = ? AND status >= 1`).get(id) as ProjectRow | undefined;
 }
 
 /** Get all projects across all users (admin use). */
 export function getAllProjects(): ProjectRow[] {
   ensureDb();
-  return db.prepare(`SELECT * FROM projects WHERE status = 1 ORDER BY created_at DESC`).all() as ProjectRow[];
+  return db.prepare(`SELECT * FROM projects WHERE status > 1 ORDER BY created_at DESC`).all() as ProjectRow[];
 }
 
 export interface AdminDashboardStats {
@@ -402,34 +439,34 @@ export function getAdminDashboardStats(): AdminDashboardStats {
 
   const statusBreakdown = db.prepare(`
     SELECT COALESCE(workflow_status, 'Yet to Award') as status, COUNT(*) as count, COALESCE(SUM(cost), 0) as cost
-    FROM projects WHERE status = 1 GROUP BY workflow_status
+    FROM projects WHERE status >= 1 GROUP BY workflow_status
   `).all() as { status: string; count: number; cost: number }[];
 
   const scopeBreakdown = db.prepare(`
     SELECT COALESCE(scope, 'Unspecified') as scope, COUNT(*) as count
-    FROM projects WHERE status = 1 GROUP BY scope
+    FROM projects WHERE status >= 1 GROUP BY scope
   `).all() as { scope: string; count: number }[];
 
   const billingBreakdown = db.prepare(`
     SELECT COALESCE(billing, 'Unknown') as billing, COUNT(*) as count
-    FROM projects WHERE status = 1 GROUP BY billing
+    FROM projects WHERE status >= 1 GROUP BY billing
   `).all() as { billing: string; count: number }[];
 
   const paymentBreakdown = db.prepare(`
     SELECT COALESCE(payment, 'Unknown') as payment, COUNT(*) as count
-    FROM projects WHERE status = 1 GROUP BY payment
+    FROM projects WHERE status >= 1 GROUP BY payment
   `).all() as { payment: string; count: number }[];
 
   const recentProjects = db.prepare(`
     SELECT p.*, u.username FROM projects p
     JOIN users u ON u.id = p.user_id
-    WHERE p.status = 1 ORDER BY p.created_at DESC LIMIT 10
+    WHERE p.status >= 1 ORDER BY p.created_at DESC LIMIT 10
   `).all() as (ProjectRow & { username: string })[];
 
   const projectsPerUser = db.prepare(`
     SELECT p.user_id as userId, u.username, u.email, COUNT(*) as count, COALESCE(SUM(p.cost), 0) as totalCost
     FROM projects p JOIN users u ON u.id = p.user_id
-    WHERE p.status = 1 GROUP BY p.user_id ORDER BY count DESC
+    WHERE p.status >= 1 GROUP BY p.user_id ORDER BY count DESC
   `).all() as { userId: number; username: string; email: string; count: number; totalCost: number }[];
 
   return {
@@ -517,10 +554,29 @@ export function getAllTickets(): TicketRow[] {
   return db.prepare(`SELECT * FROM tickets ORDER BY created_at DESC`).all() as TicketRow[];
 }
 
+/** Update a project's workflow status and sync the numeric status column. */
+export function updateProjectWorkflowStatus(id: number, workflowStatus: string, numericStatus?: number): ProjectRow | undefined {
+  ensureDb();
+  if (numericStatus !== undefined) {
+    db.prepare(`UPDATE projects SET workflow_status = ?, status = ? WHERE id = ? AND status >= 1`).run(workflowStatus, numericStatus, id);
+  } else {
+    // Auto-map: 'Yet to Award' → 1, 'In Progress' → 2, 'Under Revision' → 3, 'Completed' → 4
+    const statusMap: Record<string, number> = {
+      'Yet to Award': 1,
+      'In Progress': 2,
+      'Under Revision': 3,
+      'Completed': 4,
+    };
+    const mappedStatus = statusMap[workflowStatus] ?? 1;
+    db.prepare(`UPDATE projects SET workflow_status = ?, status = ? WHERE id = ? AND status >= 1`).run(workflowStatus, mappedStatus, id);
+  }
+  return getProjectById(id);
+}
+
 /** Update a ticket's status. */
 export function updateTicketStatus(id: number, status: string): TicketRow | undefined {
   ensureDb();
-  db.prepare(`UPDATE tickets SET status = ? WHERE id = ?`).run(status, id);
+  db.prepare(`UPDATE tickets SET ticket_status = ? WHERE id = ?`).run(status, id);
   return getTicketById(id);
 }
 
@@ -657,4 +713,4 @@ export function seedDefaultUsers(): void {
   console.log(`[DB] Seeding complete — ${total.count} users in database.`);
 }
 
-export default { initDatabase, createUser, getUserByUsername, getUserByEmail, getUserById, getAllUsers, createProject, getUserProjects, getProjectById, getAllProjects, getAdminDashboardStats, validateDatabase, authenticateUser, hashPassword, verifyPassword, seedDefaultUsers, createTicket, getTicketById, getProjectTickets, getUserTickets, getAllTickets, updateTicketStatus };
+export default { initDatabase, createUser, getUserByUsername, getUserByEmail, getUserById, getAllUsers, createProject, getUserProjects, getProjectById, getAllProjects, getAdminDashboardStats, validateDatabase, authenticateUser, hashPassword, verifyPassword, seedDefaultUsers, createTicket, getTicketById, getProjectTickets, getUserTickets, getAllTickets, updateTicketStatus, updateProjectWorkflowStatus };

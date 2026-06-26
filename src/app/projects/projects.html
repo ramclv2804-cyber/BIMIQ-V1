@@ -9,6 +9,8 @@
           <span class="hero-badge">PORTFOLIO</span>
           @if (isAdmin()) {
           <h1>{{ selectedUserName() ? selectedUserName() + ' projects portfolio' : '' }}</h1>
+          } @else if (isProduction()) {
+          <h1> Projects</h1>
           } @else {
           <h1>My Projects</h1>
           }
@@ -181,7 +183,10 @@
         <div class="card-tags">
           <span class="tag-chip" [class.tag-lod]="p.scope !== 'Scan to CAD'"
             [class.tag-scale]="p.scope === 'Scan to CAD'">{{ p.scope === 'Scan to CAD' ? p.scale : p.lod }}</span>
-          <span class="tag-chip tag-workflow">{{ p.workflowStatus }}</span>
+          <span class="tag-chip tag-workflow" [class.award]="p.workflowStatus === 'Yet to Award'"
+            [class.progress]="p.workflowStatus === 'In Progress'"
+            [class.revision]="p.workflowStatus === 'Under Revision'"
+            [class.complete]="p.workflowStatus === 'Completed'">{{ p.workflowStatus }}</span>
           <span class="tag-chip tag-billing">{{ p.billing }}</span>
           <span class="tag-chip tag-payment" [class.paid]="p.payment === 'Paid'">{{ p.payment }}</span>
         </div>
@@ -226,7 +231,7 @@
       <div class="banner-overlay"></div>
       <div class="banner-content">
         <div class="banner-top-row">
- 
+
           <h1 class="detail-title">{{ p.projectName }}</h1>
         </div>
 
@@ -373,8 +378,10 @@
             <span class="section-title-icon">confirmation_number</span>
             <span>Tickets</span>
             <div class="ticket-filter-group">
-              <button class="ticket-filter-btn ticket-filter-inprogress" [class.active]="ticketStatusFilter() === '1'" (click)="setTicketFilter('1')">In Progress</button>
-              <button class="ticket-filter-btn ticket-filter-completed" [class.active]="ticketStatusFilter() === '2'" (click)="setTicketFilter('2')">Completed</button>
+              <button class="ticket-filter-btn ticket-filter-inprogress" [class.active]="ticketStatusFilter() === '1'"
+                (click)="setTicketFilter('1')">In Progress</button>
+              <button class="ticket-filter-btn ticket-filter-completed" [class.active]="ticketStatusFilter() === '2'"
+                (click)="setTicketFilter('2')">Completed</button>
             </div>
             <span class="tickets-notif" *ngIf="projectTickets().length">
               <span class="tickets-notif-icon">notifications</span>
@@ -389,12 +396,15 @@
                     <span class="ticket-item-date">{{ t.createdAt | date:'MMM d, y' }}</span>
                     <span class="ticket-item-sep">|</span>
                     <span class="ticket-item-time">{{ t.createdAt | date:'h:mm a' }}</span>
-                    <span class="ticket-item-badge ticket-badge-{{ t.status || '1' }}">{{ ticketStatusLabel(t.status) }}</span>
+                    <span class="ticket-item-badge ticket-badge-{{ t.status || '1' }}">{{ ticketStatusLabel(t.status)
+                      }}</span>
                     <span *ngIf="t.url" class="ticket-item-attach">attached</span>
                   </div>
                   <div class="ticket-item-sub" *ngIf="t.comments || t.raisedByUsername || t.url">
-                    <span *ngIf="t.raisedByUsername" class="ticket-item-author">Raised: <span class="ticket-author-name">{{ t.raisedByUsername }}</span></span>
-                    <span *ngIf="t.comments" class="ticket-item-text ticket-comment-clamp">comments: {{ t.comments }}</span>
+                    <span *ngIf="t.raisedByUsername" class="ticket-item-author">Raised: <span
+                        class="ticket-author-name">{{ t.raisedByUsername }}</span></span>
+                    <span *ngIf="t.comments" class="ticket-item-text ticket-comment-clamp">comments: {{ t.comments
+                      }}</span>
                   </div>
                 </div>
               </div>
@@ -478,6 +488,31 @@
 
     </div>
   </div>
+
+  <!-- Project Status Change — visible only for production role users -->
+  <div class="detail-footer" *ngIf="isProduction()">
+    <div class="detail-footer-inner">
+      <div class="detail-footer-label">
+        <span class="detail-footer-icon">assignment_turned_in</span>
+        Project Status
+      </div>
+      <div class="detail-footer-controls">
+        <select class="status-change-select" [value]="selectedProjectStatus()"
+          (change)="selectedProjectStatus.set($any($event.target).value)">
+          <option value="Yet to Award">Yet to Award</option>
+          <option value="In Progress">In Progress</option>
+          <option value="Under Revision">Under Revision</option>
+          <option value="Completed">Completed</option>
+        </select>
+        <button class="status-change-btn" (click)="changeProjectStatus()"
+          [disabled]="isChangingProjectStatus() || isProjectStatusUnchanged()">
+          <span class="status-change-btn-icon" *ngIf="isChangingProjectStatus()">hourglass_top</span>
+          <span class="status-change-btn-icon" *ngIf="!isChangingProjectStatus()">update</span>
+          <span>{{ isChangingProjectStatus() ? 'Updating...' : 'Change Status' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- TICKET MODAL -->
@@ -510,11 +545,11 @@
         Attachment Link
       </label>
       <div class="ticket-file-wrap">
-        <input type="url" id="ticketFile" class="ticket-file-input" placeholder="Paste a link..." [value]="ticketUrl()"
+        <input type="url" id="ticketFile" class="ticket-file-input" [value]="ticketUrl()"
           (input)="onTicketUrlChange($event)" />
-        <label for="ticketFile" class="ticket-file-label">
+        <label for="ticketFile" class="ticket-file-label" *ngIf="!ticketUrl()">
           <span class="ticket-file-icon">link</span>
-          <span class="ticket-file-text">{{ ticketUrl() || 'Paste a link...' }}</span>
+          <span class="ticket-file-text">Paste a link...</span>
         </label>
       </div>
     </div>
@@ -589,4 +624,39 @@
       </a>
     </div>
   </div>
+
+  <!-- Status Change Controls — always visible at bottom for production role users -->
+  <div class="ticket-detail-footer" *ngIf="isProduction()">
+    <div class="ticket-detail-footer-inner">
+      <div class="ticket-detail-footer-label">
+        <span class="ticket-detail-footer-icon">swap_horiz</span>
+        Change Status
+      </div>
+      <div class="ticket-detail-footer-controls">
+        <select class="status-change-select" [value]="selectedNewStatus()"
+          (change)="selectedNewStatus.set($any($event.target).value)">
+          <option value="1">In Progress</option>
+          <option value="2">Completed</option>
+        </select>
+        <button class="status-change-btn" (click)="changeTicketStatus()"
+          [disabled]="isChangingStatus() || isStatusUnchanged()">
+          <span class="status-change-btn-icon" *ngIf="isChangingStatus()">hourglass_top</span>
+          <span class="status-change-btn-icon" *ngIf="!isChangingStatus()">update</span>
+          <span>{{ isChangingStatus() ? 'Updating...' : 'Change Status' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS CHANGE ALERT POPUP -->
+<div class="modal-backdrop status-alert-backdrop" *ngIf="statusAlert()" (click)="closeStatusAlert()"></div>
+<div class="status-alert-modal" *ngIf="statusAlert(); let alert">
+  <div class="status-alert-icon" [class.success]="alert.type === 'success'" [class.error]="alert.type === 'error'">
+    <span *ngIf="alert.type === 'success'">check_circle</span>
+    <span *ngIf="alert.type === 'error'">error</span>
+  </div>
+  <h3 class="status-alert-title">{{ alert.type === 'success' ? 'Status Updated' : 'Update Failed' }}</h3>
+  <p class="status-alert-message">{{ alert.message }}</p>
+  <button class="status-alert-btn" (click)="closeStatusAlert()">OK</button>
 </div>
