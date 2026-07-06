@@ -155,16 +155,10 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             <span class="text-[9px] text-[#DF80AC] uppercase tracking-wider block mb-1.5 font-mono">Active Projects</span>
             <div class="space-y-1.5 font-mono text-[10px]">
               <button type="button" 
-                      (click)="calculator.activeCategory.set('STRUCTURAL'); calculator.setTab('portfolio')"
+                      (click)="calculator.activeCategory.set('ARCHITECTURAL & STRUCTURAL'); calculator.setTab('portfolio')"
                       class="w-full text-left bg-transparent p-0 border-none flex items-center justify-between gap-6 cursor-pointer hover:text-primary-custom transition-all duration-200 font-mono text-slate-300 hover:scale-[1.02] focus:outline-none">
-                <span class="font-mono text-[9px] text-slate-400 font-medium">Structural</span>
-                <span class="text-white  font-mono">{{ calculator.countryStats().structuralVal }}</span>
-              </button>
-              <button type="button" 
-                      (click)="calculator.activeCategory.set('ARCHITECTURAL'); calculator.setTab('portfolio')"
-                      class="w-full text-left bg-transparent p-0 border-none flex items-center justify-between gap-6 cursor-pointer hover:text-primary-custom transition-all duration-200 font-mono text-slate-300 hover:scale-[1.02] focus:outline-none">
-                <span class="font-mono text-[9px] text-slate-400 font-medium">Architectural</span>
-                <span class="text-white  font-mono">{{ calculator.countryStats().architecturalVal }}</span>
+                <span class="font-mono text-[9px] text-slate-400 font-medium">Architectural & Structural</span>
+                <span class="text-white  font-mono">{{ calculator.countryStats().archAndStructuralVal }}</span>
               </button>
               <button type="button" 
                       (click)="calculator.activeCategory.set('MEP'); calculator.setTab('portfolio')"
@@ -194,7 +188,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           <h2 class="font-serif text-3xl md:text-4xl text-silver-leaf select-none font-bold">Our Services</h2>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           
           <!-- Card 1: MEP Pipeline Design -->
           <div class="glass-panel p-5 md:p-6 rounded-xl md:rounded-2xl border border-white/5 bg-midnight-charcoal/80 flex flex-col justify-between h-auto gap-4 md:gap-6 transition-all hover:border-white/10 select-none">
@@ -239,88 +233,45 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             </div>
           </div>
 
-          <!-- Card 2: Structural Frameworks -->
+          <!-- Card 2: Architectural & Structural Design -->
           <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-midnight-charcoal/80 flex flex-col justify-between h-auto gap-6 transition-all hover:border-white/10 select-none">
             <div class="space-y-4">
               <div class="flex justify-between items-center">
                 <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
                   <span class="material-symbols-outlined text-[20px] text-[#e9c349]">foundation</span>
                 </div>
-                <span class="font-mono text-[9px] uppercase tracking-wider bg-white/5 border border-white/10 text-slate-300 px-2 py-0.5 rounded font-mono">CIVIL</span>
+                <span class="font-mono text-[9px] uppercase tracking-wider bg-white/5 border border-white/10 text-slate-300 px-2 py-0.5 rounded font-mono">ARCH & STRUCT</span>
               </div>
               
               <div>
-                <h4 class="font-serif text-xl text-silver-leaf">Structural Frameworks</h4>
+                <h4 class="font-serif text-xl text-silver-leaf">Architectural & Structural Design</h4>
                 <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans mt-2">
-                  Seismic trusses, structural foundation beams, loading calculations.
+                  Seismic trusses, structural foundation beams, facade geometries, loading calculations.
                 </p>
               </div>
             </div>
 
             <div class="grid grid-cols-3 gap-1.5 md:gap-2 font-mono text-[9px] md:text-[10px]">
               <button type="button" 
-                      (click)="calculator.activeStructuralTier.set('SMALL'); calculator.showNotification('Structural Tier calibrated to Small', 'success')"
-                      [ngClass]="calculator.activeStructuralTier() === 'SMALL' ? 'bg-secondary-custom text-on-secondary-custom font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
+                      (click)="calculator.activeArchAndStructuralTier.set('SMALL'); calculator.showNotification('Architectural & Structural Tier calibrated to Small', 'success')"
+                      [ngClass]="calculator.activeArchAndStructuralTier() === 'SMALL' ? 'bg-secondary-custom text-on-secondary-custom font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
                       class="py-3.5 rounded-xl text-center active:scale-95 transition-all outline-none cursor-pointer">
                 <span class="block ">SMALL</span>
-                <span class="block text-[9px] opacity-80 mt-0.5">$3.5K</span>
+                <span class="block text-[9px] opacity-80 mt-0.5">$8.5K</span>
               </button>
               <button type="button" 
-                      (click)="calculator.activeStructuralTier.set('MEDIUM'); calculator.showNotification('Structural Tier calibrated to Medium', 'success')"
-                      [ngClass]="calculator.activeStructuralTier() === 'MEDIUM' ? 'bg-secondary-custom text-on-secondary-custom font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
+                      (click)="calculator.activeArchAndStructuralTier.set('MEDIUM'); calculator.showNotification('Architectural & Structural Tier calibrated to Medium', 'success')"
+                      [ngClass]="calculator.activeArchAndStructuralTier() === 'MEDIUM' ? 'bg-secondary-custom text-on-secondary-custom font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
                       class="py-3.5 rounded-xl text-center active:scale-95 transition-all outline-none cursor-pointer">
                 <span class="block ">MEDIUM</span>
-                <span class="block text-[9px] opacity-80 mt-0.5">$7.2K</span>
+                <span class="block text-[9px] opacity-80 mt-0.5">$18.2K</span>
               </button>
               <button type="button" 
-                      (click)="calculator.activeStructuralTier.set('LARGE'); calculator.showNotification('Structural Tier calibrated to Large', 'success')"
-                      [ngClass]="calculator.activeStructuralTier() === 'LARGE' ? 'bg-secondary-custom text-on-secondary-custom font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
+                      (click)="calculator.activeArchAndStructuralTier.set('LARGE'); calculator.showNotification('Architectural & Structural Tier calibrated to Large', 'success')"
+                      [ngClass]="calculator.activeArchAndStructuralTier() === 'LARGE' ? 'bg-secondary-custom text-on-secondary-custom font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
                       class="py-3.5 rounded-xl text-center active:scale-95 transition-all outline-none cursor-pointer">
                 <span class="block ">LARGE</span>
-                <span class="block text-[9px] opacity-80 mt-0.5">$12K+</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Card 3: Envelope & Elevation -->
-          <div class="glass-panel p-6 rounded-2xl border border-white/5 bg-midnight-charcoal/80 flex flex-col justify-between h-auto gap-6 transition-all hover:border-white/10 select-none">
-            <div class="space-y-4">
-              <div class="flex justify-between items-center">
-                <div class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                  <span class="material-symbols-outlined text-[20px] text-primary-custom">architecture</span>
-                </div>
-                <span class="font-mono text-[9px] uppercase tracking-wider bg-white/5 border border-white/10 text-slate-300 px-2 py-0.5 rounded font-mono">AESTHETIC</span>
-              </div>
-              
-              <div>
-                <h4 class="font-serif text-xl text-silver-leaf">Envelope & Elevation</h4>
-                <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans mt-2">
-                  Facade geometries, modular furniture layouts, landscaping contours.
-                </p>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-1.5 md:gap-2 font-mono text-[9px] md:text-[10px]">
-              <button type="button" 
-                      (click)="calculator.activeArchitecturalTier.set('SMALL'); calculator.showNotification('Architectural Tier calibrated to Small', 'success')"
-                      [ngClass]="calculator.activeArchitecturalTier() === 'SMALL' ? 'bg-[#cd79a3] text-midnight-charcoal font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
-                      class="py-3.5 rounded-xl text-center active:scale-95 transition-all outline-none cursor-pointer">
-                <span class="block ">SMALL</span>
-                <span class="block text-[9px] opacity-80 mt-0.5">$5.0K</span>
-              </button>
-              <button type="button" 
-                      (click)="calculator.activeArchitecturalTier.set('MEDIUM'); calculator.showNotification('Architectural Tier calibrated to Medium', 'success')"
-                      [ngClass]="calculator.activeArchitecturalTier() === 'MEDIUM' ? 'bg-[#cd79a3] text-midnight-charcoal font-bold border-none' : 'bg-transparent border border-white/15 text-[#c5c6d0] hover:border-white/25'"
-                      class="py-3.5 rounded-xl text-center active:scale-95 transition-all outline-none cursor-pointer">
-                <span class="block ">MEDIUM</span>
-                <span class="block text-[9px] opacity-80 mt-0.5">$11K</span>
-              </button>
-              <button type="button" 
-                      (click)="calculator.activeArchitecturalTier.set('LARGE'); calculator.showNotification('Architectural Tier calibrated to Large', 'success')"
-                      [ngClass]="calculator.activeArchitecturalTier() === 'LARGE' ? 'bg-[#cd79a3] text-midnight-charcoal font-bold border-none' : 'bg-transparent border border-white/15 text-on-surface-variant-custom hover:border-white/25'"
-                      class="py-3.5 rounded-xl text-center active:scale-95 transition-all outline-none cursor-pointer">
-                <span class="block ">LARGE</span>
-                <span class="block text-[9px] opacity-80 mt-0.5">$20K+</span>
+                <span class="block text-[9px] opacity-80 mt-0.5">$32K+</span>
               </button>
             </div>
           </div>
@@ -540,7 +491,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           </button>
 
           <!-- Project 2 -->
-          <button type="button" (click)="calculator.openArchiveProject('Obsidian', 'STRUCTURAL', 'Opening archive node: PROJECT_005 Obsidian Terminal')"
+          <button type="button" (click)="calculator.openArchiveProject('Obsidian', 'ARCHITECTURAL & STRUCTURAL', 'Opening archive node: PROJECT_005 Obsidian Terminal')"
                style="animation-delay: 110ms;"
                class="w-full text-left bg-transparent p-0 flex items-center justify-between p-3 md:p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
             <div class="flex items-center gap-4">
@@ -560,7 +511,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
           </button>
 
           <!-- Project 3 -->
-          <button type="button" (click)="calculator.openArchiveProject('Flux', 'ARCHITECTURAL', 'Opening archive node: PROJECT_016 Flux Residential')"
+          <button type="button" (click)="calculator.openArchiveProject('Flux', 'ARCHITECTURAL & STRUCTURAL', 'Opening archive node: PROJECT_016 Flux Residential')"
                style="animation-delay: 170ms;"
                class="w-full text-left bg-transparent p-0 flex items-center justify-between p-3 md:p-4 bg-midnight-charcoal/40 border border-white/5 hover:border-white/15 hover:bg-midnight-charcoal/60 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgba(218,225,255,0.04)] rounded-xl cursor-pointer transition-all duration-300 group select-none focus:outline-none animate-fade-slide-up opacity-0">
             <div class="flex items-center gap-4">
@@ -627,8 +578,7 @@ export class Home {
       if (c && c.locations) {
         c.locations.forEach((loc, idx) => {
           if (!loc) return;
-          let pinType = 'STRUCTURAL';
-          if (idx % 3 === 1) pinType = 'ARCHITECTURAL';
+          let pinType = 'ARCHITECTURAL & STRUCTURAL';
           if (idx % 3 === 2) pinType = 'MEP';
 
           const latNum = Number(loc.lat);
@@ -656,21 +606,11 @@ export class Home {
       title: 'Crystal Atrium',
       format: '.RVT / .DWG',
       precision: '+/- 1.5mm',
-      type: 'ARCHITECTURAL',
-      activeLayer: 'Daylight Analysis Axis Active',
+      type: 'ARCHITECTURAL & STRUCTURAL',
+      activeLayer: 'Structural & Daylight Analysis Axis Active',
       size: '12,000 SQ FT',
       alignment: 'Coordinate alignment verified (WGS84 GPS grid)',
       image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCRWYGczuRNVoLApBph6t_QACwT__PN5xdqb5KbDa3JsJ0tH3rLbbrgGyi_1V6HJ2xYX4410dXoSWmUSYCpisKcsGbSX88OXypSEANhuBn8BudnwmlIrCYNhTjT7j84ogwNxG1GBVe6ITJ_IglZtLd9uFThp3IpbccQ-XhB-kDfy_W3AbswscbGT-v_-oo0oEBqdWbF7CrIe9t9hOi3Bo71Yio41IDiWOirzTMYhCReQ2dPcZj6NYGHGHWwqrDfMPYOtPYXQcRRgY8'
-    },
-    {
-      title: 'Monolith Terminal',
-      format: '.RVT / .IFC',
-      precision: '+/- 2.0mm',
-      type: 'STRUCTURAL',
-      activeLayer: 'Structural Concrete Skeletons Active',
-      size: '33,023 SQ FT',
-      alignment: 'Structural load telemetry verified securely',
-      image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRFkC6_hFVn7b-agjpn9iKPpfmErl8szxOLnn5K6wfH1mNgngYgHEddNwt2QBFjktDwHrgXoQSCWROAbuZp_bVltApbslk8lXqSU4qGyoRGE9DRluSiwG2lYJ1qoXU6oi1vVfcFWsvvK7WaN_oQs9YFcjpV6nDBUljI3DW_i-NybLNSjlg0cJrR09nSG9fVPo4E5R4TLur-IcV9Q-y-5nYxqN0ytBcqCVOjc2V7WMnKAmp2M71URgmXwB7RY8uxxCmsyKdhfZenYY'
     },
     {
       title: 'Vertex HQ Pipeline',
@@ -886,16 +826,12 @@ export class Home {
     return this.calculator.mepTiers[this.calculator.activeMepTier()].costValue;
   }
 
-  getStructuralSelectedCost() {
-    return this.calculator.structuralTiers[this.calculator.activeStructuralTier()].costValue;
-  }
-
-  getArchitecturalSelectedCost() {
-    return this.calculator.architecturalTiers[this.calculator.activeArchitecturalTier()].costValue;
+  getArchAndStructuralSelectedCost() {
+    return this.calculator.archAndStructuralTiers[this.calculator.activeArchAndStructuralTier()].costValue;
   }
 
   getTotal() {
-    return this.getMepSelectedCost() + this.getStructuralSelectedCost() + this.getArchitecturalSelectedCost();
+    return this.getMepSelectedCost() + this.getArchAndStructuralSelectedCost();
   }
 
   watchDemo() {

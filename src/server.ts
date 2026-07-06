@@ -8,9 +8,9 @@ import express from 'express';
 import {join, dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import 'dotenv/config';
-import { initDatabase, createUser, getUserByUsername, getUserByEmail, getUserById, createProject, getUserProjects, getAllUsers, getAllProjects, getAdminDashboardStats, validateDatabase, authenticateUser, seedDefaultUsers, createTicket, getProjectTickets, getUserTickets, getAllTickets, updateTicketStatus, updateProjectWorkflowStatus } from './server/database';
+import { initDatabase, createUser, getUserByUsername, getUserByEmail, getUserById, getProjectById, getTicketById, createProject, getUserProjects, getAllUsers, getNewUsers, markUserAsRead, getAllProjects, getAdminDashboardStats, validateDatabase, authenticateUser, seedDefaultUsers, createTicket, getProjectTickets, getUserTickets, getAllTickets, updateTicketStatus, updateProjectWorkflowStatus } from './server/database';
 import { generateToken, requireAuth, optionalAuth, revokeToken } from './server/auth';
-import { sendMail, sendTicketRaiseEmail } from './server/mail';
+import { sendMail, sendTicketRaiseEmail, sendTicketStatusChangeEmail, sendProjectStatusChangeEmail } from './server/mail';
 
 const serverDir = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = join(serverDir, '../browser');
@@ -33,11 +33,11 @@ seedDefaultUsers();
 /**
  * POST /api/auth/signup
  * Create a new user account. Returns user info + JWT token.
- * Body: { username, password, email }
+ * Body: { username, password, email, company_name?, company_website?, contact_number? }
  */
 app.post('/api/auth/signup', (req, res) => {
   try {
-    const { username, password, email } = req.body;
+    const { username, password, email, company_name, company_website, contact_number } = req.body;
 
     if (!username || !password || !email) {
       return res.status(400).json({ error: 'username, password, and email are required.' });
@@ -53,7 +53,7 @@ app.post('/api/auth/signup', (req, res) => {
       return res.status(409).json({ error: 'Username or email already registered.' });
     }
 
-    const user = createUser(username, password, email);
+    const user = createUser(username, password, email, company_name, company_website, contact_number);
 
     // Generate JWT
     const token = generateToken({
@@ -67,6 +67,9 @@ app.post('/api/auth/signup', (req, res) => {
       id: user.id,
       username: user.username,
       email: user.email,
+      company_name: user.company_name,
+      company_website: user.company_website,
+      contact_number: user.contact_number,
       role: user.role,
       token,
     });
@@ -176,6 +179,46 @@ app.get('/api/users', requireAuth, (_req, res) => {
   }
 });
 
+/**
+ * GET /api/users/new
+ * Get all new/unread users (markasread = 0). Admin only.
+ */
+app.get('/api/users/new', requireAuth, (req, res) => {
+  try {
+    const authUser = (req as unknown as { [key: string]: unknown })['user'] as { role: string };
+    if (authUser.role !== 'admin') {
+      return res.status(403).json({ error: 'Admin access required.' });
+    }
+    const users = getNewUsers();
+    return res.json({ users, count: users.length });
+  } catch (error: unknown) {
+    const err = error as Error;
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/users/:id/markread
+ * Mark a user as read. Admin only.
+ */
+app.patch('/api/users/:id/markread', requireAuth, (req, res) => {
+  try {
+    const authUser = (req as unknown as { [key: string]: unknown })['user'] as { role: string };
+    if (authUser.role !== 'admin') {
+      return res.status(403).json({ error: 'Admin access required.' });
+    }
+    const id = Number(req.params['id']);
+    const updated = markUserAsRead(id);
+    if (!updated) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+    return res.json({ success: true, message: 'User marked as read.' });
+  } catch (error: unknown) {
+    const err = error as Error;
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 // ═══════════════════════════════════════════════
 //  ADMIN DASHBOARD API ROUTE (protected)
 // ═══════════════════════════════════════════════
@@ -270,9 +313,9 @@ app.get('/api/projects', requireAuth, (req, res) => {
  * PATCH /api/projects/:id
  * Update a project (e.g., change workflow_status). Requires JWT auth.
  */
-app.patch('/api/projects/:id', requireAuth, (req, res) => {
+app.patch('/api/projects/:id', requireAuth, async (req, res) => {
   try {
-    const authUser = (req as unknown as { [key: string]: unknown })['user'] as { userId: number; role: string };
+    const authUser = (req as unknown as { [key: string]: unknown })['user'] as { userId: number; role: string; username: string; email: string };
     const id = Number(req.params['id']);
     const { workflow_status } = req.body;
 
@@ -285,10 +328,37 @@ app.patch('/api/projects/:id', requireAuth, (req, res) => {
       return res.status(403).json({ error: 'Only admin or production users can update project status.' });
     }
 
+    // Capture old status BEFORE updating
+    const oldProject = getProjectById(id);
+    const oldStatus = oldProject?.workflow_status || 'Unknown';
+
     const project = updateProjectWorkflowStatus(id, workflow_status);
     if (!project) {
       return res.status(404).json({ error: 'Project not found.' });
     }
+
+    // ── Send email notification (fire-and-forget) ──
+    if (oldStatus !== workflow_status) {
+      sendProjectStatusChangeEmail({
+        projectId: project.id,
+        projectName: project.project_name,
+        projectNo: project.project_no || undefined,
+        client: project.client || undefined,
+        oldStatus,
+        newStatus: workflow_status,
+        changedByUsername: authUser.username || authUser.email?.split('@')[0] || 'Unknown',
+        changedByEmail: authUser.email,
+      }).then((result) => {
+        if (result.message?.startsWith('Skipped')) {
+          console.log(`[Project] Status change email skipped for project #${project.id}: ${result.message}`);
+        } else {
+          console.log(`[Project] Status change email sent for project #${project.id}: ${oldStatus} → ${workflow_status}`);
+        }
+      }).catch((err: Error) => {
+        console.warn(`[Project] Failed to send status change email for project #${project.id}:`, err);
+      });
+    }
+
     return res.json(project);
   } catch (error: unknown) {
     const err = error as Error;
@@ -344,8 +414,12 @@ app.post('/api/tickets', requireAuth, async (req, res) => {
       raisedByEmail: authUser.email,
       ticketUrl: ticketData.ticket_urls || undefined,
       ticketComments: ticketData.ticket_comments || undefined,
-    }).then(() => {
-      console.log(`[Ticket] Email notification sent for ticket #${ticket.id}`);
+    }).then((result) => {
+      if (result.message?.startsWith('Skipped')) {
+        console.log(`[Ticket] Email notification skipped for ticket #${ticket.id}: ${result.message}`);
+      } else {
+        console.log(`[Ticket] Email notification sent for ticket #${ticket.id}`);
+      }
     }).catch((err: Error) => {
       console.warn(`[Ticket] Failed to send email notification for ticket #${ticket.id}:`, err);
     });
@@ -398,8 +472,9 @@ app.get('/api/tickets', requireAuth, (req, res) => {
  * PATCH /api/tickets/:id
  * Update a ticket (e.g., change status). Requires JWT auth.
  */
-app.patch('/api/tickets/:id', requireAuth, (req, res) => {
+app.patch('/api/tickets/:id', requireAuth, async (req, res) => {
   try {
+    const authUser = (req as unknown as { [key: string]: unknown })['user'] as { userId: number; role: string; username: string; email: string };
     const id = Number(req.params['id']);
     const { status } = req.body;
 
@@ -407,10 +482,37 @@ app.patch('/api/tickets/:id', requireAuth, (req, res) => {
       return res.status(400).json({ error: 'status is required.' });
     }
 
+    // Capture old status BEFORE updating
+    const oldTicket = getTicketById(id);
+    const oldStatus = oldTicket?.ticket_status || 'Unknown';
+
     const ticket = updateTicketStatus(id, status);
     if (!ticket) {
       return res.status(404).json({ error: 'Ticket not found.' });
     }
+
+    // ── Send email notification (fire-and-forget) ──
+    if (oldStatus !== status) {
+      sendTicketStatusChangeEmail({
+        ticketId: ticket.id,
+        projectName: ticket.project_name || 'Unknown Project',
+        oldStatus,
+        newStatus: status,
+        changedByUsername: authUser.username || authUser.email?.split('@')[0] || 'Unknown',
+        changedByEmail: authUser.email,
+        ticketUrl: ticket.ticket_urls || undefined,
+        ticketComments: ticket.ticket_comments || undefined,
+      }).then((result) => {
+        if (result.message?.startsWith('Skipped')) {
+          console.log(`[Ticket] Status change email skipped for ticket #${ticket.id}: ${result.message}`);
+        } else {
+          console.log(`[Ticket] Status change email sent for ticket #${ticket.id}: ${oldStatus} → ${status}`);
+        }
+      }).catch((err: Error) => {
+        console.warn(`[Ticket] Failed to send status change email for ticket #${ticket.id}:`, err);
+      });
+    }
+
     return res.json(ticket);
   } catch (error: unknown) {
     const err = error as Error;
@@ -551,7 +653,7 @@ app.post('/api/quote/request', async (req, res) => {
     const bcc = process.env['MAILGUN_BCC']?.split(',').map(s => s.trim()).filter(Boolean);
 
     await sendMail({
-      to: 'unreal.qc.team@gmail.com',
+      to: email,
       ...(cc?.length ? { cc } : {}),
       ...(bcc?.length ? { bcc } : {}),
       subject: subject || 'New Quote Request',

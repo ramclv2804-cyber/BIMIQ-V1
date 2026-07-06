@@ -13,6 +13,7 @@ import { Projects } from './projects/projects';
 import { AppHeader } from './app-header/app-header';
 import { Resources } from './resources/resources';
 import { DbValidator } from './db-validator/db-validator';
+import { SafeUrlPipe } from './services/pdfPipe/safe-url.pipe';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,7 +29,8 @@ import { DbValidator } from './db-validator/db-validator';
     AdminDashboard,
     Projects,
     Resources,
-    DbValidator
+    DbValidator,
+    SafeUrlPipe
   ],
   templateUrl: './app.html',
   styleUrl: './app.css',
@@ -53,8 +55,18 @@ export class App {
   }
 
   goToEstimator() {
+    if (!this.calculator.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.calculator.setTab('config');
     this.router.navigate(['/']);
+  }
+
+  openViewer(url: string | null | undefined) {
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
   }
 
   goToDbValidator() {

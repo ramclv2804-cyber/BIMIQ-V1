@@ -17,6 +17,7 @@ interface Ticket {
   comments: string;
   createdAt: string;
   status?: string;
+  completedAt?: string;
 }
 
 @Component({
@@ -97,7 +98,10 @@ export class Projects {
   ticketStatusFilter = signal<string>('1');
 
   filteredProjectTickets = computed(() => {
-    return this.projectTickets();
+    const filter = this.ticketStatusFilter();
+    const tickets = this.projectTickets();
+    if (!filter || filter === 'all') return tickets;
+    return tickets.filter(t => t.status === filter);
   });
 
   filteredProjects = computed(() => {
@@ -180,6 +184,7 @@ export class Projects {
       // Update local state
       this.detailProject.set({ ...project, workflowStatus: newStatus });
 
+
       // Update in the projects list too
       this.calculator.userProjects.update(list =>
         list.map(p => p.id === project.id ? { ...p, workflowStatus: newStatus } : p)
@@ -238,29 +243,28 @@ export class Projects {
         result = await this.calculator.apiGetMyTickets();
       }
 
-      if (result.tickets && result.tickets.length > 0) {
-        const mapped = (result.tickets as any[])
-          .filter((t: any) =>
-            project.id
-              ? Number(t.project_id) === project.id
-              : t.project_name === project.projectName
-          )
-          .map((t: any) => ({
-            id: t.id as number,
-            projectName: t.project_name as string,
-            projectId: t.project_id as number,
-            userId: t.user_id as number,
-            raisedByUsername: t.raised_by_username as string || undefined,
-            url: t.ticket_urls as string || '',
-            comments: t.ticket_comments as string || '',
-            createdAt: t.created_at as string,
-            status: t.ticket_status as string || '1',
-          })) as Ticket[];
-        this.tickets.update(map => ({
-          ...map,
-          [project.projectName]: mapped,
-        }));
-      }
+      const mapped = (result.tickets || [])
+        .filter((t: any) =>
+          project.id
+            ? Number(t.project_id) === project.id
+            : t.project_name === project.projectName
+        )
+        .map((t: any) => ({
+          id: t.id as number,
+          projectName: t.project_name as string,
+          projectId: t.project_id as number,
+          userId: t.user_id as number,
+          raisedByUsername: t.raised_by_username as string || undefined,
+          url: t.ticket_urls as string || '',
+          comments: t.ticket_comments as string || '',
+          createdAt: t.created_at as string,
+          status: t.ticket_status as string || '1',
+          completedAt: t.completed_at as string || undefined,
+        })) as Ticket[];
+      this.tickets.update(map => ({
+        ...map,
+        [project.projectName]: mapped,
+      }));
     } catch {
       // Silently fall back to local tickets
     }
@@ -305,13 +309,34 @@ export class Projects {
     try {
       await this.calculator.apiUpdateTicketStatus(ticket.id, newStatus);
 
-      // Update local state (create new object, avoid mutation)
-      this.selectedTicket.set({ ...ticket, status: newStatus });
+      // Build the updated ticket with immediate local sync
+      const now = new Date().toISOString();
+      const updatedTicket: Ticket = {
+        ...ticket,
+        status: newStatus,
+        completedAt: newStatus === '2' ? now : undefined,
+      };
 
-      // Refresh tickets list
+      // Update selected ticket immediately
+      this.selectedTicket.set(updatedTicket);
+
+      // Update ticket in the local map IMMEDIATELY so the list reflects the change right away
       const project = this.detailProject();
       if (project) {
-        this.loadTicketsForProject(project, this.ticketStatusFilter());
+        this.tickets.update(map => {
+          const current = map[project.projectName] || [];
+          return {
+            ...map,
+            [project.projectName]: current.map(t =>
+              t.id === ticket.id ? updatedTicket : t
+            ),
+          };
+        });
+      }
+
+      // Auto-switch filter to Completed after marking as completed
+      if (newStatus === '2') {
+        this.ticketStatusFilter.set('2');
       }
 
       this.statusAlert.set({
@@ -330,9 +355,15 @@ export class Projects {
   }
 
   openTicket(project: UserProject) {
+    // Close any other open modals first
+    this.detailProject.set(null);
+    this.selectedTicket.set(null);
+    this.statusAlert.set(null);
+    // Open the ticket modal with fresh empty form
     this.ticketProject.set(project);
     this.ticketComments.set('');
     this.ticketUrl.set('');
+    console.log('[Tickets] Opened ticket modal for project:',project, project.projectName,this.ticketProject());
   }
 
   closeTicket() {

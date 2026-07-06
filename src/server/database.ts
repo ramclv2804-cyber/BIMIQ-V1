@@ -63,13 +63,16 @@ export function initDatabase(): Database.Database {
   // ── Users table ──
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
-      id         INTEGER PRIMARY KEY AUTOINCREMENT,
-      username   TEXT    NOT NULL UNIQUE,
-      password   TEXT    NOT NULL,
-      email      TEXT    NOT NULL UNIQUE,
-      role       TEXT    DEFAULT 'client',
-      status     INTEGER DEFAULT 1,
-      created_at TEXT    DEFAULT (datetime('now', '+5 hours', '+30 minutes'))
+      id              INTEGER PRIMARY KEY AUTOINCREMENT,
+      username        TEXT    NOT NULL UNIQUE,
+      password        TEXT    NOT NULL,
+      email           TEXT    NOT NULL UNIQUE,
+      company_name    TEXT,
+      company_website TEXT,
+      contact_number  TEXT,
+      role            TEXT    DEFAULT 'client',
+      status          INTEGER DEFAULT 1,
+      created_at      TEXT    DEFAULT (datetime('now', '+5 hours', '+30 minutes'))
     )
   `);
 
@@ -125,6 +128,7 @@ export function initDatabase(): Database.Database {
       ticket_comments   TEXT,
       ticket_status     TEXT    DEFAULT '1',
       raised_by_username TEXT,
+      completed_at      TEXT,
       created_at        TEXT    DEFAULT (datetime('now', '+5 hours', '+30 minutes')),
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
       FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL
@@ -156,6 +160,44 @@ export function initDatabase(): Database.Database {
     console.log(`[DB] Fixed project status values — ${fixedCount.changes} projects updated to status=1`);
   }
 
+  // Migration: add company_name, company_website, contact_number columns to users table
+  const companyColsAdded = db.prepare(`SELECT name FROM _migrations WHERE name = 'add_company_fields_to_users'`).get();
+  if (!companyColsAdded) {
+    try {
+      db.exec(`ALTER TABLE users ADD COLUMN company_name TEXT`);
+      db.exec(`ALTER TABLE users ADD COLUMN company_website TEXT`);
+      db.exec(`ALTER TABLE users ADD COLUMN contact_number TEXT`);
+    } catch {
+      // Columns may already exist if table was recreated
+    }
+    db.prepare(`INSERT INTO _migrations (name) VALUES ('add_company_fields_to_users')`).run();
+    console.log(`[DB] Added company_name, company_website, contact_number columns to users table`);
+  }
+
+  // Migration: add markasread column to users table
+  const markReadColAdded = db.prepare(`SELECT name FROM _migrations WHERE name = 'add_markasread_to_users'`).get();
+  if (!markReadColAdded) {
+    try {
+      db.exec(`ALTER TABLE users ADD COLUMN markasread INTEGER DEFAULT 0`);
+    } catch {
+      // Column may already exist
+    }
+    db.prepare(`INSERT INTO _migrations (name) VALUES ('add_markasread_to_users')`).run();
+    console.log(`[DB] Added markasread column to users table`);
+  }
+
+  // Migration: add completed_at column to tickets table
+  const completedAtAdded = db.prepare(`SELECT name FROM _migrations WHERE name = 'add_completed_at_to_tickets'`).get();
+  if (!completedAtAdded) {
+    try {
+      db.exec(`ALTER TABLE tickets ADD COLUMN completed_at TEXT`);
+    } catch {
+      // Column may already exist
+    }
+    db.prepare(`INSERT INTO _migrations (name) VALUES ('add_completed_at_to_tickets')`).run();
+    console.log(`[DB] Added completed_at column to tickets table`);
+  }
+
   console.log(`[DB] SQLite database initialized at ${DB_PATH}`);
   return db;
 }
@@ -169,7 +211,11 @@ export interface UserRow {
   username: string;
   password: string;
   email: string;
+  company_name: string | null;
+  company_website: string | null;
+  contact_number: string | null;
   role: string;
+  markasread: number;
   created_at: string;
 }
 
@@ -178,13 +224,20 @@ function istNow(): string {
   return new Date(Date.now() + 19800000).toISOString().replace('T', ' ').substring(0, 19);
 }
 
-export function createUser(username: string, password: string, email: string): UserRow {
+export function createUser(
+  username: string,
+  password: string,
+  email: string,
+  company_name?: string,
+  company_website?: string,
+  contact_number?: string
+): UserRow {
   ensureDb();
   const hashed = hashPassword(password);
   const stmt = db.prepare(
-    `INSERT INTO users (username, password, email, created_at) VALUES (?, ?, ?, ?)`
+    `INSERT INTO users (username, password, email, company_name, company_website, contact_number, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
   );
-  const result = stmt.run(username, hashed, email, istNow());
+  const result = stmt.run(username, hashed, email, company_name || null, company_website || null, contact_number || null, istNow());
   return getUserById(result.lastInsertRowid as number)!;
 }
 
@@ -209,7 +262,20 @@ export function getUserById(id: number): UserRow | undefined {
 /** Get all users (passwords excluded for safety). */
 export function getAllUsers(): Omit<UserRow, 'password'>[] {
   ensureDb();
-  return db.prepare(`SELECT id, username, email, role, created_at FROM users WHERE status = 1`).all() as Omit<UserRow, 'password'>[];
+  return db.prepare(`SELECT id, username, email, company_name, company_website, contact_number, role, markasread, created_at FROM users WHERE status = 1`).all() as Omit<UserRow, 'password'>[];
+}
+
+/** Get new/unread users (markasread = 0). Shows all roles including admin. */
+export function getNewUsers(): Omit<UserRow, 'password'>[] {
+  ensureDb();
+  return db.prepare(`SELECT id, username, email, company_name, company_website, contact_number, role, markasread, created_at FROM users WHERE status = 1 AND markasread = 0 ORDER BY created_at DESC`).all() as Omit<UserRow, 'password'>[];
+}
+
+/** Mark a user as read (set markasread = 1). */
+export function markUserAsRead(id: number): boolean {
+  ensureDb();
+  const result = db.prepare(`UPDATE users SET markasread = 1 WHERE id = ? AND status = 1`).run(id);
+  return result.changes > 0;
 }
 
 /**
@@ -497,6 +563,7 @@ export interface TicketRow {
   ticket_status: string;
   raised_by_username: string | null;
   created_at: string;
+  completed_at: string | null;
 }
 
 export interface CreateTicketInput {
@@ -573,10 +640,14 @@ export function updateProjectWorkflowStatus(id: number, workflowStatus: string, 
   return getProjectById(id);
 }
 
-/** Update a ticket's status. */
+/** Update a ticket's status. Sets completed_at when status='2', clears it otherwise. */
 export function updateTicketStatus(id: number, status: string): TicketRow | undefined {
   ensureDb();
-  db.prepare(`UPDATE tickets SET ticket_status = ? WHERE id = ?`).run(status, id);
+  if (status === '2') {
+    db.prepare(`UPDATE tickets SET ticket_status = ?, completed_at = ? WHERE id = ?`).run(status, istNow(), id);
+  } else {
+    db.prepare(`UPDATE tickets SET ticket_status = ?, completed_at = NULL WHERE id = ?`).run(status, id);
+  }
   return getTicketById(id);
 }
 
@@ -713,4 +784,4 @@ export function seedDefaultUsers(): void {
   console.log(`[DB] Seeding complete — ${total.count} users in database.`);
 }
 
-export default { initDatabase, createUser, getUserByUsername, getUserByEmail, getUserById, getAllUsers, createProject, getUserProjects, getProjectById, getAllProjects, getAdminDashboardStats, validateDatabase, authenticateUser, hashPassword, verifyPassword, seedDefaultUsers, createTicket, getTicketById, getProjectTickets, getUserTickets, getAllTickets, updateTicketStatus, updateProjectWorkflowStatus };
+export default { initDatabase, createUser, getUserByUsername, getUserByEmail, getUserById, getAllUsers, getNewUsers, markUserAsRead, createProject, getUserProjects, getProjectById, getAllProjects, getAdminDashboardStats, validateDatabase, authenticateUser, hashPassword, verifyPassword, seedDefaultUsers, createTicket, getTicketById, getProjectTickets, getUserTickets, getAllTickets, updateTicketStatus, updateProjectWorkflowStatus };

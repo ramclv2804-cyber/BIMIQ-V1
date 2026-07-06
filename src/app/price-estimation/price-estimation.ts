@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal, computed, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-calculator';
 
 @Component({
@@ -949,8 +949,8 @@ import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-cal
 })
 export class PriceEstimation implements OnInit {
   calculator = inject(SpatialCostCalculator);
+  private router = inject(Router);
   sanitizer = inject(DomSanitizer);
-  router = inject(Router);
   isCardCurrencyOpen = signal<boolean>(false);
   formStep = signal<number>(1);
   buildingModelIndex = signal<number>(0);
@@ -960,18 +960,24 @@ export class PriceEstimation implements OnInit {
   isHoldSuccessModalOpen = signal<boolean>(false);
   projectErrorMessage = signal<string>('Your project creation failed. Something went wrong, please try again.');
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: Event) {
-    if (!this.calculator.isLoggedIn()) {
-      this.router.navigate(['/login']);
-      return;
-    }
-    const target = event.target as HTMLElement;
-    if (!target.closest('.dropdown-toggle, .dropdown-panel')) {
-      this.calculator.closeAllDropdowns();
-      this.isCardCurrencyOpen.set(false);
-    }
+  constructor() {
+    // Watch for form step trigger from bim-selection (mode toggle)
+    effect(() => {
+      const step = this.calculator.formStepTrigger();
+      if (step === 1) {
+        this.resetForm();
+      }
+    });
   }
+
+  resetForm() {
+    this.formStep.set(1);
+    this.calculator.modelingSelectionLocked.set(false);
+    this.calculator.resetFormFields();
+    // Reset the trigger so next toggle triggers the effect again
+    this.calculator.formStepTrigger.set(0);
+  }
+
   isAnyDropdownOpen = computed(() =>
     this.calculator.isBuildingTypeDropdownOpen() ||
     this.calculator.isCadRequirementsOpen() ||
@@ -987,6 +993,11 @@ export class PriceEstimation implements OnInit {
   }
 
   ngOnInit() {
+    // Redirect to login if not authenticated
+    if (!this.calculator.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     const params = new URLSearchParams(window.location.search);
     const stepParam = params.get('step');
     if (stepParam) {
@@ -1066,7 +1077,7 @@ export class PriceEstimation implements OnInit {
     const ok = await this.saveAsHold();
     if (ok) {
       this.isHoldSuccessModalOpen.set(true);
-      this.goToStep(3);
+      this.resetForm();
     } else {
       this.isProjectFailModalOpen.set(true);
     }
@@ -1077,7 +1088,7 @@ export class PriceEstimation implements OnInit {
     if (ok) {
       this.isHoldSuccessModalOpen.set(true);
       this.closePreviewModal();
-      this.goToStep(3);
+      this.resetForm();
     } else {
       this.isProjectFailModalOpen.set(true);
     }
@@ -1132,7 +1143,7 @@ export class PriceEstimation implements OnInit {
     try {
       await c.addUserProject(newProject);
       this.closePreviewModal();
-      this.goToStep(3);
+      this.resetForm();
       c.placeOrder.set(true);
       return true;
     } catch (e) {
@@ -1535,11 +1546,10 @@ export class PriceEstimation implements OnInit {
         if (reqs.includes('Sheets')) write('• Sheets / Drawing Set');
       } else {
         const reqs = c.bimRequirements() || [];
-        const hasArch = reqs.includes('Architectural');
-        const hasFurn = reqs.includes('Furniture');
-        if (hasArch && !hasFurn) write('• Architectural model (Excluding furniture)');
-        if (hasArch && hasFurn) write('• Architectural model (Including furniture)');
-        if (reqs.includes('Structural')) write('• Structural model');
+        if (reqs.includes('Architectural & Structural')) {
+          write('• Architectural model');
+          write('• Structural model');
+        }
         if (reqs.includes('Mechanical')) write('• Mechanical model');
         if (reqs.includes('Electrical')) write('• Electrical model');
         if (reqs.includes('Plumbing')) write('• Plumbing model');
@@ -1616,7 +1626,7 @@ export class PriceEstimation implements OnInit {
         }
       } else {
         const reqs = c.bimRequirements() || [];
-        const allScope = ['Architectural', 'Structural', 'Mechanical', 'Electrical', 'Plumbing', 'Fire Protection', 'Furniture'];
+        const allScope = ['Architectural & Structural', 'Mechanical', 'Electrical', 'Plumbing', 'Fire Protection', 'Furniture'];
         for (const s of allScope) {
           if (!reqs.includes(s)) write(`• ${s} model`);
         }
@@ -1816,17 +1826,17 @@ export class PriceEstimation implements OnInit {
 
     console.log('Generated Quote Request HTML:', html);
 
-    // try {
-    //   const res = await fetch('/api/quote/request', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ html, subject: `New Quote Request: ${c.smartProjectName() || 'No Project Name'}`, email: c.smartEmail() }),
-    //   });
-    //   if (!res.ok) throw new Error('Server error');
-    //   console.log('[Quote] Email sent successfully');
-    // } catch (err) {
-    //   console.error('[Quote] Failed to send email:', err);
-    // }
+    try {
+      const res = await fetch('/api/quote/request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ html, subject: `New Quote Request: ${c.smartProjectName() || 'No Project Name'}`, email: c.smartEmail() }),
+      });
+      if (!res.ok) throw new Error('Server error');
+      console.log('[Quote] Email sent successfully');
+    } catch (err) {
+      console.error('[Quote] Failed to send email:', err);
+    }
   }
 
   toggleInteriorArchitecture() {

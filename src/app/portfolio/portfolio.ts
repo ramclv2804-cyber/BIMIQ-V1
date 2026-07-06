@@ -36,7 +36,7 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
             <!-- Categories tags -->
             <div class="flex gap-1.5 md:gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
-              @for (cat of ['ALL PROJECTS', 'MEP', 'ARCHITECTURAL', 'STRUCTURAL']; track cat) {
+              @for (cat of ['ALL PROJECTS', 'MEP', 'ARCHITECTURAL & STRUCTURAL']; track cat) {
                 <button 
                   type="button"
                   (click)="calculator.activeCategory.set(cat)"
