@@ -1,0 +1,277 @@
+<app-header />
+
+<div class="dashboard-page">
+  <div class="page-hero">
+    <div class="hero-content">
+      <div class="hero-top">
+        <div class="hero-top-left">
+          <span class="hero-badge">ADMIN DASHBOARD</span>
+          <h1>Project Overview</h1>
+          <p class="hero-sub">Aggregated metrics across all clients and projects</p>
+        </div>
+        <!-- New Users Notification Bell -->
+        <div class="new-users-bell-wrapper">
+          <div class="new-users-bell-label-group" (click)="toggleNewUsersPopup()" [class.active]="isNewUsersPopupOpen()">
+            <button type="button" class="new-users-bell" 
+              (click)="$event.stopPropagation()"
+              [class.active]="isNewUsersPopupOpen()">
+              <i class="bi bi-bell new-users-bell-icon"></i>
+              @if (newUsers().length > 0) {
+                <span class="new-users-badge">{{ newUsers().length > 9 ? '9+' : newUsers().length }}</span>
+              }
+            </button>
+            <div class="new-users-bell-label">
+              <span class="new-users-bell-label-text">New Registrations</span>
+              @if (newUsers().length > 0) {
+              <span class="new-users-bell-label-count">{{ newUsers().length }} pending</span>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (loading) {
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <span>Loading dashboard data...</span>
+  </div>
+  } @else if (!data()) {
+  <div class="empty-state">
+    <span class="empty-icon">database</span>
+    <h3>No Data Available</h3>
+    <p>Could not load dashboard statistics.</p>
+  </div>
+  } @else {
+  <div class="stats-grid">
+    <div class="stat-card total-projects">
+      <div class="stat-card-icon">folder</div>
+      <div class="stat-card-body">
+        <span class="stat-card-value">{{ formatNumber(data()!.totalProjects) }}</span>
+        <span class="stat-card-label">Total Projects</span>
+      </div>
+    </div>
+    <div class="stat-card total-clients">
+      <div class="stat-card-icon">group</div>
+      <div class="stat-card-body">
+        <span class="stat-card-value">{{ formatNumber(data()!.totalUsers) }}</span>
+        <span class="stat-card-label">Total Clients</span>
+      </div>
+    </div>
+    <div class="stat-card total-revenue">
+      <div class="stat-card-icon">payments</div>
+      <div class="stat-card-body">
+        <span class="stat-card-value">{{ formatCurrency(data()!.totalCost) }}</span>
+        <span class="stat-card-label">Total Revenue</span>
+      </div>
+    </div>
+    <div class="stat-card total-sft">
+      <div class="stat-card-icon">square_foot</div>
+      <div class="stat-card-body">
+        <span class="stat-card-value">{{ formatNumber(data()!.totalSft) }}</span>
+        <span class="stat-card-label">Total Sq.Ft</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Workflow Status</h2>
+    <div class="breakdown-grid">
+      @for (item of data()!.statusBreakdown; track item.status) {
+      <div class="breakdown-card" [style.borderColor]="getStatusColor(item.status)">
+        <div class="breakdown-card-dot" [style.background]="getStatusColor(item.status)"></div>
+        <div class="breakdown-card-body">
+          <span class="breakdown-card-value">{{ formatNumber(item.count) }}</span>
+          <span class="breakdown-card-label">{{ item.status || 'Unspecified' }}</span>
+        </div>
+        <div class="breakdown-card-cost">{{ formatCurrency(item.cost) }}</div>
+      </div>
+      }
+    </div>
+  </div>
+
+  <div class="sections-row">
+    <div class="section">
+      <h2 class="section-title">By Scope</h2>
+      <div class="breakdown-grid scope-grid">
+        @for (item of data()!.scopeBreakdown; track item.scope) {
+        <div class="breakdown-card" [style.borderColor]="getScopeColor(item.scope)">
+          <div class="breakdown-card-dot" [style.background]="getScopeColor(item.scope)"></div>
+          <div class="breakdown-card-body">
+            <span class="breakdown-card-value">{{ formatNumber(item.count) }}</span>
+            <span class="breakdown-card-label">{{ item.scope || 'Unspecified' }}</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Billing</h2>
+      <div class="breakdown-grid scope-grid">
+        @for (item of data()!.billingBreakdown; track item.billing) {
+        <div class="breakdown-card" [style.borderColor]="getBillingColor(item.billing)">
+          <div class="breakdown-card-dot" [style.background]="getBillingColor(item.billing)"></div>
+          <div class="breakdown-card-body">
+            <span class="breakdown-card-value">{{ formatNumber(item.count) }}</span>
+            <span class="breakdown-card-label">{{ item.billing || 'Unspecified' }}</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Payment</h2>
+      <div class="breakdown-grid scope-grid">
+        @for (item of data()!.paymentBreakdown; track item.payment) {
+        <div class="breakdown-card" [style.borderColor]="getPaymentColor(item.payment)">
+          <div class="breakdown-card-dot" [style.background]="getPaymentColor(item.payment)"></div>
+          <div class="breakdown-card-body">
+            <span class="breakdown-card-value">{{ formatNumber(item.count) }}</span>
+            <span class="breakdown-card-label">{{ item.payment || 'Unspecified' }}</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="sections-row">
+    <div class="section">
+      <h2 class="section-title">Recent Projects</h2>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Client</th>
+              <th>Status</th>
+              <th>Scope</th>
+              <th class="num">SFT</th>
+              <th class="num">Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of data()!.recentProjects; track trackByIndex($index)) {
+            <tr>
+              <td class="cell-primary">{{ getStr(p, 'project_name', '-') }}</td>
+              <td>{{ getStr(p, 'client', '-') }}</td>
+              <td>
+                <span class="status-chip" [style.background]="getStatusColor(getStr(p, 'workflow_status'))">
+                  {{ getStr(p, 'workflow_status', 'Yet to Award') }}
+                </span>
+              </td>
+              <td>{{ getStr(p, 'scope', '-') }}</td>
+              <td class="num">{{ formatNumber(getNum(p, 'sft')) }}</td>
+              <td class="num">{{ formatCurrency(getNum(p, 'cost')) }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Projects Per Client</h2>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Client</th>
+            <th>Email</th>
+            <th class="num">Projects</th>
+            <th class="num">Total Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of data()!.projectsPerUser; track u.userId) {
+          <tr>
+            <td class="cell-primary">{{ u.username }}</td>
+            <td>{{ u.email }}</td>
+            <td class="num">{{ formatNumber(u.count) }}</td>
+            <td class="num">{{ formatCurrency(u.totalCost) }}</td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  }
+</div>
+
+<!-- NEW USERS POPUP -->
+@if (isNewUsersPopupOpen()) {
+  <div class="new-users-backdrop" (click)="closeNewUsersPopup()"></div>
+  <div class="new-users-popup">
+    <div class="new-users-popup-header">
+      <div class="new-users-popup-header-left">
+        <div class="new-users-popup-icon-wrap">
+          <i class="bi bi-person-plus-fill new-users-popup-icon"></i>
+        </div>
+        <div class="new-users-popup-header-text">
+          <h3 class="new-users-popup-title">New Registrations</h3>
+          <span class="new-users-popup-subtitle">Recently joined users awaiting review</span>
+        </div>
+      </div>
+      @if (newUsers().length > 0) {
+      <span class="new-users-popup-count">{{ newUsers().length }} pending</span>
+      }
+      <button type="button" class="new-users-popup-close" (click)="closeNewUsersPopup()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="new-users-popup-body">
+      @if (newUsers().length === 0) {
+        <div class="new-users-empty">
+          <div class="new-users-empty-icon-wrap">
+            <i class="bi bi-check-circle-fill new-users-empty-icon"></i>
+          </div>
+          <h3 class="new-users-empty-title">All Clear!</h3>
+          <p class="new-users-empty-text">All new registrations have been reviewed.</p>
+        </div>
+      }
+      @for (u of newUsers(); track u.id) {
+        <div class="new-user-card">
+          <div class="new-user-card-avatar" [style.background]="getAvatarGradient(u.id)">
+            {{ u.username.substring(0, 2).toUpperCase() }}
+          </div>
+          <div class="new-user-card-body">
+            <div class="new-user-card-top-row">
+              <span class="new-user-card-name">{{ u.username }}</span>
+              <span class="new-user-card-time-badge" [ngClass]="getTimeBadgeClass(u.created_at)">
+                {{ getRelativeTime(u.created_at) }}
+              </span>
+            </div>
+            <div class="new-user-card-details-grid">
+              <div class="new-user-card-detail">
+                <span class="new-user-card-label">Email</span>
+                <span class="new-user-card-value">{{ u.email || '—' }}</span>
+              </div>
+              <div class="new-user-card-detail">
+                <span class="new-user-card-label">Phone</span>
+                <span class="new-user-card-value">{{ u.contact_number || '—' }}</span>
+              </div>
+              <div class="new-user-card-detail">
+                <span class="new-user-card-label">Company</span>
+                <span class="new-user-card-value">{{ u.company_name || '—' }}</span>
+              </div>
+              <div class="new-user-card-detail">
+                <span class="new-user-card-label">Website</span>
+                <span class="new-user-card-value new-user-card-link">{{ u.company_website || '—' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="new-user-card-action">
+            <button type="button" class="new-user-mark-btn" (click)="markUserAsRead(u.id)" [disabled]="isMarkingRead()">
+              <i class="bi bi-check-lg new-user-mark-btn-icon"></i>
+              <span class="new-user-mark-btn-text">mark as received</span>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}

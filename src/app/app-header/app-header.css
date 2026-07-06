@@ -5,8 +5,11 @@
   cursor: pointer;
 }
 
+
+
 .mobile-menu-container {
   animation: fadeIn 0.2s ease;
+  top: 5rem !important;
 }
 
 .hover-underline-animate.after\:scale-x-100::after {
@@ -26,4 +29,156 @@
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Resources Nav Dropdown ── */
+.resources-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 220px;
+  background: #121216;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  padding: 6px;
+  z-index: 100;
+  animation: dropdownFadeIn 0.2s ease both;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.resources-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Transparent bridge between main item and sub-dropdown — closes the 4px hover gap */
+.resources-dropdown-item.has-sub::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -8px;
+  width: 12px;
+  height: 100%;
+  z-index: 111;
+  pointer-events: auto;
+}
+
+.resources-dropdown-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  cursor: pointer;
+  color: #cbd5e1;
+  font-family: ui-monospace, 'SF Mono', monospace;
+  font-size: 11px;
+  transition: color 0.15s ease;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  border-radius: 8px;
+}
+
+.resources-dropdown-link:hover {
+  color: #f472b6;
+}
+
+.resources-dropdown-link .material-symbols-outlined:first-child {
+  color: #DF80AC;
+  font-size: 16px;
+}
+
+.sub-arrow {
+  font-size: 14px !important;
+  opacity: 0.5;
+  transition: transform 0.15s ease;
+}
+
+.has-sub:hover .sub-arrow {
+  transform: translateX(2px);
+  opacity: 0.9;
+}
+
+.resources-sub-dropdown {
+  display: none;
+  position: absolute;
+  left: calc(100% + 4px);
+  top: 0;
+  min-width: 220px;
+  background: #121216;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  padding: 6px;
+  z-index: 110;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.resources-dropdown-item {
+  position: relative;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+/* Transparent bridge between the main item and its sub-dropdown */
+.resources-dropdown-item.has-sub::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -8px;
+  width: 12px;
+  height: 100%;
+  z-index: 111;
+  pointer-events: auto;
+}
+
+.resources-dropdown-item:hover .resources-sub-dropdown {
+  display: flex;
+  flex-direction: column;
+  animation: subDropdownFadeIn 0.18s ease both;
+}
+
+@keyframes subDropdownFadeIn {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.resources-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: #94a3b8;
+  font-family: ui-monospace, 'SF Mono', monospace;
+  font-size: 11px;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.resources-sub-item:hover {
+  background: rgba(223, 128, 172, 0.1);
+  color: #f472b6;
+}
+
+.resources-sub-item .material-symbols-outlined {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.resources-sub-item:hover .material-symbols-outlined {
+  color: #DF80AC;
 }

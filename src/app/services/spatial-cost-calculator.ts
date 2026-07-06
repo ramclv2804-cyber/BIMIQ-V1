@@ -5,35 +5,300 @@ export interface Project {
   code: string;
   title: string;
   description: string;
-  category: 'MEP' | 'ARCHITECTURAL' | 'STRUCTURAL';
+  category: 'MEP' | 'ARCHITECTURAL & STRUCTURAL';
   typology: string;
   magnitude: string;
   image: string;
   date: string;
 }
 
+export interface UserProject {
+  id?: number;
+  projectNo: string;
+  client: string;
+  projectName: string;
+  buildingType: string;
+  description: string;
+  requirements: string;
+  scope: string;
+  lod: string;
+  scale: string;
+  addOn: string;
+  sft: number;
+  proposalSent: string;
+  purchaseOrderIssued: string;
+  e57IssuedDate: string;
+  startDate: string;
+  endDate: string;
+  expectedClientDeliveryDate: string;
+  cost: number;
+  currency: string;
+  billing: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  invoiceDueDate: string;
+  payment: string;
+  workflowStatus: string;
+  status?: number;
+  comments: string;
+  remark: string;
+  uploadLink: string;
+  pointCloudLink: string;
+  descriptionLink: string;
+  createdAt?: string;
+}
+
+export interface AdminDashboardData {
+  totalProjects: number;
+  totalUsers: number;
+  totalCost: number;
+  totalSft: number;
+  statusBreakdown: { status: string; count: number; cost: number }[];
+  scopeBreakdown: { scope: string; count: number }[];
+  billingBreakdown: { billing: string; count: number }[];
+  paymentBreakdown: { payment: string; count: number }[];
+  recentProjects: Record<string, unknown>[];
+  projectsPerUser: { userId: number; username: string; email: string; count: number; totalCost: number }[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class SpatialCostCalculator {
-  // Navigation active state: 'dashboard' | 'portfolio' | 'config'
-  activeTab = signal<'dashboard' | 'portfolio' | 'config'>('dashboard');
+  // Navigation active state: 'home' | 'portfolio' | 'config'
+  activeTab = signal<'home' | 'portfolio' | 'config'>('home');
 
   // User Authentication State
   isLoggedIn = signal<boolean>(false);
   isLoginModalOpen = signal<boolean>(false);
   currentUser = signal<{ email: string; name: string; initials: string; role: string } | null>(null);
 
-  loginEmailInput = signal<string>('engineer@axisxd.com');
+  loginEmailInput = signal<string>('');
   loginPasswordInput = signal<string>('••••••••');
+
+  /** Database user ID from SQLite, used for associating projects */
+  dbUserId = signal<number | null>(null);
+
+  /** JWT authentication token */
+  jwtToken = signal<string | null>(null);
+
+  /** Trigger signal for price-estimation to reset form step (set by bim-selection when toggling) */
+  formStepTrigger = signal<number>(0);
+
+  /** Active tab index for the selection preview popup's PDF/reality viewer */
+  activePreviewTab = signal<number>(0);
+
+  /** Selection preview popup — shown when selecting LOD/scale from Resources dropdown */
+  isSelectionPopupOpen = signal<boolean>(false);
+  selectionPopupData = signal<{
+    icon: string;
+    modeLabel: string;
+    modeDescription: string;
+    selectedLabel: string;
+    selectedDetail: string;
+    onProceed: () => void;
+    pdfUrls?: string[];
+    realityUrl?: string;
+  } | null>(null);
+
+  /** Reset all form input fields to their default values */
+  resetFormFields() {
+    this.smartProjectName.set('');
+    this.smartScanSize.set(3000);
+    this.smartIsMetric.set(false);
+    this.selectedBuildingType.set('');
+    this.cadRequirements.set([]);
+    this.cadScale.set('');
+    this.smartAutocadVersion.set('');
+    this.cadSheetCount.set(4);
+    this.cadSourceFormat.set('.DWG');
+    this.bimRequirements.set([]);
+    this.bimAddOns.set([]);
+    this.smartLODLevel.set('LOD_300');
+    this.smartRevitVersion.set('');
+    this.description.set('');
+    this.uploadLink.set('');
+    this.pointCloudLink.set('');
+    this.descriptionLink.set('');
+    this.remark.set('');
+    this.sendProposal.set(false);
+    this.placeOrder.set(false);
+    this.smartSpaceType.set('');
+    this.smartInteriorArchitecture.set(true);
+    this.smartInteriorFurniture.set(false);
+    this.smartInteriorMep.set(false);
+    this.smartIsComplexMepf.set(false);
+    this.smartIsExteriorRequired.set(false);
+    this.smartExteriorArchitecture.set(false);
+    this.smartExteriorFurniture.set(false);
+    this.smartExteriorMep.set(false);
+    this.smartIsSiteRequired.set(false);
+    this.siteModelingSft.set(1000);
+    this.uploadedImagePreview.set(null);
+    this.extractedRationale.set('');
+  }
 
   constructor() {
     this.restoreSession();
   }
 
   private cookieKey = 'bimiq_session';
+  private tokenCookieKey = 'bimiq_token';
 
   private isBrowser = typeof document !== 'undefined';
+
+  private apiBase = '/api';
+
+  // ── API helpers ──
+
+  private async apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
+    const url = `${this.apiBase}${path}`;
+
+    // Build headers with JWT token if available
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+    const token = this.jwtToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const res = await fetch(url, {
+      headers: { ...headers, ...(options.headers as Record<string, string> || {}) },
+      ...options,
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || `Request failed: ${res.status}`);
+    }
+    return data as T;
+  }
+
+  /** Sign up a new user via the server API. Returns the created user with JWT token. */
+  async apiSignup(username: string, password: string, email: string, companyName?: string, companyWebsite?: string, contactNumber?: string): Promise<{ id: number; username: string; email: string; company_name: string | null; company_website: string | null; contact_number: string | null; role: string; token: string }> {
+    return this.apiRequest('/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify({
+        username,
+        password,
+        email,
+        company_name: companyName || undefined,
+        company_website: companyWebsite || undefined,
+        contact_number: contactNumber || undefined,
+      }),
+    });
+  }
+
+  /** Log in via the server API. Returns the authenticated user with JWT token. */
+  async apiLogin(username: string, password: string): Promise<{ id: number; username: string; email: string; role: string; token: string }> {
+    return this.apiRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ username, password }),
+    });
+  }
+
+  /** Verify the current JWT token is still valid. */
+  async apiVerifyToken(): Promise<{ userId: number; username: string; email: string; role: string } | null> {
+    try {
+      return await this.apiRequest('/auth/verify', {
+        method: 'POST',
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  /** Create a new project via the server API. */
+  async apiCreateProject(projectData: Record<string, unknown>): Promise<unknown> {
+    return this.apiRequest('/projects', {
+      method: 'POST',
+      body: JSON.stringify(projectData),
+    });
+  }
+
+  /** Fetch projects for a user from the server API. */
+  async apiGetUserProjects(userId: number): Promise<{ projects: UserProject[]; count: number }> {
+    return this.apiRequest(`/projects`);
+  }
+
+  /** Fetch projects for a specific user (admin only). */
+  async apiGetAdminUserProjects(userId: number): Promise<{ projects: UserProject[]; count: number }> {
+    return this.apiRequest(`/projects?user_id=${userId}`);
+  }
+
+  /** Fetch all projects across all users (production/admin). */
+  async apiGetAllProjects(): Promise<{ projects: UserProject[]; count: number }> {
+    return this.apiRequest('/projects');
+  }
+
+  /** Update a project's workflow status. */
+  async apiUpdateProjectStatus(projectId: number, workflowStatus: string): Promise<unknown> {
+    return this.apiRequest(`/projects/${projectId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ workflow_status: workflowStatus }),
+    });
+  }
+
+  /** Fetch all registered users from the server API. */
+  async apiGetAllUsers(): Promise<{ users: { id: number; username: string; email: string; role: string; created_at: string }[]; count: number }> {
+    return this.apiRequest('/users');
+  }
+
+  /** Create a new ticket via the server API. */
+  async apiCreateTicket(ticketData: Record<string, unknown>): Promise<unknown> {
+    return this.apiRequest('/tickets', {
+      method: 'POST',
+      body: JSON.stringify(ticketData),
+    });
+  }
+
+  /** Fetch tickets for a project from the server API, optionally filtered by ticket_status. */
+  async apiGetProjectTickets(projectId: number, status?: string): Promise<{ tickets: unknown[]; count: number }> {
+    let url = `/tickets?project_id=${projectId}`;
+    if (status) url += `&ticket_status=${status}`;
+    return this.apiRequest(url);
+  }
+
+  /** Update a ticket's status (e.g., change to '2' for Completed). */
+  async apiUpdateTicketStatus(ticketId: number, status: string): Promise<unknown> {
+    return this.apiRequest(`/tickets/${ticketId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  /** Fetch tickets for the current authenticated user (no user_id param — works for all users). */
+  async apiGetMyTickets(): Promise<{ tickets: unknown[]; count: number }> {
+    return this.apiRequest('/tickets');
+  }
+
+  /** Fetch tickets for a specific user (admin only — passes ?user_id= param). */
+  async apiGetUserTickets(userId: number): Promise<{ tickets: unknown[]; count: number }> {
+    return this.apiRequest(`/tickets?user_id=${userId}`);
+  }
+
+  /** Fetch new/unread users from the server API. */
+  async apiGetNewUsers(): Promise<{ users: { id: number; username: string; email: string; company_name: string | null; company_website: string | null; contact_number: string | null; role: string; markasread: number; created_at: string }[]; count: number }> {
+    return this.apiRequest('/users/new');
+  }
+
+  /** Mark a user as read via the server API. */
+  async apiMarkUserAsRead(userId: number): Promise<unknown> {
+    return this.apiRequest(`/users/${userId}/markread`, { method: 'PATCH' });
+  }
+
+  /** Validate the database via the server API. */
+  async apiValidateDatabase(): Promise<unknown> {
+    return this.apiRequest('/db/validate');
+  }
+
+  /** Log out via the server API — revokes the current JWT token. */
+  async apiLogout(): Promise<void> {
+    if (!this.jwtToken()) return;
+    try {
+      await this.apiRequest('/auth/logout', { method: 'POST' });
+    } catch {
+      // Even if the server call fails, we still clear local session
+    }
+  }
 
   private restoreSession() {
     if (!this.isBrowser) return;
@@ -48,10 +313,26 @@ export class SpatialCostCalculator {
             email: data.email,
             name: uppercaseName,
             initials: nameStr.substring(0, 2).toUpperCase(),
-            role: 'Project Chief Coordinator'
+            role: data.role ,
           });
           this.smartEmail.set(data.email);
           this.isLoggedIn.set(true);
+
+          // Restore JWT token from cookie
+          if (data.jwtToken) {
+            this.jwtToken.set(data.jwtToken);
+          } else {
+            // Try the dedicated token cookie as fallback
+            const tokenMatch = document.cookie.match(new RegExp(`(?:^|; )${this.tokenCookieKey}=([^;]*)`));
+            if (tokenMatch) {
+              this.jwtToken.set(decodeURIComponent(tokenMatch[1]));
+            }
+          }
+
+          if (data.dbUserId) {
+            this.dbUserId.set(data.dbUserId);
+            this.loadUserProjects();
+          }
         }
       }
     } catch {
@@ -59,19 +340,29 @@ export class SpatialCostCalculator {
     }
   }
 
-  private setSessionCookie(email: string) {
+  private setSessionCookie(email: string, dbUserId?: number, jwtToken?: string, role?: string) {
     if (!this.isBrowser) return;
-    const data = JSON.stringify({ email });
+    const data = JSON.stringify({ email, dbUserId, jwtToken, role });
     document.cookie = `${this.cookieKey}=${encodeURIComponent(data)}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+    // Also store token in dedicated cookie for easier access
+    if (jwtToken) {
+      document.cookie = `${this.tokenCookieKey}=${encodeURIComponent(jwtToken)}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+    }
   }
 
   clearSessionCookie() {
     if (!this.isBrowser) return;
-    document.cookie = `${this.cookieKey}=; path=/; max-age=0; SameSite=Lax`;
+    document.cookie.split(';').forEach(c => {
+      const eqPos = c.indexOf('=');
+      const name = eqPos > -1 ? c.slice(0, eqPos).trim() : c.trim();
+      if (!name) return;
+      document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+      document.cookie = `${name}=; path=/; domain=${location.hostname}; max-age=0; SameSite=Lax`;
+    });
   }
 
-  loginUser(email: string) {
-    const trimmed = email.trim() || 'engineer@axisxd.com';
+  loginUser(email: string, role: string, dbUserId?: number, jwtToken?: string) {
+    const trimmed = email.trim();
     const nameStr = trimmed.split('@')[0];
     const uppercaseName = nameStr.charAt(0).toUpperCase() + nameStr.slice(1);
     const initials = nameStr.substring(0, 2).toUpperCase();
@@ -79,21 +370,252 @@ export class SpatialCostCalculator {
       email: trimmed,
       name: uppercaseName,
       initials: initials,
-      role: 'Project Chief Coordinator'
+      role,
     });
     this.smartEmail.set(trimmed);
     this.isLoggedIn.set(true);
     this.isLoginModalOpen.set(false);
-    this.setSessionCookie(trimmed);
+    if (dbUserId) this.dbUserId.set(dbUserId);
+    if (jwtToken) this.jwtToken.set(jwtToken);
+    this.setSessionCookie(trimmed, dbUserId, jwtToken, role);
+    if (dbUserId) this.loadUserProjects();
     this.showNotification(`Authorized session established under node: ${trimmed}`, 'success');
   }
 
-  logoutUser() {
+  logoutUser(serverLogout = false) {
+    // Optionally revoke the token server-side first
+    if (serverLogout) {
+      this.apiLogout();
+    }
     this.isLoggedIn.set(false);
     this.currentUser.set(null);
+    this.dbUserId.set(null);
+    this.jwtToken.set(null);
     this.smartEmail.set('');
+    this.loginEmailInput.set('');
+    this.loginPasswordInput.set('••••••••');
+    this.userProjects.set([]);
     this.clearSessionCookie();
     this.showNotification('Authorized session disconnected.', 'info');
+  }
+
+  // ── User Projects (per-user, persisted to cookie) ──
+  private projectsCookieKey = 'bimiq_projects';
+
+  userProjects = signal<UserProject[]>([]);
+  allUsers = signal<{ id: number; username: string; email: string; role: string }[]>([]);
+
+  private getProjectsCookieKeyForUser(): string {
+    const user = this.currentUser();
+    if (!user) return this.projectsCookieKey;
+    const emailHash = user.email.split('@')[0];
+    return `${this.projectsCookieKey}_${emailHash}`;
+  }
+
+  private saveUserProjectsCookie() {
+    if (!this.isBrowser) return;
+    const key = this.getProjectsCookieKeyForUser();
+    const data = JSON.stringify(this.userProjects());
+    try {
+      document.cookie = `${key}=${encodeURIComponent(data)}; path=/; max-age=${90 * 24 * 60 * 60}; SameSite=Lax`;
+    } catch {
+      console.warn('Failed to save projects cookie — may exceed size limit');
+    }
+  }
+
+  private async loadUserProjects() {
+    if (!this.isBrowser) return;
+
+    const userId = this.dbUserId();
+    if (userId) {
+      try {
+        const result = await this.apiGetUserProjects(userId);
+        if (result.projects && result.projects.length > 0) {
+          // Map DB columns back to UserProject interface
+          let mapped = result.projects.map((p: any) => ({
+            id: (p.id as number) || undefined,
+            projectNo: (p.project_no as string) || '',
+            client: (p.client as string) || '',
+            projectName: (p.project_name as string) || '',
+            buildingType: (p.building_type as string) || '',
+            description: (p.description as string) || '',
+            requirements: (p.requirements as string) || '',
+            scope: (p.scope as string) || '',
+            lod: (p.lod as string) || '',
+            scale: (p.scale as string) || '',
+            addOn: (p.add_on as string) || '',
+            sft: (p.sft as number) || 0,
+            proposalSent: (p.proposal_sent as string) || '',
+            purchaseOrderIssued: (p.purchase_order_issued as string) || '',
+            e57IssuedDate: (p.e57_issued_date as string) || '',
+            startDate: (p.start_date as string) || '',
+            endDate: (p.end_date as string) || '',
+            expectedClientDeliveryDate: (p.expected_delivery_date as string) || '',
+            cost: (p.cost as number) || 0,
+            currency: (p.currency as string) || 'USD',
+            billing: (p.billing as string) || '',
+            invoiceNumber: (p.invoice_number as string) || '',
+            invoiceDate: (p.invoice_date as string) || '',
+            invoiceDueDate: (p.invoice_due_date as string) || '',
+            payment: (p.payment as string) || '',
+            workflowStatus: (p.workflow_status as string) || 'Yet to Award',
+            status: (p.status as number) ?? 1,
+            comments: (p.comments as string) || '',
+            remark: (p.remark as string) || '',
+            uploadLink: (p.upload_link as string) || '',
+            pointCloudLink: (p.point_cloud_link as string) || '',
+            descriptionLink: (p.description_link as string) || '',
+            createdAt: (p.created_at as string) || undefined,
+          })) as UserProject[];
+
+          this.userProjects.set(mapped);
+          return;
+        }
+      } catch {
+        // Fall through to cookie fallback
+      }
+    }
+
+    // Fallback: load from cookies
+    const key = this.getProjectsCookieKeyForUser();
+    try {
+      const match = document.cookie.match(new RegExp(`(?:^|; )${key}=([^;]*)`));
+      if (match) {
+        const data = JSON.parse(decodeURIComponent(match[1]));
+        if (Array.isArray(data)) {
+          this.userProjects.set(data);
+          return;
+        }
+      }
+    } catch {
+      // cookie corrupt or missing — start fresh
+    }
+    this.userProjects.set([]);
+  }
+
+  async loadAllUsers() {
+    try {
+      const result = await this.apiGetAllUsers();
+      this.allUsers.set(result.users);
+    } catch {
+      this.allUsers.set([]);
+    }
+  }
+
+  async loadProjectsForUser(userId: number) {
+    this.userProjects.set([]);
+    try {
+      const result = await this.apiGetAdminUserProjects(userId);
+      if (result.projects && result.projects.length > 0) {
+        const mapped = result.projects.map((p: any) => ({
+          id: (p.id as number) || undefined,
+          projectNo: (p.project_no as string) || '',
+          client: (p.client as string) || '',
+          projectName: (p.project_name as string) || '',
+          buildingType: (p.building_type as string) || '',
+          description: (p.description as string) || '',
+          requirements: (p.requirements as string) || '',
+          scope: (p.scope as string) || '',
+          lod: (p.lod as string) || '',
+          scale: (p.scale as string) || '',
+          addOn: (p.add_on as string) || '',
+          sft: (p.sft as number) || 0,
+          proposalSent: (p.proposal_sent as string) || '',
+          purchaseOrderIssued: (p.purchase_order_issued as string) || '',
+          e57IssuedDate: (p.e57_issued_date as string) || '',
+          startDate: (p.start_date as string) || '',
+          endDate: (p.end_date as string) || '',
+          expectedClientDeliveryDate: (p.expected_delivery_date as string) || '',
+          cost: (p.cost as number) || 0,
+          currency: (p.currency as string) || 'USD',
+          billing: (p.billing as string) || '',
+          billingStatus: (p.billing_status as string) || '',
+          invoiceNumber: (p.invoice_number as string) || '',
+          invoiceDate: (p.invoice_date as string) || '',
+          invoiceDueDate: (p.invoice_due_date as string) || '',
+          payment: (p.payment as string) || '',
+          workflowStatus: (p.workflow_status as string) || 'Yet to Award',
+          status: (p.status as number) ?? 1,
+          comments: (p.comments as string) || '',
+          remark: (p.remark as string) || '',
+          uploadLink: (p.upload_link as string) || '',
+          pointCloudLink: (p.point_cloud_link as string) || '',
+          descriptionLink: (p.description_link as string) || '',
+          createdAt: (p.created_at as string) || undefined,
+        })) as UserProject[];
+        this.userProjects.set(mapped);
+      }
+    } catch {
+      this.userProjects.set([]);
+    }
+  }
+
+  dashboardData = signal<AdminDashboardData | null>(null);
+
+  async loadAdminDashboard() {
+    try {
+      const data = await this.apiRequest<AdminDashboardData>('/admin/dashboard');
+      this.dashboardData.set(data);
+    } catch {
+      this.dashboardData.set(null);
+    }
+  }
+
+  addUserProject(project: UserProject): Promise<unknown> {
+    // Add to local state immediately for instant UI
+    this.userProjects.update(list => [...list, project]);
+    this.saveUserProjectsCookie();
+
+    // Fire async API call to persist to DB and capture the returned id
+    const userId = this.dbUserId();
+    if (userId) {
+      return this.apiCreateProject({
+        user_id: userId,
+        project_no: project.projectNo,
+        client: project.client,
+        project_name: project.projectName,
+        building_type: project.buildingType,
+        description: project.description,
+        requirements: project.requirements,
+        scope: project.scope,
+        lod: project.lod,
+        scale: project.scale,
+        add_on: project.addOn,
+        sft: project.sft,
+        proposal_sent: project.proposalSent,
+        purchase_order_issued: project.purchaseOrderIssued,
+        e57_issued_date: project.e57IssuedDate,
+        start_date: project.startDate,
+        end_date: project.endDate,
+        expected_delivery_date: project.expectedClientDeliveryDate,
+        cost: project.cost,
+        currency: project.currency,
+        billing: project.billing,
+
+        invoice_number: project.invoiceNumber,
+        invoice_date: project.invoiceDate,
+        invoice_due_date: project.invoiceDueDate,
+        payment: project.payment,
+        workflow_status: project.workflowStatus,
+        status: project.status ?? 1,
+        comments: project.comments,
+        remark: project.remark,
+        upload_link: project.uploadLink,
+        point_cloud_link: project.pointCloudLink,
+        description_link: project.descriptionLink,
+      }).then((created: any) => {
+        // Capture the returned DB id and update the project in local state
+        if (created?.id) {
+          project.id = created.id as number;
+          // Persist the updated project (with id) to cookie
+          this.saveUserProjectsCookie();
+        }
+      }).catch(err => {
+        console.warn('[DB] Failed to save project to database:', err);
+        throw err;
+      });
+    }
+    return Promise.resolve(null);
   }
 
   // Currency rates from OpenExchangeRates
@@ -319,7 +841,7 @@ export class SpatialCostCalculator {
 
   // BIM mode fields
   bimRequirements = signal<string[]>([]);
-  bimRequirementsOptions = ['Architectural', 'Structural', 'Mechanical', 'Electrical', 'Plumbing', 'Fire Protection', 'Furniture'];
+  bimRequirementsOptions = ['Architectural & Structural', 'Mechanical', 'Electrical', 'Plumbing', 'Fire Protection', 'Furniture'];
   isBimRequirementsOpen = signal<boolean>(false);
   bimAddOns = signal<string[]>([]);
   bimAddOnsOptions = ['Floor Plan', 'RCP', 'Internal Elevations', 'External Elevations', 'Sections',  'Furniture', 'MEP-Sheets'];
@@ -400,7 +922,7 @@ export class SpatialCostCalculator {
   isAnalyzing = signal<boolean>(false);
   extractedRationale = signal<string>('');
   smartSpaceType = signal<string>('');
-  smartScanSize = signal<number>(4000); // realistic starting default
+  smartScanSize = signal<number>(3000); // realistic starting default
   smartIsMetric = signal<boolean>(false);
   smartInteriorArchitecture = signal<boolean>(true);
   smartInteriorFurniture = signal<boolean>(false);
@@ -420,9 +942,9 @@ export class SpatialCostCalculator {
   isLiveTwinViewerOpen = signal<boolean>(true);
 
   // Step 2 common fields
-  uploadLink = signal<string>('https://drive.google.com/drive/folders/abc123');
-  pointCloudLink = signal<string>('https://pointcloud.example.com/project-xyz');
-  descriptionLink = signal<string>('https://docs.google.com/document/d/def456');
+  uploadLink = signal<string>('');
+  pointCloudLink = signal<string>('');
+  descriptionLink = signal<string>('');
   description = signal<string>('');
   remark = signal<string>('');
   // manualEstimation = signal<string>('');
@@ -430,7 +952,9 @@ export class SpatialCostCalculator {
   placeOrder = signal<boolean>(false);
 
   // Step 3 fields
-  projectNumber = signal<string>('PRJ-' + Date.now().toString(36).toUpperCase());
+  projectNumber = signal<string>('PRJ-' + crypto.randomUUID().toUpperCase());
+  // projectNumber = signal<string>('PRJ-' + Date.now().toString(36).toUpperCase());
+
   orderPlacedDate = signal<string>(new Date().toISOString().split('T')[0]);
   pointCloudIssueDate = signal<string>('');
   expectedDeliveryDate = signal<string>('');
@@ -544,8 +1068,7 @@ export class SpatialCostCalculator {
 
   // Quick selections on the dashboard
   activeMepTier = signal<'SMALL' | 'MEDIUM' | 'LARGE'>('MEDIUM');
-  activeStructuralTier = signal<'SMALL' | 'MEDIUM' | 'LARGE'>('LARGE');
-  activeArchitecturalTier = signal<'SMALL' | 'MEDIUM' | 'LARGE'>('SMALL');
+  activeArchAndStructuralTier = signal<'SMALL' | 'MEDIUM' | 'LARGE'>('LARGE');
 
   isEmailValid = computed(() => {
     const email = this.smartEmail().trim();
@@ -786,14 +1309,12 @@ export class SpatialCostCalculator {
   // Dynamic Spatial breakdown metrics mimicking premium digital twin dashboard allocations
   spatialBreakdown = computed(() => {
     const size = this.smartScanSize();
-    let archPct = 0;
-    let structPct = 0;
+    let archNStructPct = 0;
     let mepPct = 0;
 
     if (this.smartIsComplexMepf()) {
       mepPct = 65;
-      structPct = 20;
-      archPct = 15;
+      archNStructPct = 35;
     } else {
       let archWeight = 1.0;
       if (this.smartInteriorArchitecture()) archWeight += 2.0;
@@ -808,43 +1329,34 @@ export class SpatialCostCalculator {
       if (this.smartExteriorMep()) mepWeight += 1.0;
 
       const totalWeight = archWeight + structWeight + mepWeight || 1.0;
-      archPct = Math.round((archWeight / totalWeight) * 100);
+      archNStructPct = Math.round(((archWeight + structWeight) / totalWeight) * 100);
       mepPct = Math.round((mepWeight / totalWeight) * 100);
-      structPct = Math.round((structWeight / totalWeight) * 100);
 
-      const sum = archPct + structPct + mepPct;
+      const sum = archNStructPct + mepPct;
       if (sum !== 100) {
-        structPct += (100 - sum);
+        archNStructPct += (100 - sum);
       }
     }
 
     return {
-      archPct,
-      structPct,
+      archNStructPct,
       mepPct,
-      archArea: Math.round(size * (archPct / 100)),
-      structArea: Math.round(size * (structPct / 100)),
+      archNStructArea: Math.round(size * (archNStructPct / 100)),
       mepArea: Math.round(size * (mepPct / 100))
     };
   });
 
-  // Structural Tiers
+  // Tiers
   mepTiers = {
     SMALL: { label: 'SMALL', costValue: 4200, display: '$1.2k' },
     MEDIUM: { label: 'MEDIUM', costValue: 8900, display: '$8.9k' },
     LARGE: { label: 'LARGE', costValue: 15000, display: '$15k+' }
   };
 
-  structuralTiers = {
-    SMALL: { label: 'SMALL', costValue: 3500, display: '$3.5k' },
-    MEDIUM: { label: 'MEDIUM', costValue: 7200, display: '$7.2k' },
-    LARGE: { label: 'LARGE', costValue: 12000, display: '$12k+' }
-  };
-
-  architecturalTiers = {
-    SMALL: { label: 'SMALL', costValue: 5000, display: '$5.0k' },
-    MEDIUM: { label: 'MEDIUM', costValue: 11000, display: '$11k' },
-    LARGE: { label: 'LARGE', costValue: 20000, display: '$20k+' }
+  archAndStructuralTiers = {
+    SMALL: { label: 'SMALL', costValue: 8500, display: '$8.5k' },
+    MEDIUM: { label: 'MEDIUM', costValue: 18200, display: '$18.2k' },
+    LARGE: { label: 'LARGE', costValue: 32000, display: '$32k+' }
   };
 
   // Estimator calculator states
@@ -916,22 +1428,15 @@ export class SpatialCostCalculator {
         "services_data": [
           {
             id: 1,
-            name: 'Structural',
-            total_prj: 932,
+            name: 'Architectural & Structural',
+            total_prj: 1642,
             sub_services: [
               { category: 'Columns', value: 112 },
               { category: 'Beams', value: 157 },
               { category: 'Floors', value: 265 },
               { category: 'Walls', value: 138 },
               { category: 'Reinforcement', value: 725 },
-              { category: 'Trusses & Bracing', value: 249 }
-            ]
-          },
-          {
-            id: 2,
-            name: 'Architectural',
-            total_prj: 710,
-            sub_services: [
+              { category: 'Trusses & Bracing', value: 249 },
               { category: 'x', value: 134 },
               { category: 'y', value: 698 },
               { category: 'z', value: 242 },
@@ -940,7 +1445,7 @@ export class SpatialCostCalculator {
             ]
           },
           {
-            id: 3,
+            id: 2,
             name: 'MEP',
             total_prj: 401,
             sub_services: [
@@ -965,22 +1470,15 @@ export class SpatialCostCalculator {
         "services_data": [
           {
             id: 1,
-            name: 'Structural',
-            total_prj: 810,
+            name: 'Architectural & Structural',
+            total_prj: 1469,
             sub_services: [
               { category: 'a', value: 98 },
               { category: 'b', value: 165 },
               { category: 'c', value: 305 },
               { category: 'x', value: 119 },
               { category: 'y', value: 675 },
-              { category: 'z', value: 215 }
-            ]
-          },
-          {
-            id: 2,
-            name: 'Architectural',
-            total_prj: 659,
-            sub_services: [
+              { category: 'z', value: 215 },
               { category: 'x', value: 110 },
               { category: 'y', value: 725 },
               { category: 'z', value: 260 },
@@ -989,7 +1487,7 @@ export class SpatialCostCalculator {
             ]
           },
           {
-            id: 3,
+            id: 2,
             name: 'MEP',
             total_prj: 373,
             sub_services: [
@@ -1014,22 +1512,15 @@ export class SpatialCostCalculator {
         "services_data": [
           {
             id: 1,
-            name: 'Structural',
-            total_prj: 876,
+            name: 'Architectural & Structural',
+            total_prj: 1607,
             sub_services: [
               { category: 'a', value: 115 },
               { category: 'b', value: 142 },
               { category: 'c', value: 290 },
               { category: 'x', value: 132 },
               { category: 'y', value: 702 },
-              { category: 'z', value: 238 }
-            ]
-          },
-          {
-            id: 2,
-            name: 'Architectural',
-            total_prj: 731,
-            sub_services: [
+              { category: 'z', value: 238 },
               { category: 'x', value: 127 },
               { category: 'y', value: 705 },
               { category: 'z', value: 225 },
@@ -1038,7 +1529,7 @@ export class SpatialCostCalculator {
             ]
           },
           {
-            id: 3,
+            id: 2,
             name: 'MEP',
             total_prj: 389,
             sub_services: [
@@ -1062,23 +1553,18 @@ export class SpatialCostCalculator {
         "bounding_box": [-8.649357, 49.906193, 1.748, 60.860699],
         "services_data": [
           {
-            id: 1, name: 'Structural', total_prj: 912,
+            id: 1, name: 'Architectural & Structural', total_prj: 1582,
             sub_services: [
               { category: 'a', value: 110 }, { category: 'b', value: 155 },
               { category: 'c', value: 270 }, { category: 'x', value: 130 },
-              { category: 'y', value: 735 }, { category: 'z', value: 245 }
-            ]
-          },
-          {
-            id: 2, name: 'Architectural', total_prj: 670,
-            sub_services: [
+              { category: 'y', value: 735 }, { category: 'z', value: 245 },
               { category: 'x', value: 115 }, { category: 'y', value: 700 },
               { category: 'z', value: 260 }, { category: '0', value: 145 },
               { category: '3', value: 230 }
             ]
           },
           {
-            id: 3, name: 'MEP', total_prj: 380,
+            id: 2, name: 'MEP', total_prj: 380,
             sub_services: [
               { category: '0', value: 132 }, { category: '1', value: 140 },
               { category: '3', value: 215 }, { category: 'z', value: 260 }
@@ -1098,23 +1584,18 @@ export class SpatialCostCalculator {
         "bounding_box": [-73.982817, -33.768377, -34.729993, 5.271786],
         "services_data": [
           {
-            id: 1, name: 'Structural', total_prj: 850,
+            id: 1, name: 'Architectural & Structural', total_prj: 1540,
             sub_services: [
               { category: 'a', value: 105 }, { category: 'b', value: 150 },
               { category: 'c', value: 260 }, { category: 'x', value: 125 },
-              { category: 'y', value: 720 }, { category: 'z', value: 240 }
-            ]
-          },
-          {
-            id: 2, name: 'Architectural', total_prj: 690,
-            sub_services: [
+              { category: 'y', value: 720 }, { category: 'z', value: 240 },
               { category: 'x', value: 120 }, { category: 'y', value: 710 },
               { category: 'z', value: 250 }, { category: '0', value: 150 },
               { category: '3', value: 235 }
             ]
           },
           {
-            id: 3, name: 'MEP', total_prj: 360,
+            id: 2, name: 'MEP', total_prj: 360,
             sub_services: [
               { category: '0', value: 128 }, { category: '1', value: 135 },
               { category: '3', value: 205 }, { category: 'z', value: 255 }
@@ -1134,23 +1615,18 @@ export class SpatialCostCalculator {
         "bounding_box": [122.93853, 24.396308, 153.986672, 45.551483],
         "services_data": [
           {
-            id: 1, name: 'Structural', total_prj: 980,
+            id: 1, name: 'Architectural & Structural', total_prj: 1700,
             sub_services: [
               { category: 'a', value: 120 }, { category: 'b', value: 165 },
               { category: 'c', value: 290 }, { category: 'x', value: 140 },
-              { category: 'y', value: 760 }, { category: 'z', value: 260 }
-            ]
-          },
-          {
-            id: 2, name: 'Architectural', total_prj: 720,
-            sub_services: [
+              { category: 'y', value: 760 }, { category: 'z', value: 260 },
               { category: 'x', value: 130 }, { category: 'y', value: 730 },
               { category: 'z', value: 270 }, { category: '0', value: 155 },
               { category: '3', value: 245 }
             ]
           },
           {
-            id: 3, name: 'MEP', total_prj: 405,
+            id: 2, name: 'MEP', total_prj: 405,
             sub_services: [
               { category: '0', value: 135 }, { category: '1', value: 150 },
               { category: '3', value: 220 }, { category: 'z', value: 275 }
@@ -1170,23 +1646,18 @@ export class SpatialCostCalculator {
         "bounding_box": [112.92111, -43.740482, 153.638673, -10.684055],
         "services_data": [
           {
-            id: 1, name: 'Structural', total_prj: 770,
+            id: 1, name: 'Architectural & Structural', total_prj: 1410,
             sub_services: [
               { category: 'a', value: 95 }, { category: 'b', value: 140 },
               { category: 'c', value: 250 }, { category: 'x', value: 120 },
-              { category: 'y', value: 700 }, { category: 'z', value: 230 }
-            ]
-          },
-          {
-            id: 2, name: 'Architectural', total_prj: 640,
-            sub_services: [
+              { category: 'y', value: 700 }, { category: 'z', value: 230 },
               { category: 'x', value: 110 }, { category: 'y', value: 690 },
               { category: 'z', value: 240 }, { category: '0', value: 140 },
               { category: '3', value: 225 }
             ]
           },
           {
-            id: 3, name: 'MEP', total_prj: 330,
+            id: 2, name: 'MEP', total_prj: 330,
             sub_services: [
               { category: '0', value: 125 }, { category: '1', value: 130 },
               { category: '3', value: 200 }, { category: 'z', value: 250 }
@@ -1206,23 +1677,18 @@ export class SpatialCostCalculator {
         "bounding_box": [68.111378, 6.554607, 97.395561, 35.674545],
         "services_data": [
           {
-            id: 1, name: 'Structural', total_prj: 980,
+            id: 1, name: 'Architectural & Structural', total_prj: 1700,
             sub_services: [
               { category: 'a', value: 120 }, { category: 'b', value: 165 },
               { category: 'c', value: 290 }, { category: 'x', value: 140 },
-              { category: 'y', value: 760 }, { category: 'z', value: 260 }
-            ]
-          },
-          {
-            id: 2, name: 'Architectural', total_prj: 720,
-            sub_services: [
+              { category: 'y', value: 760 }, { category: 'z', value: 260 },
               { category: 'x', value: 130 }, { category: 'y', value: 730 },
               { category: 'z', value: 270 }, { category: '0', value: 155 },
               { category: '3', value: 245 }
             ]
           },
           {
-            id: 3, name: 'MEP', total_prj: 405,
+            id: 2, name: 'MEP', total_prj: 405,
             sub_services: [
               { category: '0', value: 135 }, { category: '1', value: 150 },
               { category: '3', value: 220 }, { category: 'z', value: 275 }
@@ -1242,23 +1708,18 @@ export class SpatialCostCalculator {
         "bounding_box": [5.866342, 47.270111, 15.041896, 55.058347],
         "services_data": [
           {
-            id: 1, name: 'Structural', total_prj: 850,
+            id: 1, name: 'Architectural & Structural', total_prj: 1540,
             sub_services: [
               { category: 'a', value: 105 }, { category: 'b', value: 150 },
               { category: 'c', value: 260 }, { category: 'x', value: 125 },
-              { category: 'y', value: 720 }, { category: 'z', value: 240 }
-            ]
-          },
-          {
-            id: 2, name: 'Architectural', total_prj: 690,
-            sub_services: [
+              { category: 'y', value: 720 }, { category: 'z', value: 240 },
               { category: 'x', value: 120 }, { category: 'y', value: 710 },
               { category: 'z', value: 250 }, { category: '0', value: 150 },
               { category: '3', value: 235 }
             ]
           },
           {
-            id: 3, name: 'MEP', total_prj: 360,
+            id: 2, name: 'MEP', total_prj: 360,
             sub_services: [
               { category: '0', value: 128 }, { category: '1', value: 135 },
               { category: '3', value: 205 }, { category: 'z', value: 255 }
@@ -1278,23 +1739,18 @@ export class SpatialCostCalculator {
         "bounding_box": [-141.0, 41.676555, -52.648099, 70.0],
         "services_data": [
           {
-            id: 1, name: 'Structural', total_prj: 912,
+            id: 1, name: 'Architectural & Structural', total_prj: 1582,
             sub_services: [
               { category: 'a', value: 110 }, { category: 'b', value: 155 },
               { category: 'c', value: 270 }, { category: 'x', value: 130 },
-              { category: 'y', value: 735 }, { category: 'z', value: 245 }
-            ]
-          },
-          {
-            id: 2, name: 'Architectural', total_prj: 670,
-            sub_services: [
+              { category: 'y', value: 735 }, { category: 'z', value: 245 },
               { category: 'x', value: 115 }, { category: 'y', value: 700 },
               { category: 'z', value: 260 }, { category: '0', value: 145 },
               { category: '3', value: 230 }
             ]
           },
           {
-            id: 3, name: 'MEP', total_prj: 380,
+            id: 2, name: 'MEP', total_prj: 380,
             sub_services: [
               { category: '0', value: 132 }, { category: '1', value: 140 },
               { category: '3', value: 215 }, { category: 'z', value: 260 }
@@ -1327,27 +1783,23 @@ export class SpatialCostCalculator {
 
     // Fallback/standard stats structure
     if (selCountry === 'Global') {
-      let totalStructural = 0;
-      let totalArchitectural = 0;
+      let totalArchNStruct = 0;
       let totalMEP = 0;
       this.countrie_LatLang.forEach(item => {
-        const s = item.services_data.find(sd => sd.name === 'Structural');
-        const a = item.services_data.find(sd => sd.name === 'Architectural');
+        const as = item.services_data.find(sd => sd.name === 'Architectural & Structural');
         const m = item.services_data.find(sd => sd.name === 'MEP');
-        totalStructural += s ? s.total_prj : 0;
-        totalArchitectural += a ? a.total_prj : 0;
+        totalArchNStruct += as ? as.total_prj : 0;
         totalMEP += m ? m.total_prj : 0;
       });
 
-      const totalPrj = totalStructural + totalArchitectural + totalMEP;
+      const totalPrj = totalArchNStruct + totalMEP;
 
       return {
         projectStat: `${totalPrj.toLocaleString()} ACTIVE PROJECTS`,
         description: 'Expanding global infrastructure through precision OS deployment. Currently supporting major capitals across 4 continents.',
         nodesActive: (totalPrj * 11).toLocaleString(),
         uptime: '99.9995%',
-        structuralVal: totalStructural,
-        architecturalVal: totalArchitectural,
+        archAndStructuralVal: totalArchNStruct,
         mepVal: totalMEP,
         structuralBreakdown: { columns: 85, beams: 72, floors: 90, walls: 65, reinforcement: 44, trusses: 30 },
         aestheticLoad: { facade: 80, interior: 60, visual: 95, urban: 40 },
@@ -1363,8 +1815,7 @@ export class SpatialCostCalculator {
         description: 'Operational node online.',
         nodesActive: '0',
         uptime: '100.00%',
-        structuralVal: 0,
-        architecturalVal: 0,
+        archAndStructuralVal: 0,
         mepVal: 0,
         structuralBreakdown: { columns: 0, beams: 0, floors: 0, walls: 0, reinforcement: 0, trusses: 0 },
         aestheticLoad: { facade: 0, interior: 0, visual: 0, urban: 0 },
@@ -1372,14 +1823,12 @@ export class SpatialCostCalculator {
       };
     }
 
-    const s = item.services_data.find(sd => sd.name === 'Structural');
-    const a = item.services_data.find(sd => sd.name === 'Architectural');
+    const as = item.services_data.find(sd => sd.name === 'Architectural & Structural');
     const m = item.services_data.find(sd => sd.name === 'MEP');
 
-    const sVal = s ? s.total_prj : 120;
-    const aVal = a ? a.total_prj : 100;
+    const asVal = as ? as.total_prj : 220;
     const mVal = m ? m.total_prj : 80;
-    const totalPrj = sVal + aVal + mVal;
+    const totalPrj = asVal + mVal;
 
     const descriptions: Record<string, string> = {
       'United States': 'Focusing on high-rise structures in New York and seismic structural reinforcing upgrades in Chicago and Atlanta.',
@@ -1401,8 +1850,7 @@ export class SpatialCostCalculator {
       description: desc,
       nodesActive: (totalPrj * 5 + 104).toString(),
       uptime: '99.9995%',
-      structuralVal: sVal,
-      architecturalVal: aVal,
+      archAndStructuralVal: asVal,
       mepVal: mVal,
       structuralBreakdown: { columns: 92, beams: 85, floors: 78, walls: 70, reinforcement: 55, trusses: 40 },
       aestheticLoad: { facade: 90, interior: 75, visual: 85, urban: 50 },
@@ -1435,7 +1883,7 @@ export class SpatialCostCalculator {
       code: 'PROJECT_005',
       title: 'Obsidian Terminal',
       description: 'Brutalist concrete transportation terminal with dramatic light shafts and structural heritage.',
-      category: 'STRUCTURAL',
+      category: 'ARCHITECTURAL & STRUCTURAL',
       typology: 'Airports',
       magnitude: '33,023 SQ FT',
       image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDRFkC6_hFVn7b-agjpn9iKPpfmErl8szxOLnn5K6wfH1mNgngYgHEddNwt2QBFjktDwHrgXoQSCWROAbuZp_bVltApbslk8lXqSU4qGyoRGE9DRluSiwG2lYJ1qoXU6oi1vVfcFWsvvK7WaN_oQs9YFcjpV6nDBUljI3DW_i-NybLNSjlg0cJrR09nSG9fVPo4E5R4TLur-IcV9Q-y-5nYxqN0ytBcqCVOjc2V7WMnKAmp2M71URgmXwB7RY8uxxCmsyKdhfZenYY',
@@ -1446,7 +1894,7 @@ export class SpatialCostCalculator {
       code: 'PROJECT_016',
       title: 'Flux Residential',
       description: 'High-end structural research facility highlighting geometric precision and metallic frames.',
-      category: 'ARCHITECTURAL',
+      category: 'ARCHITECTURAL & STRUCTURAL',
       typology: 'Residential',
       magnitude: '4,563,023 SQ FT',
       image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80',
@@ -1457,7 +1905,7 @@ export class SpatialCostCalculator {
       code: 'PROJECT_006',
       title: 'Alpha Industrial Site',
       description: 'High-precision industrial processing station with modular layouts and night automation guides.',
-      category: 'ARCHITECTURAL',
+      category: 'ARCHITECTURAL & STRUCTURAL',
       typology: 'Industrial',
       magnitude: '3,023 SQ FT',
       image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuClK6X81gHf4fKEeWkU4WspK9CnhHm87Bk7bHZMT8vehQqycmCltomPJkvZ1CZSV1dIs_gEB2u39vOu63NEGtw1xbMEAIPLJ7ps2lwA768s6tqd2oPq__zyYwYQCMCxV4YUt3yy25ps3GTjKvHnE80RkZZO4tS4Qg_MtA4GPw08uIB2Pcmv7a96kiVBqVdwF-eMPmraGCzeGT1rgacYZlsXrUw_LojNC_IKmu75egGr2hR5IRDTE3ig3pIytk-AFQ1amP5GxwHxLeM',
@@ -1468,7 +1916,7 @@ export class SpatialCostCalculator {
       code: 'PROJECT_011',
       title: 'Monolith Residence',
       description: 'Exclusive multi-level concrete residential blocks with panoramic light integration.',
-      category: 'STRUCTURAL',
+      category: 'ARCHITECTURAL & STRUCTURAL',
       typology: 'Residential',
       magnitude: '145,023 SQ FT',
       image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDYvfiuUSfYKsmX5WpGUW5QpuzzZg-uUqNZBn02hOKfKFxn9mbzN9_hsrgZBIg5cMgoJny0decgBFHUFe7p7WCtOF8F4WTH7-w3k9uD2w0YXPUQ0dXUnxE1UQTQWaCXJszlrv-22T2MFIvfeinYs3aYcM9-DUske5vKDZWkSOtRVUvF5ePOXr9sqLtjz4S9JGG31sLOuuXTPmJmU49zKB0D0aXBOTjamfDIp7Y1JSjNRxhRjcLzVn4MS9rc0kXHtXJilnGKa3kCc9A',
@@ -1479,7 +1927,7 @@ export class SpatialCostCalculator {
       code: 'PROJECT_014',
       title: 'Aura Limestone Villa',
       description: 'Sophisticated bespoke villa emphasizing volumetric geometry and limestone finishing.',
-      category: 'ARCHITECTURAL',
+      category: 'ARCHITECTURAL & STRUCTURAL',
       typology: 'Residential',
       magnitude: '39,023 SQ FT',
       image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAXr7ydioWDeIxQVA24rxENH-OrAhhTUfw2kFnW-jMx86sOZGHdxAfF5OVsDECJBVZI1FVByBYE5913QQ0QuBph8fud1jCZsGb2pkOIe_11Kbg4ihZ31H7d1TmjVUuf_F8BFuZoaNz7TQFpOi-T3b9No9BPYvWcThA8mOmTTzsnuD4dIt6QGuxjzGZRzGcCnjsaoLaeA60lV7Gbus45t8Z8YUPiZJBRJw-z0FUfsMFe9kwH2GwW_m7XM16XNOcKKMJGEC0y4xEEEKI',
@@ -1501,7 +1949,7 @@ export class SpatialCostCalculator {
       code: 'PROJECT_009',
       title: 'Skylon Office Tower',
       description: 'Reinforced high-load structural skeleton engineered for maximum wind resistance.',
-      category: 'STRUCTURAL',
+      category: 'ARCHITECTURAL & STRUCTURAL',
       typology: 'Office',
       magnitude: '17,023 SQ FT',
       image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCAh4--94ZHe6PqKP1WucVH70x3NdHpd-vGd9pgfZOcQ8glgCgIOO7yAmRd_oPPBF2OtoPEvLvwO3Lljc5IvUAnR2KMaQNdFL72paOoHXTkY4axN1PJisekd2cOU2kditsJVYH8IliBlT2rsBsWJP5jKYt28Z4Z_c9IMBCj3hz8ftxB1vMKuzfz8tTnXNOpsc-v0-ifu9zjtQK4K1EH6LOtThscYamjNb7WodoDtCYq4a8byszUTHCewwCqpbACC7gI5pgw1fKU_Xg',
@@ -1562,7 +2010,7 @@ export class SpatialCostCalculator {
   // Initiating manual additions modal
   isAddModalOpen = signal<boolean>(false);
   newProjectTitle = signal<string>('');
-  newProjectCategory = signal<'MEP' | 'ARCHITECTURAL' | 'STRUCTURAL'>('ARCHITECTURAL');
+  newProjectCategory = signal<'MEP' | 'ARCHITECTURAL & STRUCTURAL'>('ARCHITECTURAL & STRUCTURAL');
   newProjectTypology = signal<string>('Commercial');
   newProjectMagnitude = signal<string>('24,500 SQ FT');
   newProjectDescription = signal<string>('');
@@ -1589,8 +2037,7 @@ export class SpatialCostCalculator {
 
     const imgMap = {
       MEP: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD-j0Ctd5d5ygIh7Krpzt9Dj5KbgSNe0FqXRPf8nWinLyLbYZIX4MgpGk9x-HIsuMnu8Oh-4tM2tz-JobYfwTE8OJijGZhL3pzGr2TY7vOG1dAq5h3WLS4Vv4UVhMcdU3CB0uy2FGuW5CzI9C1GhSxe9o2sgcxuI5ZFiyzNOTCWN2EcIfcNLWvwKvzYkTpcq3AJIVh3Zv8qahheJcplIOy9D6aRwPAu7HwBoKP1vKOxALtB4q1CrtJMA9JI4oaV7of5rG442tNE4GQ',
-      STRUCTURAL: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCAh4--94ZHe6PqKP1WucVH70x3NdHpd-vGd9pgfZOcQ8glgCgIOO7yAmRd_oPPBF2OtoPEvLvwO3Lljc5IvUAnR2KMaQNdFL72paOoHXTkY4axN1PJisekd2cOU2kditsJVYH8IliBlT2rsBsWJP5jKYt28Z4Z_c9IMBCj3hz8ftxB1vMKuzfz8tTnXNOpsc-v0-ifu9zjtQK4K1EH6LOtThscYamjNb7WodoDtCYq4a8byszUTHCewwCqpbACC7gI5pgw1fKU_Xg',
-      ARCHITECTURAL: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAXr7ydioWDeIxQVA24rxENH-OrAhhTUfw2kFnW-jMx86sOZGHdxAfF5OVsDECJBVZI1FVByBYE5913QQ0QuBph8fud1jCZsGb2pkOIe_11Kbg4ihZ31H7d1TmjVUuf_F8BFuZoaNz7TQFpOi-T3b9No9BPYvWcThA8mOmTTzsnuD4dIt6QGuxjzGZRzGcCnjsaoLaeA60lV7Gbus45t8Z8YUPiZJBRJw-z0FUfsMFe9kwH2GwW_m7XM16XNOcKKMJGEC0y4xEEEKI'
+      'ARCHITECTURAL & STRUCTURAL': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCAh4--94ZHe6PqKP1WucVH70x3NdHpd-vGd9pgfZOcQ8glgCgIOO7yAmRd_oPPBF2OtoPEvLvwO3Lljc5IvUAnR2KMaQNdFL72paOoHXTkY4axN1PJisekd2cOU2kditsJVYH8IliBlT2rsBsWJP5jKYt28Z4Z_c9IMBCj3hz8ftxB1vMKuzfz8tTnXNOpsc-v0-ifu9zjtQK4K1EH6LOtThscYamjNb7WodoDtCYq4a8byszUTHCewwCqpbACC7gI5pgw1fKU_Xg'
     };
 
     const newProj: Project = {
@@ -1610,7 +2057,7 @@ export class SpatialCostCalculator {
     this.showNotification(`Project ${code} created successfully inside local database node!`, 'success');
   }
 
-  setTab(tab: 'dashboard' | 'portfolio' | 'config') {
+  setTab(tab: 'home' | 'portfolio' | 'config') {
     this.activeTab.set(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }

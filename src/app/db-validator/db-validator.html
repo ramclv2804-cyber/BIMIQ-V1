@@ -1,0 +1,164 @@
+<div class="db-validator-page">
+  <app-header />
+
+  <div class="dv-container">
+    <!-- Header -->
+    <div class="dv-header">
+      <div class="dv-header-left">
+        <div class="inline-flex items-center gap-2 mb-2 select-none">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="font-mono text-[10px] text-emerald-400 uppercase tracking-widest">Database Control Panel v1.0</span>
+        </div>
+        <h1 class="dv-title">Database Validation</h1>
+        <p class="dv-subtitle">
+          Inspect the SQLite database structure, user records, project entries, and foreign key integrity.
+        </p>
+      </div>
+      <div class="dv-header-right">
+        <button
+          type="button"
+          (click)="loadValidationData()"
+          [disabled]="isLoading()"
+          class="dv-refresh-btn">
+          <span class="material-symbols-outlined text-sm" [class.animate-spin]="isLoading()">refresh</span>
+          <span>{{ isLoading() ? 'Scanning...' : 'Refresh' }}</span>
+        </button>
+        <div class="dv-db-path" *ngIf="validationData()">
+          <span class="material-symbols-outlined text-[10px]">database</span>
+          <span class="dv-path-text">{{ validationData()?.database_path }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading()) {
+      <div class="dv-loading">
+        <div class="dv-loading-spinner"></div>
+        <span>Querying database tables...</span>
+      </div>
+    }
+
+    <!-- Error State -->
+    @if (errorMessage()) {
+      <div class="dv-error">
+        <span class="material-symbols-outlined">error</span>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <!-- Validation Data -->
+    @if (validationData(); as data) {
+      <!-- Validation Errors -->
+      @if (data.errors.length > 0) {
+        <div class="dv-errors-panel">
+          <div class="dv-errors-header">
+            <span class="material-symbols-outlined text-red-400">warning</span>
+            <span class="text-red-400 font-bold uppercase tracking-wider text-[10px]">Validation Errors ({{ data.errors.length }})</span>
+          </div>
+          <ul class="dv-errors-list">
+            @for (err of data.errors; track err) {
+              <li class="dv-error-item">{{ err }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (data.errors.length === 0) {
+        <div class="dv-clean-badge">
+          <span class="material-symbols-outlined text-emerald-400">verified</span>
+          <span class="text-emerald-400 font-bold uppercase tracking-wider text-[10px]">All integrity checks passed</span>
+        </div>
+      }
+
+      <!-- Users Section -->
+      <div class="dv-section">
+        <h2 class="dv-section-title">
+          <span class="material-symbols-outlined text-primary-custom">people</span>
+          Registered Users ({{ data.users.length }})
+        </h2>
+        <div class="dv-data-card">
+          @if (data.users.length === 0) {
+            <div class="dv-empty">No users registered yet.</div>
+          } @else {
+            <div class="dv-data-table-wrap">
+              <table class="dv-data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (u of data.users; track u.id) {
+                    <tr>
+                      <td class="dv-cell-id">{{ u.id }}</td>
+                      <td class="dv-cell-username">{{ u.username }}</td>
+                      <td class="dv-cell-email">{{ u.email }}</td>
+                      <td>
+                        <span class="dv-role-badge" [class.admin]="u.role === 'admin'">{{ u.role }}</span>
+                      </td>
+                      <td class="dv-cell-date">{{ u.created_at }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Projects Section -->
+      <div class="dv-section">
+        <h2 class="dv-section-title">
+          <span class="material-symbols-outlined text-primary-custom">folder</span>
+          Projects ({{ data.projects.length }})
+        </h2>
+        <div class="dv-data-card">
+          @if (data.projects.length === 0) {
+            <div class="dv-empty">No projects created yet.</div>
+          } @else {
+            <div class="dv-data-table-wrap">
+              <table class="dv-data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>User ID</th>
+                    <th>Project Name</th>
+                    <th>Scope</th>
+                    <th>SFT</th>
+                    <th>Cost</th>
+                    <th>Currency</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (p of data.projects; track p.id) {
+                    <tr>
+                      <td class="dv-cell-id">{{ p.id }}</td>
+                      <td class="dv-cell-id">{{ p.user_id }}</td>
+                      <td class="dv-cell-name">{{ p.project_name }}</td>
+                      <td>{{ p.scope || '—' }}</td>
+                      <td class="dv-cell-num">{{ p.sft | number }}</td>
+                      <td class="dv-cell-num">{{ p.currency }}{{ p.cost | number:'1.2-2' }}</td>
+                      <td>{{ p.currency }}</td>
+                      <td>
+                        <span class="dv-status-badge" [style.background]="getStatusColor(p.workflow_status) + '18'" [style.color]="getStatusColor(p.workflow_status)">
+                          {{ p.workflow_status }}
+                        </span>
+                      </td>
+                      <td class="dv-cell-date">{{ p.created_at }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

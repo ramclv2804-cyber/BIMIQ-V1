@@ -2,11 +2,31 @@
 
 <div class="projects-page">
   <div class="page-hero">
+
     <div class="hero-content">
       <div class="hero-top">
-        <span class="hero-badge">PORTFOLIO</span>
-        <h1>My Projects</h1>
-        <p class="hero-sub">Track, manage and oversee all your BIM projects in one place</p>
+        <div class="hero-top-left">
+          <span class="hero-badge">PORTFOLIO</span>
+          @if (isAdmin()) {
+          <h1>{{ selectedUserName() ? selectedUserName() + ' projects portfolio' : '' }}</h1>
+          } @else if (isProduction()) {
+          <h1> Projects</h1>
+          } @else {
+          <h1>My Projects</h1>
+          }
+          <p class="hero-sub">Track, manage and oversee all your BIM projects in one place</p>
+        </div>
+        @if (isAdmin()) {
+        <div class="filter-card" style="margin-left:auto;">
+          <label class="filter-label">Select client</label>
+          <select class="filter-select" [value]="filterUser() ?? ''" (change)="onUserSelect($any($event.target).value)">
+            <option value="">select client</option>
+            @for (u of allUsers(); track u.id) {
+            <option [value]="u.id">{{ u.username }} ({{ u.email }})</option>
+            }
+          </select>
+        </div>
+        }
       </div>
       <div class="hero-stats-grid">
         <div class="stat-group">
@@ -119,6 +139,7 @@
         <option value="Paid">Paid</option>
       </select>
     </div>
+
   </div>
 
   <div class="projects-grid">
@@ -154,22 +175,30 @@
             <span class="chip-icon">source</span>
             {{ p.scope }}
           </span>
+          <span class="meta-chip" *ngIf="p.createdAt">
+            <span class="chip-icon">calendar_today</span>
+            {{ p.createdAt | date:'MMM d, y' }}
+          </span>
         </div>
         <div class="card-tags">
-          <span class="tag-chip" [class.tag-lod]="p.scope !== 'Scan to CAD'" [class.tag-scale]="p.scope === 'Scan to CAD'">{{ p.scope === 'Scan to CAD' ? p.scale : p.lod }}</span>
-          <span class="tag-chip tag-workflow">{{ p.workflowStatus }}</span>
+          <span class="tag-chip" [class.tag-lod]="p.scope !== 'Scan to CAD'"
+            [class.tag-scale]="p.scope === 'Scan to CAD'">{{ p.scope === 'Scan to CAD' ? p.scale : p.lod }}</span>
+          <span class="tag-chip tag-workflow" [class.award]="p.workflowStatus === 'Yet to Award'"
+            [class.progress]="p.workflowStatus === 'In Progress'"
+            [class.revision]="p.workflowStatus === 'Under Revision'"
+            [class.complete]="p.workflowStatus === 'Completed'">{{ p.workflowStatus }}</span>
           <span class="tag-chip tag-billing">{{ p.billing }}</span>
           <span class="tag-chip tag-payment" [class.paid]="p.payment === 'Paid'">{{ p.payment }}</span>
         </div>
         <div class="card-footer">
           <div class="card-cost">
-            <span class="cost-value">{{ p.currency }}{{ p.cost | number }}</span>
+            <span class="cost-value">{{ calculator.getCurrencySymbol(p.currency) }}{{ p.cost | number }}</span>
             <span class="cost-label">Total Cost</span>
           </div>
 
-          <button class="ticket-btn" (click)="$event.stopPropagation(); openTicket(p)">Ticket Raise</button>
+          <button class="ticket-btn" (click)="openTicket(p)">Ticket Raise</button>
 
-          <button class="card-arrow" (click)="$event.stopPropagation(); openDetail(p)">
+          <button class="card-arrow" (click)="openDetail(p)">
             <span class="arrow-icon">arrow_forward</span>
           </button>
         </div>
@@ -180,7 +209,12 @@
   <div class="empty-state" *ngIf="filteredProjects().length === 0">
     <span class="empty-icon">folder_off</span>
     <h3>No projects found</h3>
-    <p>Try adjusting your filters</p>
+    <ng-container *ngIf="projects().length === 0; else filterEmpty">
+      <p>Place an order from the Price Estimator to create your first project</p>
+    </ng-container>
+    <ng-template #filterEmpty>
+      <p>No projects match your current filters</p>
+    </ng-template>
   </div>
 </div>
 
@@ -197,13 +231,7 @@
       <div class="banner-overlay"></div>
       <div class="banner-content">
         <div class="banner-top-row">
-          <div class="banner-chips">
-            <span class="detail-status" [style.background]="getStatusColor(p.workflowStatus) + '18'"
-              [style.color]="getStatusColor(p.workflowStatus)">
-              <span class="status-bullet"></span>
-              {{ p.workflowStatus }}
-            </span>
-          </div>
+
           <h1 class="detail-title">{{ p.projectName }}</h1>
         </div>
 
@@ -231,7 +259,8 @@
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Area">Area</span>
-                <span class="info-card-row-value"><span class="chip-icon">straighten</span> {{ p.sft | number }} sft</span>
+                <span class="info-card-row-value"><span class="chip-icon">straighten</span> {{ p.sft | number }}
+                  sft</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Scope">Scope</span>
@@ -247,7 +276,8 @@
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Status">Status</span>
-                <span class="info-card-row-value"><span class="chip-icon">assignment</span> {{ p.workflowStatus }}</span>
+                <span class="info-card-row-value"><span class="chip-icon">assignment</span> {{ p.workflowStatus
+                  }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="addon">addon's</span>
@@ -265,27 +295,33 @@
             <div class="info-card-body">
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Started">Started</span>
-                <span class="info-card-row-value"><span class="date-icon">calendar_today</span> {{ p.startDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">calendar_today</span> {{ p.startDate |
+                  date:'MMM d, y' }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="End Date">End Date</span>
-                <span class="info-card-row-value"><span class="date-icon">event</span> {{ p.endDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">event</span> {{ p.endDate | date:'MMM d, y'
+                  }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Expected Delivery">Expected Delivery</span>
-                <span class="info-card-row-value"><span class="date-icon">local_shipping</span> {{ p.expectedClientDeliveryDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">local_shipping</span> {{
+                  p.expectedClientDeliveryDate | date:'MMM d, y' }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.proposalSent">
                 <span class="info-card-row-label" title="Proposal Sent">Proposal Sent</span>
-                <span class="info-card-row-value"><span class="date-icon">forward_to_inbox</span> {{ p.proposalSent | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">forward_to_inbox</span> {{ p.proposalSent |
+                  date:'MMM d, y' }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.purchaseOrderIssued">
                 <span class="info-card-row-label" title="Purchase Order Issued">PO Issued</span>
-                <span class="info-card-row-value"><span class="date-icon">description</span> {{ p.purchaseOrderIssued | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">description</span> {{ p.purchaseOrderIssued |
+                  date:'MMM d, y' }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.e57IssuedDate">
                 <span class="info-card-row-label" title="E57 Issued">E57 Issued</span>
-                <span class="info-card-row-value"><span class="date-icon">cloud_download</span> {{ p.e57IssuedDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">cloud_download</span> {{ p.e57IssuedDate |
+                  date:'MMM d, y' }}</span>
               </div>
             </div>
           </div>
@@ -299,32 +335,39 @@
             <div class="info-card-body">
               <div class="info-card-row highlight">
                 <span class="info-card-row-label" title="Cost">Cost</span>
-                <span class="info-card-row-value cost-value"> {{ p.currency }}{{ p.cost | number }}</span>
+                <span class="info-card-row-value cost-value"> {{ calculator.getCurrencySymbol(p.currency) }}{{ p.cost |
+                  number }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Billing">Billing</span>
-                <span class="info-card-row-value" [style.color]="p.billing === 'Invoiced' ? '#4ade80' : '#f87171'"><span class="chip-icon">receipt</span> {{ p.billing }}</span>
+                <span class="info-card-row-value" [style.color]="p.billing === 'Invoiced' ? '#4ade80' : '#f87171'"><span
+                    class="chip-icon">receipt</span> {{ p.billing }}</span>
               </div>
               <div class="info-card-row">
                 <span class="info-card-row-label" title="Payment">Payment</span>
-                <span class="info-card-row-value" [style.color]="p.payment === 'Paid' ? '#4ade80' : '#f87171'"><span class="chip-icon">payments</span> {{ p.payment }}</span>
+                <span class="info-card-row-value" [style.color]="p.payment === 'Paid' ? '#4ade80' : '#f87171'"><span
+                    class="chip-icon">payments</span> {{ p.payment }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.invoiceNumber">
                 <span class="info-card-row-label" title="Invoice Number">Invoice No</span>
-                <span class="info-card-row-value"><span class="chip-icon">receipt_long</span> {{ p.invoiceNumber }}</span>
+                <span class="info-card-row-value"><span class="chip-icon">receipt_long</span> {{ p.invoiceNumber
+                  }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.invoiceDate">
                 <span class="info-card-row-label" title="Invoice Date">Invoice Date</span>
-                <span class="info-card-row-value"><span class="date-icon">event_available</span> {{ p.invoiceDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">event_available</span> {{ p.invoiceDate |
+                  date:'MMM d, y' }}</span>
               </div>
               <div class="info-card-row" *ngIf="p.invoiceDueDate">
                 <span class="info-card-row-label" title="Due Date">Due Date</span>
-                <span class="info-card-row-value"><span class="date-icon">gavel</span> {{ p.invoiceDueDate | date:'MMM d, y' }}</span>
+                <span class="info-card-row-value"><span class="date-icon">gavel</span> {{ p.invoiceDueDate | date:'MMM
+                  d, y' }}</span>
               </div>
             </div>
           </div>
 
         </div>
+
       </div>
     </div>
 
@@ -334,25 +377,43 @@
         <div class="tickets-card">
           <h3 class="section-title">
             <span class="section-title-icon">confirmation_number</span>
-            Tickets
-            <span class="tickets-count" *ngIf="projectTickets().length">({{ projectTickets().length }})</span>
+            <span>Tickets</span>
+            <div class="ticket-filter-group">
+              <button class="ticket-filter-btn ticket-filter-inprogress" [class.active]="ticketStatusFilter() === '1'"
+                (click)="setTicketFilter('1')">In Progress</button>
+              <button class="ticket-filter-btn ticket-filter-completed" [class.active]="ticketStatusFilter() === '2'"
+                (click)="setTicketFilter('2')">Completed</button>
+            </div>
+            <span class="tickets-notif" *ngIf="filteredProjectTickets().length">
+              <span class="tickets-notif-icon">notifications</span>
+              <span class="tickets-notif-count">{{ filteredProjectTickets().length }}</span>
+            </span>
           </h3>
           <div class="tickets-scroll">
-            <div class="tickets-list" *ngIf="projectTickets().length; else noTickets">
-              <div class="ticket-item" *ngFor="let t of projectTickets()">
-                <div class="ticket-item-line"></div>
+            <div class="tickets-list" *ngIf="filteredProjectTickets().length; else noTickets">
+              <div class="ticket-item" *ngFor="let t of filteredProjectTickets()" (click)="openTicketDetail(t)">
                 <div class="ticket-item-body">
                   <div class="ticket-item-header">
-                    <span class="ticket-item-id">#{{ t.id.toString().slice(-6) }}</span>
                     <span class="ticket-item-date">{{ t.createdAt | date:'MMM d, y' }}</span>
+                    <span class="ticket-item-sep">|</span>
                     <span class="ticket-item-time">{{ t.createdAt | date:'h:mm a' }}</span>
-                    <span class="ticket-item-badge" *ngIf="t.url">attached</span>
+                    <span class="ticket-item-badge ticket-badge-{{ t.status || '1' }}">{{ ticketStatusLabel(t.status)
+                      }}</span>
+                    <span *ngIf="t.url" class="ticket-item-attach">attached</span>
                   </div>
-                  <p class="ticket-item-comment" *ngIf="t.comments">{{ t.comments }}</p>
-                  <a *ngIf="t.url" [href]="t.url" target="_blank" class="ticket-item-link">
-                    <span class="ticket-link-icon">link</span>
-                    <span class="ticket-link-text">{{ t.url }}</span>
-                  </a>
+                  <div class="ticket-item-sub" *ngIf="t.comments || t.raisedByUsername || t.url">
+                    <span *ngIf="t.raisedByUsername" class="ticket-item-author">Raised: <span
+                        class="ticket-author-name">{{ t.raisedByUsername }}</span></span>
+                    <span *ngIf="t.comments" class="ticket-item-text ticket-comment-clamp">comments: {{ t.comments
+                      }}</span>
+                  </div>
+                  @if (t.status === '2' && t.completedAt) {
+                  <div class="ticket-item-completed">
+                    <span class="ticket-item-completed-icon material-symbols-outlined">check_circle</span>
+                    <span class="ticket-item-completed-text">Completed {{ t.completedAt | date:'MMM d, y · h:mm a'
+                      }}</span>
+                  </div>
+                  }
                 </div>
               </div>
             </div>
@@ -377,31 +438,31 @@
             <div class="project-links">
               <span class="req-label">Project Links:</span>
               <div class="links-list">
-                <a *ngIf="calculator.uploadLink()" [href]="calculator.uploadLink()" target="_blank" class="link-chip">
+                <a *ngIf="p.uploadLink" [href]="p.uploadLink" target="_blank" class="link-chip">
                   <span class="link-chip-icon">cloud_upload</span>
                   <span class="link-chip-body">
                     <span class="link-chip-title">Upload Link (DWG / JPEGs / PDFs)</span>
-                    <span class="link-chip-text">{{ calculator.uploadLink() }}</span>
+                    <span class="link-chip-text">{{ p.uploadLink }}</span>
                   </span>
                   <span class="link-chip-ext">↗</span>
                 </a>
-                <a *ngIf="calculator.pointCloudLink()" [href]="calculator.pointCloudLink()" target="_blank" class="link-chip">
+                <a *ngIf="p.pointCloudLink" [href]="p.pointCloudLink" target="_blank" class="link-chip">
                   <span class="link-chip-icon">point_scan</span>
                   <span class="link-chip-body">
                     <span class="link-chip-title">Point Cloud / PDF / Upload Link</span>
-                    <span class="link-chip-text">{{ calculator.pointCloudLink() }}</span>
+                    <span class="link-chip-text">{{ p.pointCloudLink }}</span>
                   </span>
                   <span class="link-chip-ext">↗</span>
                 </a>
-                <a *ngIf="calculator.descriptionLink()" [href]="calculator.descriptionLink()" target="_blank" class="link-chip">
+                <a *ngIf="p.descriptionLink" [href]="p.descriptionLink" target="_blank" class="link-chip">
                   <span class="link-chip-icon">description</span>
                   <span class="link-chip-body">
                     <span class="link-chip-title">Description Link (Etf, Erf, if any)</span>
-                    <span class="link-chip-text">{{ calculator.descriptionLink() }}</span>
+                    <span class="link-chip-text">{{ p.descriptionLink }}</span>
                   </span>
                   <span class="link-chip-ext">↗</span>
                 </a>
-                <span class="links-empty" *ngIf="!calculator.uploadLink() && !calculator.pointCloudLink() && !calculator.descriptionLink()">
+                <span class="links-empty" *ngIf="!p.uploadLink && !p.pointCloudLink && !p.descriptionLink">
                   No links added yet
                 </span>
               </div>
@@ -410,32 +471,104 @@
         </div>
       </div>
 
-      <!-- Description -->
-
-
-      <!-- Timeline -->
-      <!-- <div class="detail-section">
-        <h3 class="section-title">Project Timeline</h3>
-        <div class="timeline">
-          <div class="tl-item" *ngFor="let m of milestones">
-            <div class="tl-marker" [class.completed]="m.status === 'completed'" [class.current]="m.status === 'current'"
-              [class.upcoming]="m.status === 'upcoming'">
-              <span class="tl-marker-icon" *ngIf="m.status === 'completed'">check</span>
-              <span class="tl-marker-dot" *ngIf="m.status !== 'completed'"></span>
+      <!-- Deliverable Links Card -->
+      <div class="deliverable-card deliverable-card-body-section">
+        <div class="deliverable-card-header">
+          <span class="deliverable-card-head-icon">download</span>
+          <span class="deliverable-card-head-label">Deliverable Links</span>
+        </div>
+        <div class="deliverable-card-body">
+          <div class="deliverable-left">
+            <div class="deliverable-form-group">
+              <label class="deliverable-label">
+                <span class="deliverable-label-icon">link</span>
+                Links <span class="deliverable-label-hint">(one per line)</span>
+              </label>
+              <textarea class="deliverable-textarea deliverable-textarea-links"
+                placeholder="https://drive.google.com/file/...&#10;https://dropbox.com/s/...&#10;https://sharepoint.com/..."
+                rows="3"></textarea>
             </div>
-            <div class="tl-content">
-              <span class="tl-title">{{ m.title }}</span>
-              <span class="tl-date">{{ m.date }}</span>
+            <div class="deliverable-form-group">
+              <label class="deliverable-label">
+                <span class="deliverable-label-icon">comment</span>
+                Comments
+              </label>
+              <textarea class="deliverable-textarea" placeholder="Add any notes about these deliverables..."
+                rows="2"></textarea>
             </div>
-            <span class="tl-status" [class.completed]="m.status === 'completed'"
-              [class.current]="m.status === 'current'" [class.upcoming]="m.status === 'upcoming'">{{ m.status }}</span>
+            <button class="deliverable-submit-btn">
+              <span class="deliverable-submit-icon">add_link</span>
+              Submit Links
+            </button>
+          </div>
+          <div class="deliverable-divider"></div>
+          <div class="deliverable-right">
+            <div class="deliverable-right-header">
+              <span class="deliverable-right-header-icon">link</span>
+              <span class="deliverable-right-header-label">Uploaded Links</span>
+            </div>
+            <div class="deliverable-links-list">
+              <a *ngIf="p.uploadLink" [href]="p.uploadLink" target="_blank" class="deliverable-link-item">
+                <span class="deliverable-link-item-icon">cloud_upload</span>
+                <span class="deliverable-link-item-body">
+                  <span class="deliverable-link-item-title">DWG / JPEGs / PDFs</span>
+                  <span class="deliverable-link-item-url">{{ p.uploadLink }}</span>
+                </span>
+                <span class="deliverable-link-item-ext">↗</span>
+              </a>
+              <a *ngIf="p.pointCloudLink" [href]="p.pointCloudLink" target="_blank" class="deliverable-link-item">
+                <span class="deliverable-link-item-icon">point_scan</span>
+                <span class="deliverable-link-item-body">
+                  <span class="deliverable-link-item-title">Point Cloud / Upload</span>
+                  <span class="deliverable-link-item-url">{{ p.pointCloudLink }}</span>
+                </span>
+                <span class="deliverable-link-item-ext">↗</span>
+              </a>
+              <a *ngIf="p.descriptionLink" [href]="p.descriptionLink" target="_blank" class="deliverable-link-item">
+                <span class="deliverable-link-item-icon">description</span>
+                <span class="deliverable-link-item-body">
+                  <span class="deliverable-link-item-title">Description Link (Etf, Erf)</span>
+                  <span class="deliverable-link-item-url">{{ p.descriptionLink }}</span>
+                </span>
+                <span class="deliverable-link-item-ext">↗</span>
+              </a>
+              <div class="deliverable-links-empty" *ngIf="!p.uploadLink && !p.pointCloudLink && !p.descriptionLink">
+                <span class="deliverable-links-empty-icon">link_off</span>
+                <span class="deliverable-links-empty-text">No links uploaded yet</span>
+              </div>
+            </div>
           </div>
         </div>
-      </div> -->
+      </div>
+    </div>
 
+    <!-- Project Status Change — visible for admin and production role users -->
+    <div class="detail-footer" *ngIf="isProduction() || isAdmin()">
+      <div class="detail-footer-inner">
+        <div class="detail-footer-label">
+          <span class="detail-footer-icon">assignment_turned_in</span>
+          Project Status
+        </div>
+        <div class="detail-footer-controls">
+          <select class="status-change-select" [value]="selectedProjectStatus()"
+            (change)="selectedProjectStatus.set($any($event.target).value)">
+            <option value="Yet to Award">Yet to Award</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Under Revision">Under Revision</option>
+            <option value="Completed">Completed</option>
+          </select>
+          <button class="status-change-btn" (click)="changeProjectStatus()"
+            [disabled]="isChangingProjectStatus() || isProjectStatusUnchanged()">
+            <span class="status-change-btn-icon" *ngIf="isChangingProjectStatus()">hourglass_top</span>
+            <span class="status-change-btn-icon" *ngIf="!isChangingProjectStatus()">update</span>
+            <span>{{ isChangingProjectStatus() ? 'Updating...' : 'Change Status' }}</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+
+  </div>
 
 <!-- TICKET MODAL -->
 <div class="modal-backdrop" *ngIf="ticketProject()" (click)="closeTicket()"></div>
@@ -454,18 +587,8 @@
     <div class="ticket-header-right">
       <div class="ticket-header-chip">
         <span class="ticket-chip-icon">folder</span>
-        <span class="ticket-chip-label">Project</span>
+        <span class="ticket-chip-label">Project: </span>
         <span class="ticket-chip-value" [title]="p.projectName">{{ p.projectName }}</span>
-      </div>
-      <div class="ticket-header-chip">
-        <span class="ticket-chip-icon">attach_money</span>
-        <span class="ticket-chip-label">Cost</span>
-        <span class="ticket-chip-value accent" [title]="p.currency + (p.cost | number)">{{ p.currency }}{{ p.cost | number }}</span>
-      </div>
-      <div class="ticket-header-chip">
-        <span class="ticket-chip-icon">straighten</span>
-        <span class="ticket-chip-label">SFT</span>
-        <span class="ticket-chip-value" [title]="(p.sft | number) + ' sft'">{{ p.sft | number }}</span>
       </div>
     </div>
   </div>
@@ -477,10 +600,11 @@
         Attachment Link
       </label>
       <div class="ticket-file-wrap">
-        <input type="url" id="ticketFile" class="ticket-file-input" placeholder="Paste a link..." [value]="ticketUrl()" (input)="onTicketUrlChange($event)" />
-        <label for="ticketFile" class="ticket-file-label">
+        <input type="url" id="ticketFile" class="ticket-file-input" [value]="ticketUrl()"
+          (input)="onTicketUrlChange($event)" />
+        <label *ngIf="!ticketUrl()" for="ticketFile" class="ticket-file-label">
           <span class="ticket-file-icon">link</span>
-          <span class="ticket-file-text">{{ ticketUrl() || 'Paste a link...' }}</span>
+          <span class="ticket-file-text">Paste a link...</span>
         </label>
       </div>
     </div>
@@ -490,19 +614,121 @@
         <span class="ticket-label-icon">comment</span>
         Comments
       </label>
-      <textarea
-        id="ticketComments"
-        class="ticket-textarea"
-        placeholder="Describe your issue or request..."
-        [value]="ticketComments()"
-        (input)="ticketComments.set($any($event.target).value)"
-        rows="4"
-      ></textarea>
+      <textarea id="ticketComments" class="ticket-textarea" placeholder="Describe your issue or request..."
+        [value]="ticketComments()" (input)="ticketComments.set($any($event.target).value)" rows="4"></textarea>
     </div>
   </div>
 
   <div class="ticket-modal-footer">
-    <button class="ticket-btn-cancel" (click)="closeTicket()">Cancel</button>
     <button class="ticket-btn-submit" (click)="submitTicket()">Submit Ticket</button>
   </div>
+</div>
+
+<!-- TICKET DETAIL MODAL -->
+<div class="modal-backdrop ticket-detail-backdrop" *ngIf="selectedTicket()" (click)="closeTicketDetail()"></div>
+<div class="ticket-detail-modal" *ngIf="selectedTicket(); let t">
+  <button class="modal-close-btn" (click)="closeTicketDetail()">
+    <span>close</span>
+  </button>
+
+  <div class="ticket-detail-header">
+    <div class="ticket-detail-header-top">
+      <div class="ticket-detail-header-left">
+        <div class="ticket-detail-icon">
+          <span>confirmation_number</span>
+        </div>
+        <div>
+          <div class="ticket-detail-title-row">
+            <h2 class="ticket-detail-title">Ticket <span class="ticket-detail-id">#{{ t.id }}</span></h2>
+            <div class="ticket-detail-chip ticket-detail-chip-{{ t.status || '1' }}">
+              <span class="ticket-detail-chip-dot"></span>
+              {{ ticketStatusLabel(t.status) }}
+            </div>
+          </div>
+          <div class="ticket-detail-meta">
+            <span class="ticket-detail-meta-icon">calendar_today</span>
+            <span class="ticket-detail-date">{{ t.createdAt | date:'MMM d, y' }}</span>
+            <span class="ticket-detail-sep">•</span>
+            <span class="ticket-detail-meta-icon">schedule</span>
+            <span class="ticket-detail-time">{{ t.createdAt | date:'h:mm a' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    @if (t.status === '2' && t.completedAt) {
+    <div class="ticket-detail-completed">
+      <div class="ticket-detail-completed-inner">
+        <div class="ticket-detail-completed-ring">
+          <span class="material-symbols-outlined ticket-detail-completed-icon">check_circle</span>
+        </div>
+        <div class="ticket-detail-completed-text">
+          <span class="ticket-detail-completed-label">Resolved</span>
+          <span class="ticket-detail-completed-date">{{ t.completedAt | date:'MMM d, y · h:mm a' }}</span>
+        </div>
+      </div>
+    </div>
+    }
+    <div class="ticket-detail-header-divider"></div>
+    <div class="ticket-detail-raised" *ngIf="t.raisedByUsername">
+      <span class="ticket-detail-raised-icon">person</span>
+      <span>Raised by</span>
+      <span class="ticket-detail-raised-name">{{ t.raisedByUsername }}</span>
+    </div>
+  </div>
+
+  <div class="ticket-detail-body">
+    <div class="ticket-detail-card" *ngIf="t.comments">
+      <div class="ticket-detail-card-title">
+        <span class="ticket-detail-card-icon">comment</span>
+        Comments
+      </div>
+      <p class="ticket-detail-comment">{{ t.comments }}</p>
+    </div>
+
+    <div class="ticket-detail-card" *ngIf="t.url">
+      <div class="ticket-detail-card-title">
+        <span class="ticket-detail-card-icon">link</span>
+        Attachment Link
+      </div>
+      <a [href]="t.url" target="_blank" class="ticket-detail-link">
+        <span class="ticket-detail-link-icon">open_in_new</span>
+        <span class="ticket-detail-link-text">{{ t.url }}</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Status Change Controls — always visible at bottom for production role users -->
+  <div class="ticket-detail-footer" *ngIf="isProduction() || isAdmin()">
+    <div class="ticket-detail-footer-inner">
+      <div class="ticket-detail-footer-label">
+        <span class="ticket-detail-footer-icon">swap_horiz</span>
+        Change Status
+      </div>
+      <div class="ticket-detail-footer-controls">
+        <select class="status-change-select" [value]="selectedNewStatus()"
+          (change)="selectedNewStatus.set($any($event.target).value)">
+          <option value="1">In Progress</option>
+          <option value="2">Completed</option>
+        </select>
+        <button class="status-change-btn" (click)="changeTicketStatus()"
+          [disabled]="isChangingStatus() || isStatusUnchanged()">
+          <span class="status-change-btn-icon" *ngIf="isChangingStatus()">hourglass_top</span>
+          <span class="status-change-btn-icon" *ngIf="!isChangingStatus()">update</span>
+          <span>{{ isChangingStatus() ? 'Updating...' : 'Change Status' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS CHANGE ALERT POPUP -->
+<div class="modal-backdrop status-alert-backdrop" *ngIf="statusAlert()" (click)="closeStatusAlert()"></div>
+<div class="status-alert-modal" *ngIf="statusAlert(); let alert">
+  <div class="status-alert-icon" [class.success]="alert.type === 'success'" [class.error]="alert.type === 'error'">
+    <span *ngIf="alert.type === 'success'">check_circle</span>
+    <span *ngIf="alert.type === 'error'">error</span>
+  </div>
+  <h3 class="status-alert-title">{{ alert.type === 'success' ? 'Status Updated' : 'Update Failed' }}</h3>
+  <p class="status-alert-message">{{ alert.message }}</p>
+  <button class="status-alert-btn" (click)="closeStatusAlert()">OK</button>
 </div>

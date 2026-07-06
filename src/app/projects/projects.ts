@@ -1,50 +1,23 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, inject, computed, signal, afterNextRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppHeader } from '../app-header/app-header';
-import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
+import { SpatialCostCalculator, UserProject } from '../services/spatial-cost-calculator';
 
 type ProjectStatus = | 'all' | 'yet-to-award' | 'in-progress' | 'under-revision' | 'completed';
-
-
-export interface UserProject {
-  // Project Information
-  projectNo: string;
-  client: string;
-  projectName: string;
-  buildingType: string;
-  description: string;
-  requirements: string;
-  scope: string;
-  lod: string;
-  scale: string;
-  addOn: string;
-  sft: number;
-  proposalSent: string;
-  purchaseOrderIssued: string;
-  e57IssuedDate: string;
-  startDate: string;
-  endDate: string;
-  expectedClientDeliveryDate: string;
-  cost: number;
-  currency: string;
-  billing: string;
-  billingStatus: string;
-  invoiceNumber: string;
-  invoiceDate: string;
-  invoiceDueDate: string;
-  payment: string;
-  workflowStatus: string;
-  comments: string;
-}
 
 interface Milestone { title: string; date: string; status: 'completed' | 'current' | 'upcoming' }
 
 interface Ticket {
   id: number;
   projectName: string;
+  projectId?: number;
+  userId?: number;
+  raisedByUsername?: string;
   url: string;
   comments: string;
   createdAt: string;
+  status?: string;
+  completedAt?: string;
 }
 
 @Component({
@@ -74,349 +47,46 @@ export class Projects {
   ];
 
 
-  projects: UserProject[] = [
-    {
-      projectNo: 'PRJ-2026-001',
-      client: 'Vertex Developments',
-      projectName: 'Crystal Atrium',
-      buildingType: 'Commercial',
-      description: 'Bespoke faceted steel workspace with parametric light ventilation integration.',
-      requirements: 'Architectural, Structural, Mechanical, Electrical',
-      cost: 12450,
-      currency: '$',
-      sft: 8500,
-      scope: 'Scan to BIM',
-      lod: 'LOD 300',
-      scale: '',
+  filterUser = signal<number | null>(null);
+  allUsers = computed(() => this.calculator.allUsers());
+  isAdmin = computed(() => this.calculator.currentUser()?.role === 'admin');
+  isProduction = computed(() => this.calculator.currentUser()?.role === 'production');
+  selectedUserName = computed(() => {
+    const id = this.filterUser();
+    if (!id) return null;
+    return this.allUsers().find(u => u.id === id)?.username ?? null;
+  });
 
-      addOn: 'Floor Plan, RCP, Sheets',
-      proposalSent: '2026-02-10',
-      purchaseOrderIssued: '2026-02-20',
-      e57IssuedDate: '2026-02-25',
-      startDate: '2026-03-01',
-      endDate: '2026-09-15',
-      expectedClientDeliveryDate: '2026-09-15',
+  projects = computed(() => this.calculator.userProjects());
 
-      workflowStatus: 'In Progress',
-      billing: 'Invoiced',
-      billingStatus: 'Invoiced',
-      invoiceNumber: 'INV-2026-001',
-      invoiceDate: '2026-06-01',
-      invoiceDueDate: '2026-07-01',
-      payment: 'Yet to Pay',
-      comments: 'Awaiting final approval from client.'
-    },
-    {
-      projectNo: 'PRJ-2026-002',
-      client: 'Skyline Properties',
-      projectName: 'Skyline Tower',
-      buildingType: 'Residential',
-      description: 'High-rise residential tower with mixed-use podium and underground parking.',
-      requirements: 'Structural, Mechanical, Electrical, Plumbing',
-      cost: 24300,
-      currency: '$',
-      sft: 18000,
-      scope: 'Scan to BIM',
-      lod: 'LOD 400',
-      scale: '',
+  constructor() {
+    afterNextRender(() => {
+      if (this.isAdmin()) {
+        this.calculator.userProjects.set([]);
+        this.calculator.loadAllUsers();
+      }
+    });
+  }
 
-      addOn: 'RCP, Internal Elevations, MEP',
-      proposalSent: '2026-03-01',
-      purchaseOrderIssued: '2026-03-10',
-      e57IssuedDate: '2026-03-15',
-      startDate: '2026-04-10',
-      endDate: '2026-11-30',
-      expectedClientDeliveryDate: '2026-11-30',
-
-      workflowStatus: 'Under Revision',
-      billing: 'Yet to Invoice',
-      billingStatus: 'Yet to Invoice',
-      invoiceNumber: '',
-      invoiceDate: '',
-      invoiceDueDate: '',
-      payment: 'Yet to Pay',
-
-      comments: 'Client requested parking revisions.'
-    },
-    {
-      projectNo: 'PRJ-2026-003',
-      client: 'Harbor Infrastructure',
-      projectName: 'Harbor Bridge',
-      buildingType: 'Infrastructure',
-      description: 'Cable-stayed bridge connecting waterfront districts.',
-      requirements: 'Structural, Site Plan, Sections',
-      cost: 18750,
-      currency: '$',
-      sft: 22500,
-      scope: 'Scan to CAD',
-      lod: '',
-      scale: '1/4" - 1\'0"',
-
-      addOn: 'Site Plan, Sections',
-      proposalSent: '2026-01-15',
-      purchaseOrderIssued: '',
-      e57IssuedDate: '',
-      startDate: '2026-02-15',
-      endDate: '2026-08-20',
-      expectedClientDeliveryDate: '2026-08-20',
-
-      workflowStatus: 'Yet to Award',
-      billing: 'Yet to Invoice',
-      billingStatus: 'Yet to Invoice',
-      invoiceNumber: '',
-      invoiceDate: '',
-      invoiceDueDate: '',
-      payment: 'Yet to Pay',
-
-      comments: 'Proposal pending approval.'
-    },
-    {
-      projectNo: 'PRJ-2026-004',
-      client: 'EcoBuild Group',
-      projectName: 'Green Office Park',
-      buildingType: 'Commercial',
-      description: 'Sustainable office campus with net-zero energy design.',
-      requirements: 'Architectural, MEP, Floor Plan, RCP',
-      cost: 6800,
-      currency: '$',
-      sft: 4100,
-      scope: 'Scan to BIM',
-      lod: 'LOD 300',
-      scale: '',
-
-      addOn: 'RCP, Sheets',
-      proposalSent: '2025-10-01',
-      purchaseOrderIssued: '2025-10-15',
-      e57IssuedDate: '2025-10-20',
-      startDate: '2025-11-10',
-      endDate: '2026-05-01',
-      expectedClientDeliveryDate: '2026-05-01',
-
-      workflowStatus: 'completed',
-      billing: 'Invoiced',
-      billingStatus: 'Invoiced',
-      invoiceNumber: 'INV-2026-004',
-      invoiceDate: '2026-05-02',
-      invoiceDueDate: '2026-06-01',
-      payment: 'Paid',
-
-      comments: 'Successfully completed.'
-    },
-    {
-      projectNo: 'PRJ-2026-005',
-      client: 'Riverfront Holdings',
-      projectName: 'Riverfront Complex',
-      buildingType: 'Multifamily',
-      description: 'Mixed-use residential complex with retail spaces.',
-      requirements: 'Floor Plan, RCP, Internal Elevations, MEP',
-      cost: 31200,
-      currency: '$',
-      sft: 35000,
-      scope: 'Scan to CAD',
-      lod: '',
-      scale: '1/8" - 1\'0"',
-      addOn: 'Floor Plan, Furniture',
-      proposalSent: '2026-01-05',
-      purchaseOrderIssued: '',
-      e57IssuedDate: '',
-      startDate: '2026-01-20',
-      endDate: '2027-03-15',
-      expectedClientDeliveryDate: '2027-03-15',
-
-      workflowStatus: 'yet to award',
-      billing: 'yet to invoice',
-      billingStatus: 'yet to invoice',
-      invoiceNumber: '',
-      invoiceDate: '',
-      invoiceDueDate: '',
-      payment: 'yet to pay',
-
-      comments: 'Project paused by client.'
-    },
-
-    {
-      projectNo: 'PRJ-2026-006',
-      client: 'Solaris Ventures',
-      projectName: 'Solaris Tower',
-      buildingType: 'Commercial',
-      description: 'Solar-powered commercial tower with smart building systems.',
-      requirements: 'Architectural, MEP, Electrical, Site Plan',
-      cost: 28400,
-      currency: '$',
-      sft: 22000,
-      scope: 'Scan to BIM',
-      lod: 'LOD 400',
-      scale: '',
-      addOn: 'Site Plan',
-      proposalSent: '2026-02-15',
-      purchaseOrderIssued: '2026-03-01',
-      e57IssuedDate: '2026-03-05',
-      startDate: '2026-03-15',
-      endDate: '2026-12-01',
-      expectedClientDeliveryDate: '2026-12-01',
-
-      workflowStatus: 'In Progress',
-      billing: 'Invoiced',
-      billingStatus: 'Invoiced',
-      invoiceNumber: 'INV-2026-006',
-      invoiceDate: '2026-05-15',
-      invoiceDueDate: '2026-06-15',
-      payment: 'Paid',
-
-      comments: 'MEP coordination completed.'
-    },
-
-    {
-      projectNo: 'PRJ-2026-007',
-      client: 'Metro Transit Authority',
-      projectName: 'Central Transit Hub',
-      buildingType: 'Infrastructure',
-      description: 'Multi-modal transit hub connecting rail and bus networks.',
-      requirements: 'Structural, MEP, Site Plan, Fire Protection',
-      cost: 42000,
-      currency: '$',
-      sft: 45000,
-      scope: 'Scan to BIM',
-      lod: 'LOD 300',
-      scale: '',
-
-      addOn: 'Sections, Site Plan, Fire Protection',
-      proposalSent: '2026-04-01',
-      purchaseOrderIssued: '2026-04-15',
-      e57IssuedDate: '2026-04-20',
-      startDate: '2026-05-01',
-      endDate: '2027-06-30',
-      expectedClientDeliveryDate: '2027-06-30',
-
-      workflowStatus: 'In Progress',
-      billing: 'Yet to Invoice',
-      billingStatus: 'Yet to Invoice',
-      invoiceNumber: '',
-      invoiceDate: '',
-      invoiceDueDate: '',
-      payment: 'Yet to Pay',
-
-      comments: 'Major coordination milestone achieved.'
-    },
-
-    {
-      projectNo: 'PRJ-2026-008',
-      client: 'Pineview Healthcare',
-      projectName: 'Pineview Medical',
-      buildingType: 'Healthcare',
-      description: 'Regional medical center with surgical suites.',
-      requirements: 'Floor Plan, RCP, MEP, Furniture',
-      cost: 33200,
-      currency: '$',
-      sft: 28000,
-      scope: 'Scan to CAD',
-      lod: '',
-      scale: '1/2" - 1\'0"',
-      addOn: 'MEP, Furniture, Internal Elevations, External Elevations, Sections, Site Plan, Fire Protection, Sheets',
-      proposalSent: '2026-01-20',
-      purchaseOrderIssued: '2026-01-28',
-      e57IssuedDate: '2026-02-01',
-      startDate: '2026-02-01',
-      endDate: '2026-10-15',
-      expectedClientDeliveryDate: '2026-10-15',
-
-      workflowStatus: 'Under Revision',
-      billing: 'Invoiced',
-      billingStatus: 'Invoiced',
-      invoiceNumber: 'INV-2026-008',
-      invoiceDate: '2026-06-01',
-      invoiceDueDate: '2026-07-01',
-      payment: 'Paid',
-
-      comments: 'Equipment revisions underway.'
-    },
-
-    {
-      projectNo: 'PRJ-2026-009',
-      client: 'Azure Hospitality',
-      projectName: 'Azure Hotel',
-      buildingType: 'Hospitality',
-      description: 'Boutique waterfront hotel with rooftop lounge.',
-      requirements: 'Architectural, MEP, Furniture, Interior Elevations',
-      cost: 22100,
-      currency: '$',
-      sft: 19000,
-      scope: 'Scan to BIM',
-      lod: 'LOD 400',
-      scale: '',
-
-      addOn: 'Furniture, Internal Elevations, External Elevations',
-      proposalSent: '2025-07-15',
-      purchaseOrderIssued: '2025-07-25',
-      e57IssuedDate: '2025-08-01',
-      startDate: '2025-08-10',
-      endDate: '2026-04-20',
-      expectedClientDeliveryDate: '2026-04-20',
-
-      workflowStatus: 'completed',
-      billing: 'Invoiced',
-      billingStatus: 'Invoiced',
-      invoiceNumber: 'INV-2026-009',
-      invoiceDate: '2026-04-22',
-      invoiceDueDate: '2026-05-22',
-      payment: 'Paid',
-
-      comments: 'Client sign-off received.'
-    },
-
-    {
-      projectNo: 'PRJ-2026-010',
-      client: 'Eagle Ridge Estates',
-      projectName: 'Eagle Ridge',
-      buildingType: 'Multifamily',
-      description: 'Luxury hillside condominium complex with panoramic views.',
-      requirements: 'Structural, Architectural, Plumbing, Electrical',
-      cost: 27600,
-      currency: '$',
-      sft: 24000,
-      scope: 'Scan to BIM',
-      lod: 'LOD 300',
-      scale: '',
-
-      addOn: 'Floor Plan, RCP, Sheets',
-      proposalSent: '2026-03-20',
-      purchaseOrderIssued: '2026-03-30',
-      e57IssuedDate: '2026-04-01',
-      startDate: '2026-04-01',
-      endDate: '2027-01-15',
-      expectedClientDeliveryDate: '2027-01-15',
-
-      workflowStatus: 'In Progress',
-      billing: 'Yet to Invoice',
-      billingStatus: 'Yet to Invoice',
-      invoiceNumber: '',
-      invoiceDate: '',
-      invoiceDueDate: '',
-      payment: 'Yet to Pay',
-
-      comments: 'Structural modeling phase ongoing.'
-    }
-  ];
-
-  totalCost = computed(() => this.projects.reduce((s, p) => s + p.cost, 0));
-  totalSft = computed(() => this.projects.reduce((s, p) => s + p.sft, 0));
-  totalCount = computed(() => this.projects.length);
-  scanToBimCount = computed(() => this.projects.filter(p => p.scope === 'Scan to BIM').length);
-  scanToCadCount = computed(() => this.projects.filter(p => p.scope === 'Scan to CAD').length);
-  lod200Count = computed(() => this.projects.filter(p => p.lod === 'LOD 200').length);
-  lod300Count = computed(() => this.projects.filter(p => p.lod === 'LOD 300').length);
-  lod400Count = computed(() => this.projects.filter(p => p.lod === 'LOD 400').length);
-  scaleQuarterCount = computed(() => this.projects.filter(p => p.scale === '1/4" - 1\'0"').length);
-  scaleEighthCount = computed(() => this.projects.filter(p => p.scale === '1/8" - 1\'0"').length);
-  scaleHalfCount = computed(() => this.projects.filter(p => p.scale === '1/2" - 1\'0"').length);
-  yetToAwardCount = computed(() => this.projects.filter(p => p.workflowStatus?.toLowerCase() === 'yet to award').length);
-  inProgressCount = computed(() => this.projects.filter(p => p.workflowStatus?.toLowerCase() === 'in progress').length);
-  underRevisionCount = computed(() => this.projects.filter(p => p.workflowStatus?.toLowerCase() === 'under revision').length);
-  completeCount = computed(() => this.projects.filter(p => p.workflowStatus?.toLowerCase() === 'completed').length);
-  yetToInvoiceCount = computed(() => this.projects.filter(p => p.billing?.toLowerCase() === 'yet to invoice').length);
-  invoicedCount = computed(() => this.projects.filter(p => p.billing?.toLowerCase() === 'invoiced').length);
-  yetToPayCount = computed(() => this.projects.filter(p => p.payment?.toLowerCase() === 'yet to pay').length);
-  paidCount = computed(() => this.projects.filter(p => p.payment?.toLowerCase() === 'paid').length);
+  totalCost = computed(() => this.projects().reduce((s, p) => s + p.cost, 0));
+  totalSft = computed(() => this.projects().reduce((s, p) => s + p.sft, 0));
+  totalCount = computed(() => this.projects().length);
+  scanToBimCount = computed(() => this.projects().filter(p => p.scope === 'Scan to BIM').length);
+  scanToCadCount = computed(() => this.projects().filter(p => p.scope === 'Scan to CAD').length);
+  lod200Count = computed(() => this.projects().filter(p => p.lod === 'LOD 200').length);
+  lod300Count = computed(() => this.projects().filter(p => p.lod === 'LOD 300').length);
+  lod400Count = computed(() => this.projects().filter(p => p.lod === 'LOD 400').length);
+  scaleQuarterCount = computed(() => this.projects().filter(p => p.scale === '1/4" - 1\'0"').length);
+  scaleEighthCount = computed(() => this.projects().filter(p => p.scale === '1/8" - 1\'0"').length);
+  scaleHalfCount = computed(() => this.projects().filter(p => p.scale === '1/2" - 1\'0"').length);
+  yetToAwardCount = computed(() => this.projects().filter(p => p.workflowStatus?.toLowerCase() === 'yet to award').length);
+  inProgressCount = computed(() => this.projects().filter(p => p.workflowStatus?.toLowerCase() === 'in progress').length);
+  underRevisionCount = computed(() => this.projects().filter(p => p.workflowStatus?.toLowerCase() === 'under revision').length);
+  completeCount = computed(() => this.projects().filter(p => p.workflowStatus?.toLowerCase() === 'completed').length);
+  yetToInvoiceCount = computed(() => this.projects().filter(p => p.billing?.toLowerCase() === 'yet to invoice').length);
+  invoicedCount = computed(() => this.projects().filter(p => p.billing?.toLowerCase() === 'invoiced').length);
+  yetToPayCount = computed(() => this.projects().filter(p => p.payment?.toLowerCase() === 'yet to pay').length);
+  paidCount = computed(() => this.projects().filter(p => p.payment?.toLowerCase() === 'paid').length);
 
   filterScope = signal<string>('all');
   filterLod = signal<string>('all');
@@ -425,13 +95,22 @@ export class Projects {
   filterPayment = signal<string>('all');
   animKey = signal(0);
 
+  ticketStatusFilter = signal<string>('1');
+
+  filteredProjectTickets = computed(() => {
+    const filter = this.ticketStatusFilter();
+    const tickets = this.projectTickets();
+    if (!filter || filter === 'all') return tickets;
+    return tickets.filter(t => t.status === filter);
+  });
+
   filteredProjects = computed(() => {
     const scope = this.filterScope();
     const lod = this.filterLod();
     const pStatus = this.filterProjStatus();
     const billing = this.filterBilling();
     const payment = this.filterPayment();
-    return this.projects.filter(p => {
+    return this.projects().filter(p => {
       if (scope !== 'all' && p.scope !== scope) return false;
       if (lod !== 'all' && p.lod !== lod && p.scale !== lod) return false;
       if (pStatus !== 'all' && p.workflowStatus.toLowerCase() !== pStatus.toLowerCase()) return false;
@@ -449,118 +128,90 @@ export class Projects {
     this.filterPayment.set('all');
   }
 
+  onUserSelect(value: string) {
+    const id = value ? Number(value) : null;
+    this.filterUser.set(id);
+    if (id) {
+      this.calculator.loadProjectsForUser(id);
+    } else {
+      this.calculator.userProjects.set([]);
+    }
+  }
+
   trackCard = (_i: number, p: UserProject) => p.projectName + this.animKey();
   getStatusColor(status: string): string {
-    const m = this.statusFilters.find(s => s.key === status);
-    return m ? m.color : '#94a3b8';
+    const colorMap: Record<string, string> = {
+      'Yet to Award': '#f59e0b',
+      'In Progress': '#3b82f6',
+      'Under Revision': '#a855f7',
+      'Completed': '#22c55e',
+    };
+    return colorMap[status] || '#94a3b8';
   }
-  // getStatusLabel(status: string): string {
-  //   const m = this.statusFilters.find(s => s.key === status);
-  //   return m ? m.label : status;
-  // }
 
   detailProject = signal<UserProject | null>(null);
   isDescExpanded = signal(false);
 
+  selectedProjectStatus = signal<string>('In Progress');
+  isChangingProjectStatus = signal(false);
+  isProjectStatusUnchanged = computed(() => this.selectedProjectStatus() === this.detailProject()?.workflowStatus);
+
   openDetail(project: UserProject) {
     this.detailProject.set(project);
     this.isDescExpanded.set(false);
+    this.ticketStatusFilter.set('1');
+    // Default dropdown to current project workflow status
+    this.selectedProjectStatus.set(project.workflowStatus || 'In Progress');
+    // Load tickets from database for this project — initially only status 1 (In Progress)
+    this.loadTicketsForProject(project, '1');
   }
+
   closeDetail() {
     this.detailProject.set(null);
   }
   toggleDesc() { this.isDescExpanded.update(v => !v); }
 
+  async changeProjectStatus() {
+    const project = this.detailProject();
+    if (!project || !project.id) return;
+
+    const newStatus = this.selectedProjectStatus();
+    this.isChangingProjectStatus.set(true);
+
+    try {
+      await this.calculator.apiUpdateProjectStatus(project.id, newStatus);
+
+      // Update local state
+      this.detailProject.set({ ...project, workflowStatus: newStatus });
+
+
+      // Update in the projects list too
+      this.calculator.userProjects.update(list =>
+        list.map(p => p.id === project.id ? { ...p, workflowStatus: newStatus } : p)
+      );
+
+      this.statusAlert.set({
+        type: 'success',
+        message: `Project status changed to ${newStatus} successfully!`,
+      });
+    } catch (err) {
+      console.warn('[Projects] Failed to update project status:', err);
+      this.statusAlert.set({
+        type: 'error',
+        message: 'Failed to change project status. Please try again.',
+      });
+    } finally {
+      this.isChangingProjectStatus.set(false);
+    }
+  }
+
   ticketProject = signal<UserProject | null>(null);
   ticketComments = signal('');
   ticketUrl = signal('');
 
-  tickets = signal<Record<string, Ticket[]>>({
-    'Crystal Atrium': [
-      ...Array.from({ length: 14 }, (_, i) => ({
-        id: 1718000001001 + i,
-        projectName: 'Crystal Atrium',
-        url: i % 3 === 0 ? `https://drive.google.com/file/d/crystal_dwg_${i + 1}` : '',
-        comments: [
-          'Client requested updated facade drawings for approval.',
-          'Structural MEP coordination needed before next review.',
-          'Revised floor plan submitted for interior layout changes.',
-          'Point cloud alignment check requested by the engineering team.',
-          'Updated RCP reflecting new lighting layout under review.',
-          'Elevation discrepancies found between scan and existing drawings.',
-          'Fire-rated wall details missing from current model set.',
-          'Roof drain slope coordination needed with structural beams.',
-          'Curtain wall anchorage detail requires engineer sign-off.',
-          'Stair pressurization fan schedule needs revision.',
-          'BIM model LOD 350 review completed with minor corrections.',
-          'Clash detection report — ductwork conflicts with structural grid.',
-          'Updated section cuts requested for permit submission.',
-          'Final model export in progress for client handover.',
-        ][i],
-        createdAt: new Date(Date.UTC(2026, 5, 1 + i, 8 + (i % 10), (i * 13) % 60)).toISOString(),
-      })),
-    ],
-    'Skyline Tower': [
-      ...Array.from({ length: 10 }, (_, i) => ({
-        id: 1718000020001 + i,
-        projectName: 'Skyline Tower',
-        url: i % 2 === 0 ? `https://drive.google.com/file/d/skyline_doc_${i + 1}` : '',
-        comments: [
-          'Parking revision layouts uploaded for client feedback.',
-          'Structural load analysis report added to project folder.',
-          'Core wall reinforcement detailing in progress.',
-          'Elevator shaft alignment verified against laser scan.',
-          'Ramp slope adjustment per updated zoning requirements.',
-          'Glazing shop drawing review comments addressed.',
-          'MEP rough-in coordination with ceiling grid complete.',
-          'Waterproofing membrane specification updated.',
-          'Curtain wall panel layout approved for fabrication.',
-          'Final as-built model delivered to facility management.',
-        ][i],
-        createdAt: new Date(Date.UTC(2026, 4, 20 + i, 9 + (i * 7) % 12, (i * 17) % 60)).toISOString(),
-      })),
-    ],
-    'Harbor Bridge': [
-      ...Array.from({ length: 12 }, (_, i) => ({
-        id: 1718000040001 + i,
-        projectName: 'Harbor Bridge',
-        url: i % 4 === 0 ? `https://drive.google.com/file/d/harbor_ref_${i + 1}` : '',
-        comments: [
-          'Survey control points verified against geodetic network.',
-          'Approach slab reinforcing steel shop drawings submitted.',
-          'Expansion joint details coordinated with structural model.',
-          'Pier cap formwork design reviewed for constructability.',
-          'Stay cable anchorage zone clash check completed.',
-          'Deck drainage layout revised for superelevation transitions.',
-          'Traffic barrier reinforcement updated to current standards.',
-          'Utility conduit crossings identified within abutment zones.',
-          'Span camber diagram approved by independent checker.',
-          'Paint system specification for structural steel issued.',
-          'Construction sequence phasing plan submitted for review.',
-          'Overturning stability check passed for all service loads.',
-        ][i],
-        createdAt: new Date(Date.UTC(2026, 4, 10 + i, 10 + (i * 5) % 14, (i * 19) % 60)).toISOString(),
-      })),
-    ],
-    'Green Office Park': [
-      ...Array.from({ length: 8 }, (_, i) => ({
-        id: 1718000060001 + i,
-        projectName: 'Green Office Park',
-        url: i % 2 === 0 ? `https://drive.google.com/file/d/green_mep_${i + 1}` : '',
-        comments: [
-          'HVAC zoning plan received and incorporated into model.',
-          'Photovoltaic panel layout optimized for solar exposure.',
-          'Rainwater harvesting system schematic approved.',
-          'Green roof assembly details submitted for permitting.',
-          'Natural ventilation CFD analysis results uploaded.',
-          'Energy model compliance report ready for review.',
-          'Daylight autonomy study complete — glare analysis pending.',
-          'Smart lighting control sequence of operations drafted.',
-        ][i],
-        createdAt: new Date(Date.UTC(2026, 3, 15 + i, 7 + (i * 9) % 16, (i * 11) % 60)).toISOString(),
-      })),
-    ],
-  });
+  selectedTicket = signal<Ticket | null>(null);
+
+  tickets = signal<Record<string, Ticket[]>>({});
 
   projectTickets = computed(() => {
     const p = this.detailProject();
@@ -570,10 +221,149 @@ export class Projects {
     );
   });
 
+  setTicketFilter(filter: string) {
+    this.ticketStatusFilter.set(filter);
+    // Reload tickets from database with the selected status filter
+    const project = this.detailProject();
+    if (project) {
+      this.loadTicketsForProject(project, filter);
+    }
+  }
+
+  /** Load tickets from the database for the given project, filtered by ticket_status */
+  private async loadTicketsForProject(project: UserProject, status: string = '1') {
+    try {
+      let result: { tickets: unknown[]; count: number };
+
+      // Prefer fetching by project_id (works for all authenticated users)
+      if (project.id) {
+        result = await this.calculator.apiGetProjectTickets(project.id, status);
+      } else {
+        // Fallback: fetch current user's own tickets and filter by project name
+        result = await this.calculator.apiGetMyTickets();
+      }
+
+      const mapped = (result.tickets || [])
+        .filter((t: any) =>
+          project.id
+            ? Number(t.project_id) === project.id
+            : t.project_name === project.projectName
+        )
+        .map((t: any) => ({
+          id: t.id as number,
+          projectName: t.project_name as string,
+          projectId: t.project_id as number,
+          userId: t.user_id as number,
+          raisedByUsername: t.raised_by_username as string || undefined,
+          url: t.ticket_urls as string || '',
+          comments: t.ticket_comments as string || '',
+          createdAt: t.created_at as string,
+          status: t.ticket_status as string || '1',
+          completedAt: t.completed_at as string || undefined,
+        })) as Ticket[];
+      this.tickets.update(map => ({
+        ...map,
+        [project.projectName]: mapped,
+      }));
+    } catch {
+      // Silently fall back to local tickets
+    }
+  }
+
+  openTicketDetail(ticket: Ticket) {
+    this.selectedTicket.set(ticket);
+    // Default dropdown to the current ticket status
+    this.selectedNewStatus.set(ticket.status || '1');
+  }
+
+  closeTicketDetail() {
+    this.selectedTicket.set(null);
+  }
+
+  selectedNewStatus = signal<string>('1');
+  isChangingStatus = signal(false);
+  isStatusUnchanged = computed(() => this.selectedNewStatus() === this.selectedTicket()?.status);
+
+  statusAlert = signal<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  ticketStatusLabel(status?: string): string {
+    const labels: Record<string, string> = {
+      '1': 'In Progress',
+      '2': 'Completed',
+      '3': 'Under Revision',
+    };
+    return labels[status || ''] || 'Unknown';
+  }
+
+  closeStatusAlert() {
+    this.statusAlert.set(null);
+  }
+
+  async changeTicketStatus() {
+    const ticket = this.selectedTicket();
+    if (!ticket || !ticket.id) return;
+
+    const newStatus = this.selectedNewStatus();
+    this.isChangingStatus.set(true);
+
+    try {
+      await this.calculator.apiUpdateTicketStatus(ticket.id, newStatus);
+
+      // Build the updated ticket with immediate local sync
+      const now = new Date().toISOString();
+      const updatedTicket: Ticket = {
+        ...ticket,
+        status: newStatus,
+        completedAt: newStatus === '2' ? now : undefined,
+      };
+
+      // Update selected ticket immediately
+      this.selectedTicket.set(updatedTicket);
+
+      // Update ticket in the local map IMMEDIATELY so the list reflects the change right away
+      const project = this.detailProject();
+      if (project) {
+        this.tickets.update(map => {
+          const current = map[project.projectName] || [];
+          return {
+            ...map,
+            [project.projectName]: current.map(t =>
+              t.id === ticket.id ? updatedTicket : t
+            ),
+          };
+        });
+      }
+
+      // Auto-switch filter to Completed after marking as completed
+      if (newStatus === '2') {
+        this.ticketStatusFilter.set('2');
+      }
+
+      this.statusAlert.set({
+        type: 'success',
+        message: `Ticket status changed to ${this.ticketStatusLabel(newStatus)} successfully!`,
+      });
+    } catch (err) {
+      console.warn('[Tickets] Failed to update ticket status:', err);
+      this.statusAlert.set({
+        type: 'error',
+        message: 'Failed to change ticket status. Please try again.',
+      });
+    } finally {
+      this.isChangingStatus.set(false);
+    }
+  }
+
   openTicket(project: UserProject) {
+    // Close any other open modals first
+    this.detailProject.set(null);
+    this.selectedTicket.set(null);
+    this.statusAlert.set(null);
+    // Open the ticket modal with fresh empty form
     this.ticketProject.set(project);
     this.ticketComments.set('');
     this.ticketUrl.set('');
+    console.log('[Tickets] Opened ticket modal for project:',project, project.projectName,this.ticketProject());
   }
 
   closeTicket() {
@@ -585,21 +375,44 @@ export class Projects {
     this.ticketUrl.set(input.value);
   }
 
-  submitTicket() {
+  async submitTicket() {
     const p = this.ticketProject();
     if (!p) return;
     const url = this.ticketUrl();
+    const comments = this.ticketComments();
+    const userId = this.calculator.dbUserId();
+
     const ticket: Ticket = {
       id: Date.now(),
       projectName: p.projectName,
+      userId: userId || undefined,
       url,
-      comments: this.ticketComments(),
+      comments,
       createdAt: new Date().toISOString(),
     };
+
+    // Save to local state immediately
     this.tickets.update(map => ({
       ...map,
       [p.projectName]: [...(map[p.projectName] || []), ticket],
     }));
+
+    // Persist to database via API
+    if (userId) {
+      try {
+        const currentUser = this.calculator.currentUser();
+        await this.calculator.apiCreateTicket({
+          project_id: p.id || null,
+          project_name: p.projectName,
+          ticket_urls: url || null,
+          ticket_comments: comments || null,
+          raised_by_username: currentUser?.name || currentUser?.email?.split('@')[0] || 'Unknown',
+        });
+      } catch (err) {
+        console.warn('[Tickets] Failed to persist ticket to database:', err);
+      }
+    }
+
     this.closeTicket();
   }
 
@@ -614,7 +427,7 @@ export class Projects {
     { value: '142', label: 'Total Tasks', icon: 'assignment', color: '#668dc1' },
     { value: '36', label: 'Files', icon: 'folder', color: '#50c48e' },
     { value: '12', label: 'Issues', icon: 'bug_report', color: '#b59954' },
-    { value: '2,840', label: 'Hours', icon: 'schedule', color: '#a78bfa' },
+    { value: '2,840', label: 'Schedule', icon: 'schedule', color: '#a78bfa' },
   ];
 
   milestones: Milestone[] = [

@@ -96,7 +96,7 @@
 .signin-card {
   position: relative;
   width: 100%;
-  max-width: 420px;
+  max-width: 550px;
   background: rgba(14, 15, 20, 0.85);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -139,7 +139,7 @@
   background: rgba(255, 255, 255, 0.03);
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.7rem;
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: 1.75rem;
@@ -159,22 +159,22 @@
 }
 
 .brand-label {
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.6rem;
   letter-spacing: 0.2em;
   color: #e9c349;
-  font-weight: 700;
   text-transform: uppercase;
   display: block;
   margin-bottom: 0.15rem;
 }
 
 .brand-title {
-  font-family: 'Georgia', serif;
-  font-size: 1.65rem;
+  font-family: "Manrope";
+  font-size: 1.5rem;
   color: #DAE1FF;
   margin: 0;
   line-height: 1;
+  font-weight: 600;
 }
 
 .brand-title span {
@@ -204,9 +204,8 @@
   border-radius: 9999px;
   background: transparent;
   color: rgba(255, 255, 255, 0.4);
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.7rem;
-  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   cursor: pointer;
@@ -232,7 +231,7 @@
   border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: 0.75rem;
   color: #f87171;
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.7rem;
   margin-bottom: 1.25rem;
   animation: fadeIn 0.25s ease;
@@ -250,6 +249,99 @@
   }
 }
 
+/* ── Mobile Enhancements ── */
+@media (max-width: 480px) {
+  .signin-page {
+    padding: 4rem 0.75rem 1.5rem;
+  }
+
+  .signin-card {
+    max-width: 100%;
+    padding: 1.5rem 1rem;
+    border-radius: 1.25rem;
+    margin-top: 4rem;
+  }
+
+  .brand-title {
+    font-size: 1.25rem;
+  }
+
+  .toggle-btn {
+    font-size: 0.6rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .field input {
+    font-size: 0.75rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .submit-btn {
+    font-size: 0.65rem;
+    padding: 0.65rem;
+  }
+
+  .switch-text {
+    font-size: 0.6rem;
+  }
+
+  .form {
+    gap: 0.9rem;
+  }
+
+  .error-msg {
+    font-size: 0.65rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .back-btn {
+    font-size: 0.65rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .orb-1 {
+    width: 300px;
+    height: 300px;
+  }
+
+  .orb-2 {
+    width: 350px;
+    height: 350px;
+  }
+
+  .orb-3 {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 380px) {
+  .signin-card {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .brand {
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .brand-title {
+    font-size: 1.1rem;
+  }
+
+  .brand-title span {
+    font-size: 0.7rem;
+  }
+
+  .brand-label {
+    font-size: 0.5rem;
+  }
+
+  .field label {
+    font-size: 0.55rem;
+  }
+}
+
 .form {
   display: flex;
   flex-direction: column;
@@ -263,12 +355,11 @@
 }
 
 .field label {
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.6rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.4);
-  font-weight: 700;
 }
 
 .field input {
@@ -278,7 +369,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 0.75rem;
   color: #DAE1FF;
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.8rem;
   outline: none;
   transition: all 0.2s;
@@ -304,6 +395,243 @@
 
 .field-error label {
   color: #ef4444 !important;
+}
+
+.phone-field .phone-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.75rem;
+  transition: all 0.2s;
+}
+
+.phone-field .phone-input-wrapper:focus-within {
+  border-color: #DF80AC;
+  background: rgba(223, 128, 172, 0.05);
+  box-shadow: 0 0 0 3px rgba(223, 128, 172, 0.12);
+}
+
+.phone-field.field-error .phone-input-wrapper {
+  border-color: #b34747 !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.phone-field .phone-input-wrapper input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0.7rem 0.9rem 0.7rem 0.5rem;
+  border-radius: 0 0.75rem 0.75rem 0;
+  color: #DAE1FF;
+  font-family: "IBMPlexMono-Medium", monospace;
+  font-size: 0.8rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.phone-field .phone-input-wrapper input::placeholder {
+  color: rgba(255, 255, 255, 0.15);
+}
+
+.phone-field.field-error .phone-input-wrapper input {
+  box-shadow: none !important;
+}
+
+.country-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.7rem 0.4rem 0.7rem 0.9rem;
+  cursor: pointer;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  user-select: none;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+.country-flag {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.country-dial {
+  font-family: "IBMPlexMono-Medium", monospace;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.country-arrow {
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.3);
+  transition: transform 0.2s;
+  line-height: 1;
+}
+
+.country-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 320px;
+  width: max-content;
+  max-width: 380px;
+  max-height: 340px;
+  display: flex;
+  flex-direction: column;
+  background: #1a1b22;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+  padding: 6px;
+  z-index: 300;
+  animation: dropdownFadeIn 0.15s ease both;
+}
+
+.country-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0.35rem 0.5rem;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.country-search-icon {
+  font-size: 0.75rem;
+  margin-right: 0.4rem;
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+
+.country-search-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.55rem;
+  color: #DAE1FF;
+  font-family: "IBMPlexMono-Medium", monospace;
+  font-size: 0.68rem;
+  outline: none;
+  transition: all 0.15s;
+  min-width: 0;
+}
+
+.country-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.62rem;
+}
+
+.country-search-input:focus {
+  border-color: #DF80AC;
+  background: rgba(223, 128, 172, 0.06);
+}
+
+.country-search-clear {
+  position: absolute;
+  right: 0.7rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  font-size: 0.6rem;
+  padding: 0.2rem;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.country-search-clear:hover {
+  color: #f87171;
+}
+
+.country-results-info {
+  padding: 0.2rem 0.7rem 0.35rem;
+  font-family: "IBMPlexMono-Medium", monospace;
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.country-list {
+  overflow-y: auto;
+  max-height: 240px;
+  flex: 1;
+}
+
+.country-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.country-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.country-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+}
+
+.country-no-results {
+  padding: 1rem 0.7rem;
+  text-align: center;
+  font-family: "IBMPlexMono-Medium", monospace;
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+@keyframes dropdownFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.country-option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border: none;
+  background: transparent;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: #cbd5e1;
+  font-family: "IBMPlexMono-Medium", monospace;
+  font-size: 0.72rem;
+  text-align: left;
+  transition: all 0.12s;
+}
+
+.country-option:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.country-option.active {
+  background: rgba(223, 128, 172, 0.1);
+  color: #DF80AC;
+}
+
+.country-flag-sm {
+  font-size: 1.1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.country-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.country-dial-sm {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.65rem;
+  flex-shrink: 0;
 }
 
 .password-wrapper {
@@ -347,9 +675,8 @@
   color: #0A0C10;
   border: none;
   border-radius: 0.75rem;
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.7rem;
-  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   cursor: pointer;
@@ -393,7 +720,7 @@
 
 .switch-text {
   text-align: center;
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.65rem;
   color: rgba(255, 255, 255, 0.35);
   margin: 0;
@@ -405,7 +732,6 @@
   color: #DAE1FF;
   font-family: inherit;
   font-size: inherit;
-  font-weight: 700;
   cursor: pointer;
   padding: 0;
   transition: color 0.2s;
@@ -413,6 +739,29 @@
 
 .switch-text button:hover {
   color: #ffffff;
+}
+
+.required-star {
+  color: #f87171;
+  margin-left: 1px;
+}
+
+/* ── Side-by-side grid for signup fields ── */
+.signup-form-grid {
+  gap: 1rem;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .field-row {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
 }
 
 .demo-hint {
@@ -426,6 +775,6 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 9999px;
   color: rgba(255, 255, 255, 0.25);
-  font-family: 'Courier New', monospace;
+  font-family: "IBMPlexMono-Medium", monospace;
   font-size: 0.6rem;
 }

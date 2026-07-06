@@ -41,6 +41,13 @@
   <nav class="hidden md:flex items-center gap-8">
     <button type="button"
       class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
+      [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'home' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+      (click)="setTab('home')">
+      <span class="hover-underline-animate pb-0.5"
+        [class.after:scale-x-100]="currentUrl() === '/' && calculator.activeTab() === 'home'">Home</span>
+    </button>
+    <button type="button"
+      class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
       [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'portfolio' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
       (click)="setTab('portfolio')">
       <span class="hover-underline-animate pb-0.5"
@@ -54,15 +61,15 @@
         [class.after:scale-x-100]="currentUrl() === '/' && calculator.activeTab() === 'config'">Price Estimate</span>
     </button>
     @if (isLoggedIn()) {
-    @if (user()?.name === 'Clove' || user()?.name === 'clove') {
+    @if (user()?.role === 'admin') {
     <button type="button"
       class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
-      [ngClass]="currentUrl() === '/estimations' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-      (click)="goToEstimations()">
+      [ngClass]="currentUrl() === '/dashboard' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+      (click)="goToDashboard()">
       <span class="hover-underline-animate pb-0.5"
-        [class.after:scale-x-100]="currentUrl() === '/estimations'">Estimations</span>
+        [class.after:scale-x-100]="currentUrl() === '/dashboard'">Dashboard</span>
     </button>
-    } @else {
+    }
     <button type="button"
       class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
       [ngClass]="currentUrl() === '/projects' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
@@ -71,30 +78,78 @@
         [class.after:scale-x-100]="currentUrl() === '/projects'">Projects</span>
     </button>
     }
-    }
-    <button type="button"
-      class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
-      [ngClass]="currentUrl() === '/resources' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
-      (click)="goToResources()">
-      <span class="hover-underline-animate pb-0.5"
-        [class.after:scale-x-100]="currentUrl() === '/resources'">Resources</span>
-    </button>
+    <div class="relative resources-dropdown-container">
+      <button type="button"
+        class="font-mono text-xs uppercase tracking-widest focus:outline-none bg-transparent border-none cursor-pointer pb-1 relative"
+        [ngClass]="isResourcesDropdownOpen() || currentUrl() === '/resources' ? 'text-primary-custom font-bold' : 'text-on-surface-variant-custom hover:text-silver-leaf'"
+        (click)="toggleResourcesDropdown()" (mouseenter)="onResourcesMouseEnter()">
+        <span class="hover-underline-animate pb-0.5"
+          [class.after:scale-x-100]="isResourcesDropdownOpen() || currentUrl() === '/resources'">Resources</span>
+      </button>
+      @if (isResourcesDropdownOpen()) {
+      <div class="resources-dropdown" (mouseenter)="onResourcesMouseEnter()" (mouseleave)="onResourcesMouseLeave()">
+        <!-- Scan to BIM -->
+        <div class="resources-dropdown-item has-sub">
+          <div class="resources-dropdown-link" (click)="navigateToBimConfig('LOD_300')">
+            <span class="material-symbols-outlined text-sm">view_in_ar</span>
+            <span>Scan to BIM</span>
+            <span class="material-symbols-outlined text-sm ml-auto sub-arrow">chevron_right</span>
+          </div>
+          <div class="resources-sub-dropdown">
+            <button type="button" class="resources-sub-item" (click)="navigateToBimConfig('LOD_200')">
+              <span class="material-symbols-outlined text-xs">layers</span>
+              Typical LOD 200
+            </button>
+            <button type="button" class="resources-sub-item" (click)="navigateToBimConfig('LOD_300')">
+              <span class="material-symbols-outlined text-xs">layers</span>
+              Typical LOD 300
+            </button>
+          </div>
+        </div>
+        <!-- Scan to CAD -->
+        <div class="resources-dropdown-item has-sub">
+          <div class="resources-dropdown-link" (click)="navigateToCadScale(1)">
+            <span class="material-symbols-outlined text-sm">draw</span>
+            <span>Scan to CAD</span>
+            <span class="material-symbols-outlined text-sm ml-auto sub-arrow">chevron_right</span>
+          </div>
+          <div class="resources-sub-dropdown">
+            <button type="button" class="resources-sub-item" (click)="navigateToCadScale(0)">
+              <span class="material-symbols-outlined text-xs">straighten</span>
+              1/8" — 1'-0"
+            </button>
+            <button type="button" class="resources-sub-item" (click)="navigateToCadScale(1)">
+              <span class="material-symbols-outlined text-xs">straighten</span>
+              1/4" — 1'-0"
+            </button>
+            <button type="button" class="resources-sub-item" (click)="navigateToCadScale(2)">
+              <span class="material-symbols-outlined text-xs">straighten</span>
+              1/2" — 1'-0"
+            </button>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
   </nav>
 
   <!-- Hamburger (mobile) -->
   <button type="button" (click)="toggleMobileMenu()"
     class="hamburger-btn md:hidden flex flex-col items-center justify-center w-9 h-9 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all cursor-pointer focus:outline-none">
-    <span class="material-symbols-outlined text-[19px] text-silver-leaf">{{ isMobileMenuOpen() ? 'close' : 'menu' }}</span>
+    <span class="material-symbols-outlined text-[19px] text-silver-leaf">{{ isMobileMenuOpen() ? 'close' : 'menu'
+      }}</span>
   </button>
 
   <div class="hidden md:flex items-center gap-3">
-    <button
-      type="button"
-      (click)="goToEstimator()"
+    @if (user()?.role !== 'admin') {
+    <button type="button" (click)="goToEstimator()"
       class="w-9 h-9 bg-primary-custom text-on-primary-custom rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 active:scale-90 z-40 group focus:outline-none cursor-pointer shrink-0">
       <span class="material-symbols-outlined text-lg">add</span>
-      <span class="absolute top-full mt-2 bg-midnight-charcoal border border-silver-leaf/10 px-3 py-1.5 rounded-lg text-primary-custom font-mono text-[9px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">INITIATE PROJECT</span>
+      <span
+        class="absolute top-full mt-2 bg-midnight-charcoal border border-silver-leaf/10 px-3 py-1.5 rounded-lg text-primary-custom font-mono text-[9px] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">INITIATE
+        PROJECT</span>
     </button>
+    }
     @if (!isLoggedIn()) {
     <button type="button" (click)="signIn()"
       class="flex items-center gap-2 bg-[#DF80AC]/10 text-white border border-[#DF80AC]/30 font-mono text-[10px] uppercase tracking-widest px-4 py-2 rounded-full hover:bg-[#DF80AC]/20 hover:scale-[1.03] active:scale-95 transition-all focus:outline-none cursor-pointer font-bold">
@@ -104,11 +159,10 @@
     <div class="relative user-menu-container select-none z-[100]">
       <button type="button" (click)="toggleUserMenu()"
         class="flex items-center gap-2 border border-[#DF80AC]/30 bg-[#DF80AC]/15 px-3 py-1.5 rounded-full text-slate-200 text-xs font-mono transition-all duration-300 hover:bg-[#DF80AC]/25 focus:outline-none cursor-pointer">
-        <span
-          class="w-6 h-6 rounded-full bg-[#DF80AC] text-black flex items-center justify-center font-bold text-[10px]">
+        <span class="w-6 h-6 rounded-full bg-[#DF80AC] text-black flex items-center justify-center  text-[10px]">
           {{ user()?.initials }}
         </span>
-        <span class="hidden md:inline font-bold text-xs uppercase tracking-wider text-[#DF80AC]">{{ user()?.name
+        <span class="hidden md:inline text-xs uppercase tracking-wider text-[#DF80AC]">{{ user()?.name
           }}</span>
         <span class="material-symbols-outlined text-sm transition-transform duration-300"
           [class.rotate-180]="isUserMenuOpen()">expand_more</span>
@@ -117,10 +171,10 @@
       <div
         class="absolute right-0 mt-2 w-56 bg-[#121216] border border-white/10 rounded-xl shadow-2xl py-2 text-xs font-mono backdrop-blur-md animate-fade-in divide-y divide-white/5 z-[60] text-left">
         <div class="px-4 py-2.5 text-left">
-          <p class="text-white font-bold leading-tight">{{ user()?.name }}</p>
+          <p class="text-white  leading-tight">{{ user()?.name }}</p>
           <p class="text-[12px] text-slate-400 mt-0.5 truncate">{{ user()?.email }}</p>
           <p
-            class="text-[8.5px] text-[#DF80AC] uppercase font-bold mt-1.5 tracking-wider bg-[#DF80AC]/10 border border-[#DF80AC]/25 px-1.5 py-0.5 rounded inline-block">
+            class="text-[8.5px] text-[#DF80AC] uppercase  mt-1.5 tracking-wider bg-[#DF80AC]/10 border border-[#DF80AC]/25 px-1.5 py-0.5 rounded inline-block">
             {{ user()?.role }}</p>
         </div>
         <div class="py-1">
@@ -151,83 +205,83 @@
 
 <!-- Mobile Navigation Drawer -->
 @if (isMobileMenuOpen()) {
-  <div class="mobile-menu-container fixed inset-0 z-[60] md:hidden sticky">
-    <!-- <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="toggleMobileMenu()"></div> -->
-    <div class="absolute top-18 left-4 right-4 bg-[#121216] border border-white/30 rounded-2xl shadow-2xl py-3 animate-fade-slide-up overflow-hidden">
-      <nav class="flex flex-col gap-0.5 px-3">
-        <button type="button" (click)="navigateAndClose('/', 'dashboard')"
-          class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-          [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'dashboard' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
-          <span class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-sm">dashboard</span>
-            Dashboard
-          </span>
-        </button>
-        <button type="button" (click)="navigateAndClose('/', 'portfolio')"
-          class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-          [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'portfolio' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
-          <span class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-sm">layers</span>
-            Portfolio
-          </span>
-        </button>
-        <button type="button" (click)="navigateAndClose('/', 'config')"
-          class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-          [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'config' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
-          <span class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-sm">tune</span>
-            Price Estimate
-          </span>
-        </button>
-        @if (isLoggedIn()) {
-          @if (user()?.name === 'clove') {
-            <button type="button" (click)="navigateAndClose('/estimations')"
-              class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-              [ngClass]="currentUrl() === '/estimations' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
-              <span class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-sm">analytics</span>
-                Estimations
-              </span>
-            </button>
-          } @else {
-            <button type="button" (click)="navigateAndClose('/projects')"
-              class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-              [ngClass]="currentUrl() === '/projects' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
-              <span class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-sm">folder</span>
-                Projects 
-              </span>
-            </button>
-          }
-        }
-        <button type="button" (click)="navigateAndClose('/resources')"
-          class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
-          [ngClass]="currentUrl() === '/resources' ? 'text-primary-custom font-bold bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
-          <span class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-sm">database</span>
-            Resources
-          </span>
-        </button>
-      </nav>
-      <div class="border-t border-white/5 mt-2 pt-2 px-3">
-        @if (!isLoggedIn()) {
-          <button type="button" (click)="navigateAndClose('/login')"
-            class="w-full flex items-center justify-center gap-2 bg-[#DF80AC]/10 text-white border border-[#DF80AC]/30 font-mono text-[10px] uppercase tracking-widest px-4 py-3 rounded-xl hover:bg-[#DF80AC]/20 transition-all cursor-pointer font-bold">
-            <span class="material-symbols-outlined text-sm">login</span>
-            SIGN IN
-          </button>
-        } @else {
-          <div class="px-4 py-3 text-left">
-            <p class="text-white font-bold text-xs font-mono">{{ user()?.name }}</p>
-            <p class="text-[10px] text-slate-400 font-mono truncate">{{ user()?.email }}</p>
-          </div>
-          <button type="button" (click)="logout()"
-            class="w-full flex items-center justify-center gap-2 text-rose-400 font-mono text-[10px] uppercase tracking-widest px-4 py-3 rounded-xl hover:bg-rose-500/10 transition-all cursor-pointer font-bold border-none bg-transparent">
-            <span class="material-symbols-outlined text-sm">logout</span>
-            Disconnect Session
-          </button>
-        }
+<div class="mobile-menu-container fixed inset-0 z-[60] md:hidden sticky">
+  <!-- <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="toggleMobileMenu()"></div> -->
+  <div
+    class="absolute top-6 left-4 right-4 bg-[#121216] border border-white/30 rounded-2xl shadow-2xl py-3 animate-fade-slide-up overflow-hidden">
+    <nav class="flex flex-col gap-0.5 px-3">
+      <button type="button" (click)="navigateAndClose('/', 'home')"
+        class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
+        [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'home' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-sm">home</span>
+          Home
+        </span>
+      </button>
+      <button type="button" (click)="navigateAndClose('/', 'portfolio')"
+        class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
+        [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'portfolio' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-sm">layers</span>
+          Portfolio
+        </span>
+      </button>
+      <button type="button" (click)="navigateAndClose('/', 'config')"
+        class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
+        [ngClass]="currentUrl() === '/' && calculator.activeTab() === 'config' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-sm">tune</span>
+          Price Estimate
+        </span>
+      </button>
+      @if (isLoggedIn()) {
+      @if (user()?.role === 'admin') {
+      <button type="button" (click)="navigateAndClose('/dashboard')"
+        class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
+        [ngClass]="currentUrl() === '/dashboard' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-sm">analytics</span>
+          Dashboard
+        </span>
+      </button>
+      }
+      <button type="button" (click)="navigateAndClose('/projects')"
+        class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
+        [ngClass]="currentUrl() === '/projects' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-sm">folder</span>
+          Projects
+        </span>
+      </button>
+      }
+      <button type="button" (click)="navigateAndClose('/resources')"
+        class="w-full text-left px-4 py-3.5 rounded-xl font-mono text-xs uppercase tracking-widest transition-all cursor-pointer border-none bg-transparent"
+        [ngClass]="currentUrl() === '/resources' ? 'text-primary-custom bg-primary-custom/5' : 'text-on-surface-variant-custom hover:text-silver-leaf hover:bg-white/5'">
+        <span class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-sm">database</span>
+          Resources
+        </span>
+      </button>
+    </nav>
+    <div class="border-t border-white/5 mt-2 pt-2 px-3">
+      @if (!isLoggedIn()) {
+      <button type="button" (click)="navigateAndClose('/login')"
+        class="w-full flex items-center justify-center gap-2 bg-[#DF80AC]/10 text-white border border-[#DF80AC]/30 font-mono text-[10px] uppercase tracking-widest px-4 py-3 rounded-xl hover:bg-[#DF80AC]/20 transition-all cursor-pointer font-bold">
+        <span class="material-symbols-outlined text-sm">login</span>
+        SIGN IN
+      </button>
+      } @else {
+      <div class="px-4 py-3 text-left">
+        <p class="text-white  text-xs font-mono">{{ user()?.name }}</p>
+        <p class="text-[10px] text-slate-400 font-mono truncate">{{ user()?.email }}</p>
       </div>
+      <button type="button" (click)="logout()"
+        class="w-full flex items-center justify-center gap-2 text-rose-400 font-mono text-[10px] uppercase tracking-widest px-4 py-3 rounded-xl hover:bg-rose-500/10 transition-all cursor-pointer font-bold border-none bg-transparent">
+        <span class="material-symbols-outlined text-sm">logout</span>
+        Disconnect Session
+      </button>
+      }
     </div>
   </div>
+</div>
 }

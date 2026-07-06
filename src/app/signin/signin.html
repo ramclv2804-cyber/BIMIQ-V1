@@ -115,81 +115,173 @@
         </p>
       </div>
     } @else {
-      <div class="form">
-        <div class="field" [class.field-error]="hasError('signupUsername')">
-          <label for="signupUsername">Username</label>
+      <div class="form signup-form-grid">
+        <!-- Row 1: Username | Email -->
+        <div class="field-row">
+          <div class="field" [class.field-error]="hasError('signupUsername')">
+            <label for="signupUsername">Username <span class="required-star">*</span></label>
+            <input
+              id="signupUsername"
+              type="text"
+              [value]="signupUsername"
+              (input)="signupUsername = $any($event.target).value; clearFieldErrors()"
+              (keydown.enter)="onSignup()"
+              placeholder="Choose a username"
+              autocomplete="username"
+            />
+          </div>
+          <div class="field" [class.field-error]="hasError('signupEmail')">
+            <label for="signupEmail">Email <span class="required-star">*</span></label>
+            <input
+              id="signupEmail"
+              type="email"
+              [value]="signupEmail"
+              (input)="signupEmail = $any($event.target).value; clearFieldErrors()"
+              (keydown.enter)="onSignup()"
+              placeholder="you@company.com"
+              autocomplete="email"
+            />
+          </div>
+        </div>
+
+        <!-- Row 2: Contact Number | Company Name -->
+        <div class="field-row">
+          <div class="field phone-field" [class.field-error]="hasError('signupContactNumber')">
+            <label for="signupContactNumber">Contact Number <span class="required-star">*</span></label>
+            <div class="phone-input-wrapper">
+              <div class="country-selector" tabindex="0" (click)="toggleCountryDropdown()" (keydown.escape)="isCountryDropdownOpen = false">
+                <span class="country-flag">{{ selectedCountry.flag }}</span>
+                <span class="country-dial">{{ selectedCountry.dial }}</span>
+                <span class="country-arrow">▾</span>
+                @if (isCountryDropdownOpen) {
+                  <div class="country-dropdown" (click)="$event.stopPropagation()" (keydown.escape)="isCountryDropdownOpen = false; countrySearch = ''">
+                    <!-- Search input -->
+                    <div class="country-search-wrapper">
+                      <span class="country-search-icon">🔍</span>
+                      <input
+                        type="text"
+                        class="country-search-input"
+                        [value]="countrySearch"
+                        (input)="countrySearch = $any($event.target).value"
+                        (keydown.escape)="isCountryDropdownOpen = false; countrySearch = ''; $event.stopPropagation()"
+                        placeholder="Search countries..."
+                        autocomplete="off"
+                      />
+                      @if (countrySearch) {
+                        <button type="button" class="country-search-clear" (click)="countrySearch = ''; $event.stopPropagation()">✕</button>
+                      }
+                    </div>
+                    <!-- Results count -->
+                    @if (filteredCountries.length > 0) {
+                      <div class="country-results-info">{{ filteredCountries.length }} country{{ filteredCountries.length !== 1 ? 'ies' : 'y' }}</div>
+                    }
+                    <!-- Country list -->
+                    <div class="country-list">
+                      @for (c of filteredCountries; track c.code) {
+                        <button type="button" class="country-option" (click)="selectCountry(c)" [class.active]="c.code === selectedCountry.code">
+                          <span class="country-flag-sm">{{ c.flag }}</span>
+                          <span class="country-name">{{ c.name }}</span>
+                          <span class="country-dial-sm">{{ c.dial }}</span>
+                        </button>
+                      }
+                      @if (filteredCountries.length === 0) {
+                        <div class="country-no-results">No countries match "{{ countrySearch }}"</div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+              <input
+                id="signupContactNumber"
+                type="tel"
+                [value]="signupContactNumber"
+                (input)="onPhoneInput($event)"
+                (keydown.enter)="onSignup()"
+                placeholder="555 123 4567"
+                autocomplete="tel-national"
+              />
+            </div>
+          </div>
+          <div class="field" [class.field-error]="hasError('signupCompanyName')">
+            <label for="signupCompanyName">Company Name <span class="required-star">*</span></label>
+            <input
+              id="signupCompanyName"
+              type="text"
+              [value]="signupCompanyName"
+              (input)="signupCompanyName = $any($event.target).value; clearFieldErrors()"
+              (keydown.enter)="onSignup()"
+              placeholder="Your Company Ltd."
+            />
+          </div>
+        </div>
+
+        <!-- Row 3: Company Website (full width) -->
+        <div class="field" [class.field-error]="hasError('signupCompanyWebsite')">
+          <label for="signupCompanyWebsite">Company Website <span class="required-star">*</span></label>
           <input
-            id="signupUsername"
+            id="signupCompanyWebsite"
             type="text"
-            [value]="signupUsername"
-            (input)="signupUsername = $any($event.target).value; clearFieldErrors()"
+            [value]="signupCompanyWebsite"
+            (input)="signupCompanyWebsite = $any($event.target).value; clearFieldErrors()"
             (keydown.enter)="onSignup()"
-            placeholder="Choose a username"
-            autocomplete="username"
+            placeholder="https://yourcompany.com"
           />
         </div>
-        <div class="field" [class.field-error]="hasError('signupEmail')">
-          <label for="signupEmail">Email</label>
-          <input
-            id="signupEmail"
-            type="email"
-            [value]="signupEmail"
-            (input)="signupEmail = $any($event.target).value; clearFieldErrors()"
-            (keydown.enter)="onSignup()"
-            placeholder="you@company.com"
-            autocomplete="email"
-          />
-        </div>
-        <div class="field" [class.field-error]="hasError('signupPassword')">
-          <label for="signupPassword">Password</label>
-          <div class="password-wrapper">
-            <input
-              id="signupPassword"
-              [type]="showSignupPassword ? 'text' : 'password'"
-              [value]="signupPassword"
-              (input)="signupPassword = $any($event.target).value; clearFieldErrors()"
-              (keydown.enter)="onSignup()"
-              placeholder="Create a password"
-              autocomplete="new-password"
-            />
-            <button type="button" class="pwd-toggle" (click)="showSignupPassword = !showSignupPassword" tabindex="-1">
-              @if (showSignupPassword) {
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-              } @else {
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
-                </svg>
-              }
-            </button>
+
+        <!-- Row 4: Password | Confirm Password -->
+        <div class="field-row">
+          <div class="field" [class.field-error]="hasError('signupPassword')">
+            <label for="signupPassword">Password <span class="required-star">*</span></label>
+            <div class="password-wrapper">
+              <input
+                id="signupPassword"
+                [type]="showSignupPassword ? 'text' : 'password'"
+                [value]="signupPassword"
+                (input)="signupPassword = $any($event.target).value; clearFieldErrors()"
+                (keydown.enter)="onSignup()"
+                placeholder="Create a password"
+                autocomplete="new-password"
+              />
+              <button type="button" class="pwd-toggle" (click)="showSignupPassword = !showSignupPassword" tabindex="-1">
+                @if (showSignupPassword) {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                } @else {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                  </svg>
+                }
+              </button>
+            </div>
+          </div>
+          <div class="field" [class.field-error]="hasError('signupConfirm')">
+            <label for="signupConfirm">Confirm Password <span class="required-star">*</span></label>
+            <div class="password-wrapper">
+              <input
+                id="signupConfirm"
+                [type]="showSignupConfirm ? 'text' : 'password'"
+                [value]="signupConfirm"
+                (input)="signupConfirm = $any($event.target).value; clearFieldErrors()"
+                (keydown.enter)="onSignup()"
+                placeholder="Confirm your password"
+                autocomplete="new-password"
+              />
+              <button type="button" class="pwd-toggle" (click)="showSignupConfirm = !showSignupConfirm" tabindex="-1">
+                @if (showSignupConfirm) {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                } @else {
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                  </svg>
+                }
+              </button>
+            </div>
           </div>
         </div>
-        <div class="field" [class.field-error]="hasError('signupConfirm')">
-          <label for="signupConfirm">Confirm Password</label>
-          <div class="password-wrapper">
-            <input
-              id="signupConfirm"
-              [type]="showSignupConfirm ? 'text' : 'password'"
-              [value]="signupConfirm"
-              (input)="signupConfirm = $any($event.target).value; clearFieldErrors()"
-              (keydown.enter)="onSignup()"
-              placeholder="Confirm your password"
-              autocomplete="new-password"
-            />
-            <button type="button" class="pwd-toggle" (click)="showSignupConfirm = !showSignupConfirm" tabindex="-1">
-              @if (showSignupConfirm) {
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-              } @else {
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
-                </svg>
-              }
-            </button>
-          </div>
-        </div>
+
         <button type="button" (click)="onSignup()" class="submit-btn" [class.loading]="isLoading" [disabled]="isLoading">
           @if (isLoading) {
             <span class="spinner"></span>

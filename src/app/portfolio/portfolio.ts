@@ -9,12 +9,12 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
   template: `
     <div class="animate-fade-in text-left">
       <!-- Portfolio Header & Category Filters -->
-      <header class="mb-12 text-left">
+      <header class="mb-8 md:mb-12 text-left">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div class="space-y-2">
             <span class="font-mono text-xs text-secondary-custom uppercase tracking-widest block">Technical Archive</span>
-            <h1 class="font-serif text-3xl md:text-5xl text-silver-leaf">Project Portfolio</h1>
-            <p class="text-xs text-on-surface-variant-custom max-w-md">Filtered grid catalog database containing precision-engineered CAD references.</p>
+            <h1 class="font-serif text-2xl md:text-5xl text-silver-leaf leading-none">Project Portfolio</h1>
+            <p class="text-[11px] md:text-xs text-on-surface-variant-custom max-w-md">Filtered grid catalog database containing precision-engineered CAD references.</p>
           </div>
 
           <div class="flex flex-col gap-4 w-full md:w-auto">
@@ -35,13 +35,13 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
             </div>
 
             <!-- Categories tags -->
-            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              @for (cat of ['ALL PROJECTS', 'MEP', 'ARCHITECTURAL', 'STRUCTURAL']; track cat) {
+            <div class="flex gap-1.5 md:gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+              @for (cat of ['ALL PROJECTS', 'MEP', 'ARCHITECTURAL & STRUCTURAL']; track cat) {
                 <button 
                   type="button"
                   (click)="calculator.activeCategory.set(cat)"
                   [style.animation-delay]="($index * 50) + 'ms'"
-                  class="px-4 py-1.5 rounded-full font-mono text-[10px] tracking-widest transition-all duration-250 hover:scale-[1.05] active:scale-[0.95] whitespace-nowrap border cursor-pointer animate-fade-slide-up opacity-0"
+                  class="px-3 md:px-4 py-1.5 rounded-full font-mono text-[9px] md:text-[10px] tracking-widest transition-all duration-250 hover:scale-[1.05] active:scale-[0.95] whitespace-nowrap border cursor-pointer animate-fade-slide-up opacity-0 shrink-0"
                   [ngClass]="calculator.activeCategory() === cat ? 'bg-primary-custom text-on-primary-custom border-primary-custom shadow-[0_4px_15px_rgba(218,225,255,0.15)] font-bold' : 'border-silver-leaf/15 text-on-surface-variant-custom hover:border-white/30 hover:bg-white/5'">
                   {{ cat }}
                 </button>
@@ -52,14 +52,14 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
       </header>
 
       <!-- Active Database Results Info -->
-      <div class="mb-6 flex justify-between items-center bg-midnight-charcoal/20 border border-white/5 rounded-xl px-4 py-2 font-mono text-[10px] text-on-surface-variant-custom tracking-wider select-none">
+      <div class="mb-4 md:mb-6 flex justify-between items-center bg-midnight-charcoal/20 border border-white/5 rounded-xl px-3 md:px-4 py-2 font-mono text-[8px] md:text-[10px] text-on-surface-variant-custom tracking-wider select-none">
         <span>GRID METRICS SYNCHRONIZED</span>
-        <span class="text-primary-custom">{{ calculator.filteredProjects().length }} MATCHING NODES</span>
+        <span class="text-primary-custom">{{ calculator.filteredProjects().length }} MATCHING PROJECTS</span>
       </div>
 
       <!-- Portfolio Projects Grid -->
       @if (calculator.filteredProjects().length > 0) {
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-left">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 text-left">
           @for (proj of calculator.filteredProjects(); track proj.id) {
             <article [style.animation-delay]="($index * 60) + 'ms'" class="glass-panel rounded-xl overflow-hidden group hover:border-primary-custom/30 hover:-translate-y-1 hover:shadow-[0_12px_35px_rgba(218,225,255,0.08)] transition-all duration-300 animate-fade-slide-up opacity-0">
               <div class="relative h-60 overflow-hidden">
@@ -74,23 +74,23 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
                 </div>
               </div>
               
-              <div class="p-6 space-y-4 inner-bevel bg-midnight-charcoal/40">
+              <div class="p-4 md:p-6 space-y-3 md:space-y-4 inner-bevel bg-midnight-charcoal/40">
                 <div class="flex justify-between items-start">
-                  <h3 class="font-serif text-lg text-silver-leaf font-bold">
+                  <h3 class="font-serif text-base md:text-lg text-silver-leaf font-bold">
                     <span class="hover-underline-animate pb-0.5">{{ proj.title }}</span>
                   </h3>
                   <span class="font-mono text-[11px] text-on-surface-variant-custom">{{ proj.date }}</span>
                 </div>
-                <p class="text-xs text-on-surface-variant-custom leading-relaxed font-sans min-h-[36px]">{{ proj.description }}</p>
+                <p class="text-[11px] md:text-xs text-on-surface-variant-custom leading-relaxed font-sans min-h-[28px] md:min-h-[36px]">{{ proj.description }}</p>
                 
-                <div class="pt-4 flex justify-between border-t border-silver-leaf/10 font-mono text-xs">
+                <div class="pt-3 md:pt-4 flex justify-between border-t border-silver-leaf/10 font-mono text-[11px] md:text-xs">
                   <div class="flex flex-col">
-                    <span class="text-[9px] text-on-surface-variant-custom uppercase tracking-wider block">Typology</span>
-                    <span class="text-silver-leaf font-semibold block mt-0.5">{{ proj.typology }}</span>
+                    <span class="text-[8px] md:text-[9px] text-on-surface-variant-custom uppercase tracking-wider block">Typology</span>
+                    <span class="text-silver-leaf block mt-0.5">{{ proj.typology }}</span>
                   </div>
                   <div class="flex flex-col text-right">
-                    <span class="text-[9px] text-on-surface-variant-custom uppercase tracking-wider block">Magnitude</span>
-                    <span class="text-primary-custom font-bold select-all block mt-0.5">{{ proj.magnitude }}</span>
+                    <span class="text-[8px] md:text-[9px] text-on-surface-variant-custom uppercase tracking-wider block">Magnitude</span>
+                    <span class="text-primary-custom select-all block mt-0.5">{{ proj.magnitude }}</span>
                   </div>
                 </div>
               </div>
@@ -100,9 +100,9 @@ import { SpatialCostCalculator } from '../services/spatial-cost-calculator';
 
        
       } @else {
-        <div class="glass-panel p-12 text-center rounded-2xl border border-dashed border-silver-leaf/10">
-          <span class="material-symbols-outlined text-4xl text-primary-custom/50 animate-pulse">database_off</span>
-          <p class="font-mono text-xs text-silver-leaf mt-3">No matching nodes found for your exact parameters.</p>
+        <div class="glass-panel p-8 md:p-12 text-center rounded-2xl border border-dashed border-silver-leaf/10">
+          <span class="material-symbols-outlined text-3xl md:text-4xl text-primary-custom/50 animate-pulse">database_off</span>
+          <p class="font-mono text-[11px] md:text-xs text-silver-leaf mt-3">No matching nodes found for your exact parameters.</p>
           <button type="button" (click)="calculator.searchQuery.set(''); calculator.activeCategory.set('ALL PROJECTS')" class="mt-4 text-xs font-mono text-primary-custom underline bg-transparent border-none cursor-pointer">
             Reset filter criteria
           </button>
